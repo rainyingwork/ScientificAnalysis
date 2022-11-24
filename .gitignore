@@ -3,5 +3,7 @@ env
 UnitTest/*
 */*/file/data
 */*/file/doc
+*/*/file/model
 *.pyc
 logs.log
+*.pkl
