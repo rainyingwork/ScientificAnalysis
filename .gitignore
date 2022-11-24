@@ -1,3 +1,7 @@
 .idea
 env
+UnitTest/*
+*/*/file/data
+*/*/file/doc
 *.pyc
+logs.log

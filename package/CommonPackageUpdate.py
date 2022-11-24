@@ -2,14 +2,24 @@ import os , shutil
 import sys
 
 __pythonexePath = "{}/venv/Scripts/python.exe".format(sys.path[1])
-os.system("{} -m pip install --upgrade pip".format(__pythonexePath))
-os.system("{} -m pip install gitpython".format(__pythonexePath))
-os.system("{} -m pip install matplotlib".format(__pythonexePath))
-os.system("{} -m pip install scikit-learn".format(__pythonexePath))
-os.system("{} -m pip install nltk".format(__pythonexePath))
-os.system("{} -m pip install streamlit".format(__pythonexePath))
-os.system("{} -m pip install scikit-surprise".format(__pythonexePath))
-os.system("{} -m pip install seaborn".format(__pythonexePath))
+# os.system("{} -m pip install --upgrade pip".format(__pythonexePath))
+# os.system("{} -m pip install gitpython".format(__pythonexePath))
+# os.system("{} -m pip install matplotlib".format(__pythonexePath))
+# os.system("{} -m pip install scikit-learn".format(__pythonexePath))
+# os.system("{} -m pip install nltk".format(__pythonexePath))
+# os.system("{} -m pip install streamlit".format(__pythonexePath))
+# os.system("{} -m pip install scikit-surprise".format(__pythonexePath))
+# os.system("{} -m pip install seaborn".format(__pythonexePath))
+# os.system("{} -m pip install pycaret==3.0.0rc2".format(__pythonexePath))
+# os.system("{} -m pip install xgboost==1.6.2".format(__pythonexePath))
+# os.system("{} -m pip install catboost==1.0.6".format(__pythonexePath))
+# os.system("{} -m pip install scikit-learn==1.1.2".format(__pythonexePath))
+# os.system("{} -m pip install gensim==4.2.0".format(__pythonexePath))
+# os.system("{} -m pip install tqdm==4.64.1".format(__pythonexePath))
+# os.system("{} -m pip install openpyxl==3.0.10".format(__pythonexePath))
+# os.system("{} -m pip install matplotlib==3.6.0".format(__pythonexePath))
+# os.system("{} -m pip install explainerdashboard==0.4.0".format(__pythonexePath))
+# os.system("{} -m pip install networkx==2.8.8".format(__pythonexePath))
 
 
 
