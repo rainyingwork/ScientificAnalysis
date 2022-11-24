@@ -1,0 +1,3 @@
+
+class CrawlerInfo():
+    pass

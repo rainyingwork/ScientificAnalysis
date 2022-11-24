@@ -1,0 +1,4 @@
+
+class RawDataInfo() :
+    pass
+

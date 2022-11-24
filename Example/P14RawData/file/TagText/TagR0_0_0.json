@@ -1,0 +1,362 @@
+{
+  "001": {
+    "enname": "Purchase CH",
+    "cnname": "Purchase CH",
+    "tagorder": "1",
+    "memo": "Purchase CH",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"002": {
+    "enname": "Purchase MM",
+    "cnname": "Purchase MM",
+    "tagorder": "2",
+    "memo": "Purchase MM",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"003": {
+    "enname": "Store7 Yes",
+    "cnname": "Store7 Yes",
+    "tagorder": "3",
+    "memo": "Store7 Yes",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"004": {
+    "enname": "WeekofPurchase",
+    "cnname": "WeekofPurchase",
+    "tagorder": "4",
+    "memo": "WeekofPurchase",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"005": {
+    "enname": "StoreID",
+    "cnname": "StoreID",
+    "tagorder": "5",
+    "memo": "StoreID",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"006": {
+    "enname": "SpecialCH",
+    "cnname": "SpecialCH",
+    "tagorder": "6",
+    "memo": "SpecialCH",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"007": {
+    "enname": "SpecialMM",
+    "cnname": "SpecialMM",
+    "tagorder": "7",
+    "memo": "SpecialMM",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"008": {
+    "enname": "STORE",
+    "cnname": "STORE",
+    "tagorder": "8",
+    "memo": "STORE",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"009": {
+    "enname": "PriceCH",
+    "cnname": "PriceCH",
+    "tagorder": "9",
+    "memo": "PriceCH",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"010": {
+    "enname": "PriceMM",
+    "cnname": "PriceMM",
+    "tagorder": "10",
+    "memo": "PriceMM",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"011": {
+    "enname": "DiscCH",
+    "cnname": "DiscCH",
+    "tagorder": "11",
+    "memo": "DiscCH",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"012": {
+    "enname": "DiscMM",
+    "cnname": "DiscMM",
+    "tagorder": "12",
+    "memo": "DiscMM",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"013": {
+    "enname": "LoyalCH",
+    "cnname": "LoyalCH",
+    "tagorder": "13",
+    "memo": "LoyalCH",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"014": {
+    "enname": "SalePriceMM",
+    "cnname": "SalePriceMM",
+    "tagorder": "14",
+    "memo": "SalePriceMM",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"015": {
+    "enname": "SalePriceMM",
+    "cnname": "SalePriceMM",
+    "tagorder": "15",
+    "memo": "SalePriceMM",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"016": {
+    "enname": "PriceDiff",
+    "cnname": "PriceDiff",
+    "tagorder": "16",
+    "memo": "PriceDiff",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"017": {
+    "enname": "PctDiscMM",
+    "cnname": "PctDiscMM",
+    "tagorder": "17",
+    "memo": "PctDiscMM",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"018": {
+    "enname": "PctDiscCH",
+    "cnname": "PctDiscCH",
+    "tagorder": "18",
+    "memo": "PctDiscCH",
+    "jsonmessage": {
+      "DataVersion":"R0_0_0",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+}
