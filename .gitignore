@@ -1,9 +1,13 @@
+# 主要步上傳
 .idea
 env
-UnitTest/*
 */*/file/data
 */*/file/doc
 */*/file/model
 *.pyc
 logs.log
-*.pkl
+# 暫不上傳
+UnitTest/*
+Example/P35NetworkX
+Project/RecommendationSystem
+RWTaiwan/TagData
