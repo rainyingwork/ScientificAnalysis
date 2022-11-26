@@ -14,7 +14,7 @@ if __name__ == "__main__":
     opsInfo["OPSOrderJson"] = {
         "ExecuteArr": ["R0_0_1", "P0_0_1"]
         , "OrderArr": [
-            {"Parent": "R0_0_0", "Child": "R0_0_1"}
+            {"Parent": "R0_0_1", "Child": "P0_0_1"}
         ]
         , "FunctionMemo": {
             "R0_0_1": "撈取相關資料"

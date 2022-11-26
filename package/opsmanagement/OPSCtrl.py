@@ -33,7 +33,7 @@ class OPSCtrl:
                 executeFunction = functionDict["ExecuteFunction"]
                 opsInfo["ResultJson"][executeFunction] = functionDict["FunctionRestlt"]
                 allGlobalObjectDict[executeFunction] = functionDict["GlobalObjectDict"]
-        print("start OPS , product is {} , project is {} , version is {} , opsrecordid is {}".format(product , project, opsVersion,opsRecordId))
+        print("end OPS , product is {} , project is {} , version is {} , opsrecordid is {}".format(product , project, opsVersion,opsRecordId))
 
     def runExecuteFunction(self,executeFunction, opsInfo, threadQueue):
 

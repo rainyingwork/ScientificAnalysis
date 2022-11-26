@@ -37,10 +37,10 @@ if __name__ == "__main__":
                 , "ModelFunction": "UsePycaretModelByDatabaseRusult"
                 , "DatabaseProduct": "Example"
                 , "DatabaseProject": "P33PycaretUse"
-                , "DatabaseOPSVersion": "V0_0_2"
-                , "DatabaseOPSRecord": 720
+                , "DatabaseOPSVersion": "V0_0_1"
+                , "DatabaseOPSRecord": 863
                 , "DatabaseFunction": "M0_0_2"
-                , "DatabaseModelName": "BayesianRidge"
+                , "DatabaseModelName": "CatBoostClassifier"
             }
         }
         opsInfo["ResultJson"] = {}
