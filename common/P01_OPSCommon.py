@@ -65,6 +65,7 @@ def makeBuildOPSInfo (runType, product, project, opsVersion,opsOrderJson, parame
         "RunType": runType
         , "Product": product
         , "Project": project
+        , "OPSVersionId": opsVersionEntityCtrl.getNextPrimaryKeyId()
         , "OPSVersion": opsVersion
         , "OPSOrderJson": opsOrderJson
         , "ParameterJson": parameterJson

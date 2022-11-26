@@ -269,7 +269,6 @@ class RawDataFunction(CommonFunction):
         dfIDArr = []
         for sqlInfo in sqlInfoArr :
             sql = makeSingleTagDataSQL(fvInfo,sqlInfo)
-            print(sql)
             df = postgresCtrl.searchSQL(sql)
             dfIDArr.append(id(df))
             dfArr.append(df)

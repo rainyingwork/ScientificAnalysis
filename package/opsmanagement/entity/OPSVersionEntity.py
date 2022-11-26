@@ -50,7 +50,7 @@ class OPSVersionEntity (EntityBase) :
         entity["createtime"] = datetime.datetime.now()
         entity["modifytime"] = datetime.datetime.now()
         entity["deletetime"] = None
-        entity["opsversionid"] = None
+        entity["opsversionid"] = opsInfo["OPSVersionId"]
         entity["product"] = opsInfo["Product"]
         entity["project"] = opsInfo["Project"]
         entity["opsversion"] = opsInfo["OPSVersion"]
