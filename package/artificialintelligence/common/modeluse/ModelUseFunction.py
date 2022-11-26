@@ -22,7 +22,8 @@ class ModelUseFunction(CommonFunction):
         resultDict = {}
         globalObjectDict = {}
         for key in functionVersionInfo.keys():
-            resultDict[key] = functionVersionInfo[key]
+            if key not in ["ResultArr"] :
+                resultDict[key] = functionVersionInfo[key]
         if functionVersionInfo['FunctionType'] == "TagFilter":
             if functionVersionInfo['ModelFunction'] == "Lasso":
                 otherInfo = self.muTagFilterByLasso(functionVersionInfo)
@@ -77,14 +78,14 @@ class ModelUseFunction(CommonFunction):
 
     @classmethod
     def makeXYDataInfoAndColumnNames (self , fvInfo, otherInfo) :
-        modeluseDFIDArr = fvInfo["ResultIDArr"]
+
+        modeluseDFArr = fvInfo["ResultArr"]
         makeDataKeys = fvInfo['MakeDataKeys']
         makeDataInfoArr = fvInfo['MakeDataInfo']
         df = pandas.DataFrame()
         yMakeDataInfoArr, xMakeDataInfoArr = [], []
         commonColumnNames, yColumnNames, xColumnNames = makeDataKeys, [], []
-        for modeluseDFID in modeluseDFIDArr:
-            modeluseDF = GainObjectCtrl.getObjectsById(modeluseDFID)
+        for modeluseDF in modeluseDFArr:
             for makeDataInfo in makeDataInfoArr:
                 yMakeDataInfoArr.append(makeDataInfo) if makeDataInfo["DataType"] == "Y" else xMakeDataInfoArr.append(
                     makeDataInfo)
@@ -228,6 +229,10 @@ class ModelUseFunction(CommonFunction):
         resultDict['ModelDesign']['ModelType'] = "AutoML"
         resultDict['ModelDesign']['ModelFunction'] = "UsePycaretDefult"
         resultDict['ModelDesign']['ModelDists'] = []
+        product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
+        exeFunctionRDir = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
         for bestmodel in bestmodels:
             predictions = predict_model(bestmodel, data=testDF)
             tn, fp, fn, tp = confusion_matrix(predictions[yColumnNames[0]], predictions['Label']).ravel()
@@ -236,13 +241,10 @@ class ModelUseFunction(CommonFunction):
             modeldist['ModelPackage'] = bestmodel.__class__.__module__
             modeldist['ModelName'] = bestmodel.__class__.__name__
             modeldist['ModelFileName'] = modeldist['ModelName'] + ".pkl"
-            modeldist['ModelStorageLocation'] = "{}/{}/file/model/{}".format(fvInfo["Product"], fvInfo["Project"],modeldist['ModelFileName'])
-            modeldist['ModelStorageRemotePath'] =  \
-                "/Storage/OPSData/Product={}/Project={}/OPSVersion={}/Version={}/OPSRecordId={}" \
-                . format(fvInfo["Product"], fvInfo["Project"], fvInfo["OPSVersion"], fvInfo["Version"], str(fvInfo["OPSRecordId"]))
-            modeldist['ModelStorageRemote'] =  \
-                "/Storage/OPSData/Product={}/Project={}/OPSVersion={}/Version={}/OPSRecordId={}/{}" \
-                . format(fvInfo["Product"], fvInfo["Project"], fvInfo["OPSVersion"], fvInfo["Version"], str(fvInfo["OPSRecordId"]), modeldist['ModelFileName'])
+            modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+            modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir,modeldist['ModelFileName'])
+            modeldist['ModelStorageRemotePath'] = "/Storage/OPSData/{}".format(exeFunctionRDir)
+            modeldist['ModelStorageRemote'] = "/Storage/OPSData/{}/{}".format(exeFunctionRDir, modeldist['ModelFileName'])
             modeldist['ModelResult'] = {}
             modeldist['ModelResult']['TN'] = int(tn)
             modeldist['ModelResult']['FP'] = int(fp)
@@ -252,7 +254,7 @@ class ModelUseFunction(CommonFunction):
             modeldist['ModelResult']['Precision'] = tp / (tp + fn)
             modeldist['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn)
             modeldist['ModelResult']['F1Score'] = 2 * modeldist['ModelResult']['Recall'] * modeldist['ModelResult']['Precision'] / (modeldist['ModelResult']['Recall'] + modeldist['ModelResult']['Precision'])
-            save_model(bestmodel, "{}/{}/file/model/{}".format(fvInfo["Product"], fvInfo["Project"], modeldist['ModelName']))
+            save_model(bestmodel, "{}/{}".format(modeldist['ModelStorageLocationPath'], modeldist['ModelName']))
 
             sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
             sshCtrl.uploadFile(modeldist['ModelStorageLocation'],modeldist['ModelStorageRemote'])
@@ -298,6 +300,10 @@ class ModelUseFunction(CommonFunction):
         resultDict['ModelDesign']['ModelType'] = "AutoML"
         resultDict['ModelDesign']['ModelFunction'] = "UsePycaretDefult"
         resultDict['ModelDesign']['ModelDists'] = []
+        product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
+        exeFunctionRDir = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
         for bestmodel in bestmodels:
             predictions = predict_model(bestmodel, data=testDF)
             MAE = mean_absolute_error(predictions[yColumnNames[0]], predictions['Label'])
@@ -310,13 +316,10 @@ class ModelUseFunction(CommonFunction):
             modeldist['ModelPackage'] = bestmodel.__class__.__module__
             modeldist['ModelName'] = bestmodel.__class__.__name__
             modeldist['ModelFileName'] = modeldist['ModelName'] + ".pkl"
-            modeldist['ModelStorageLocation'] = "{}/{}/file/model/{}".format(fvInfo["Product"], fvInfo["Project"],modeldist['ModelFileName'])
-            modeldist['ModelStorageRemotePath'] = \
-                "/Storage/OPSData/Product={}/Project={}/OPSVersion={}/Version={}/OPSRecordId={}" \
-                    .format(fvInfo["Product"], fvInfo["Project"], fvInfo["OPSVersion"], fvInfo["Version"],str(fvInfo["OPSRecordId"]))
-            modeldist['ModelStorageRemote'] = \
-                "/Storage/OPSData/Product={}/Project={}/OPSVersion={}/Version={}/OPSRecordId={}/{}" \
-                    .format(fvInfo["Product"], fvInfo["Project"], fvInfo["OPSVersion"], fvInfo["Version"],str(fvInfo["OPSRecordId"]), modeldist['ModelFileName'])
+            modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+            modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldist['ModelFileName'])
+            modeldist['ModelStorageRemotePath'] = "/Storage/OPSData/{}".format(exeFunctionRDir)
+            modeldist['ModelStorageRemote'] = "/Storage/OPSData/{}/{}".format(exeFunctionRDir,modeldist['ModelFileName'])
             modeldist['ModelResult'] = {}
             modeldist['ModelResult']['MAE'] = float(MAE)
             modeldist['ModelResult']['MSE'] = float(MSE)
@@ -324,7 +327,7 @@ class ModelUseFunction(CommonFunction):
             modeldist['ModelResult']['R2'] = float(R2)
             modeldist['ModelResult']['EVS'] = float(EVS)
 
-            save_model(bestmodel,"{}/{}/file/model/{}".format(fvInfo["Product"], fvInfo["Project"], modeldist['ModelName']))
+            save_model(bestmodel, "{}/{}".format(modeldist['ModelStorageLocationPath'], modeldist['ModelName']))
 
             sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
             sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
@@ -338,7 +341,6 @@ class ModelUseFunction(CommonFunction):
         from sklearn.metrics import confusion_matrix
         from pycaret.regression import predict_model
         from pycaret.regression import load_model
-
         load_dotenv(dotenv_path="env/ssh.env")
         sshCtrl = SSHCtrl(
             host=os.getenv("SSH_IP")
@@ -353,8 +355,15 @@ class ModelUseFunction(CommonFunction):
             self.makeXYDataInfoAndColumnNames(fvInfo, otherInfo)
 
         # -------------------------------------------------- MakeModel--------------------------------------------------
-        pprint.pprint(fvInfo)
         modeldist = fvInfo["ModelDesign"]['ModelDists'][0]
+
+        product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
+        exeFunctionRDir = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
+        modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+        modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldist['ModelFileName'])
+
         sshCtrl.downloadFile(modeldist['ModelStorageRemote'], modeldist['ModelStorageLocation'])
         bestmodel = load_model(modeldist['ModelStorageLocation'].replace(".pkl", ""))
 
@@ -370,9 +379,14 @@ class ModelUseFunction(CommonFunction):
         modeldist['ModelResult']['Precision'] = tp / (tp + fn)
         modeldist['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn)
         modeldist['ModelResult']['F1Score'] = 2 * modeldist['ModelResult']['Recall'] * modeldist['ModelResult']['Precision'] / (modeldist['ModelResult']['Recall'] + modeldist['ModelResult']['Precision'])
+
+        modeldist['ModelStorageRemotePath'] = "/Storage/OPSData/{}".format(exeFunctionRDir)
+        modeldist['ModelStorageRemote'] = "/Storage/OPSData/{}/{}".format(exeFunctionRDir,modeldist['ModelFileName'])
+
         sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
         sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
         resultDict = copy.deepcopy(fvInfo)
+        resultDict["ResultArr"] = None
         return resultDict
 
     @classmethod
@@ -398,8 +412,16 @@ class ModelUseFunction(CommonFunction):
             self.makeXYDataInfoAndColumnNames(fvInfo, otherInfo)
 
         # -------------------------------------------------- MakeModel--------------------------------------------------
-        pprint.pprint(fvInfo)
+
         modeldist = fvInfo["ModelDesign"]['ModelDists'][0]
+
+        product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
+        exeFunctionRDir = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
+        modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+        modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldist['ModelFileName'])
+
         sshCtrl.downloadFile(modeldist['ModelStorageRemote'], modeldist['ModelStorageLocation'])
         bestmodel = load_model(modeldist['ModelStorageLocation'].replace(".pkl",""))
 
@@ -410,17 +432,18 @@ class ModelUseFunction(CommonFunction):
         RMSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'], squared=False)
         R2 = r2_score(predictions[yColumnNames[0]], predictions['Label'])
         EVS = explained_variance_score(predictions[yColumnNames[0]], predictions['Label'])
-        modeldist['ModelStorageRemotePath'] = "/Storage/OPSData/Product={}/Project={}/OPSVersion={}/Version={}/OPSRecordId={}" \
-                .format(fvInfo["Product"], fvInfo["Project"], fvInfo["OPSVersion"], fvInfo["Version"],str(fvInfo["OPSRecordId"]))
-        modeldist['ModelStorageRemote'] = "/Storage/OPSData/Product={}/Project={}/OPSVersion={}/Version={}/OPSRecordId={}/{}" \
-                .format(fvInfo["Product"], fvInfo["Project"], fvInfo["OPSVersion"], fvInfo["Version"],str(fvInfo["OPSRecordId"]), modeldist['ModelFileName'])
         modeldist['ModelResult']['MAE'] = float(MAE)
         modeldist['ModelResult']['MSE'] = float(MSE)
         modeldist['ModelResult']['RMSE'] = float(RMSE)
         modeldist['ModelResult']['R2'] = float(R2)
         modeldist['ModelResult']['EVS'] = float(EVS)
+
+        modeldist['ModelStorageRemotePath'] = "/Storage/OPSData/{}".format(exeFunctionRDir)
+        modeldist['ModelStorageRemote'] = "/Storage/OPSData/{}/{}".format(exeFunctionRDir,modeldist['ModelFileName'])
+
         sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
         sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
         resultDict = copy.deepcopy(fvInfo)
+        resultDict["ResultArr"] = None
         return resultDict
 

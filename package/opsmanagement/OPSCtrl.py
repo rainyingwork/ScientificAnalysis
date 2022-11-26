@@ -11,6 +11,7 @@ class OPSCtrl:
 
     def executeOPS(self, opsInfo):
         allGlobalObjectDict = {}
+        opsInfo["GlobalObject"] = id(allGlobalObjectDict)
         product = opsInfo["Product"]
         project = opsInfo["Project"]
         opsVersion = opsInfo["OPSVersion"]
@@ -22,6 +23,7 @@ class OPSCtrl:
             threadQueue = Queue()
             for executeFunction in orderFunctionLayer :
                 thread = threading.Thread(target=self.runExecuteFunction, args=(executeFunction,opsInfo,threadQueue))
+                thread.daemon = True
                 thread.start() , time.sleep(0.5)
                 threadList.append(thread)
             for thread in threadList:
@@ -42,7 +44,7 @@ class OPSCtrl:
             opsRecordId = opsInfo["OPSRecordId"]
             from package.opsmanagement.entity.OPSDetailEntity import OPSDetailEntity
             functionRestlt["ExeFunctionLDir"] = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
-            functionRestlt["exeFunctionRDir"] = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}"\
+            functionRestlt["ExeFunctionRDir"] = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}"\
                                                 .format(product,project,opsVersion,opsRecordId,executeFunction)
             os.makedirs(functionRestlt["ExeFunctionLDir"]) if not os.path.isdir(functionRestlt["ExeFunctionLDir"]) else None
             with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "FunctionRestlt.pickle"), 'wb') as f:

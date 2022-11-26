@@ -18,7 +18,8 @@ class PreProcessFunction(CommonFunction):
         resultDict = {}
         globalObjectDict = {}
         for key in functionVersionInfo.keys():
-            resultDict[key] = functionVersionInfo[key]
+            if key not in ["ResultArr"] :
+                resultDict[key] = functionVersionInfo[key]
         if functionVersionInfo['FunctionType'] == "PPTagText":
             otherInfo = self.ppTagText(functionVersionInfo)
             resultDict['ResultIDArr'] , globalObjectDict['ResultArr'] = otherInfo['DFIDArr'] , otherInfo["DFArr"]
@@ -82,7 +83,7 @@ class PreProcessFunction(CommonFunction):
     @classmethod
     def makeDFByPPTagText(self, fvInfo, otherInfo):
 
-        preprossDFIDArr = fvInfo["ResultIDArr"]
+        preprossDFArr = fvInfo["ResultArr"]
         makeDataKeys = fvInfo['MakeDataKeys']
         makeDataInfoArr = fvInfo['MakeDataInfo']
 
@@ -91,10 +92,6 @@ class PreProcessFunction(CommonFunction):
         tagTextDF = self.makeTagTextDF(fvInfo)
 
         # --------------------------------------------------preprossDF--------------------------------------------------
-
-        preprossDFArr = []
-        for preprossDFID in preprossDFIDArr:
-            preprossDFArr.append(GainObjectCtrl.getObjectsById(preprossDFID))
 
         preprossResultDFIDArr = []
         preprossResultDFArr = []

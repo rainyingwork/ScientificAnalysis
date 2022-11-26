@@ -15,7 +15,8 @@ class RawDataFunction(CommonFunction):
         resultDict = {}
         globalObjectDict = {}
         for key in functionVersionInfo.keys():
-            resultDict[key] = functionVersionInfo[key]
+            if key not in ["ResultArr"] :
+                resultDict[key] = functionVersionInfo[key]
         if functionVersionInfo['FunctionType'] == "GetXYData":
             otherInfo = self.rdGetXYData(functionVersionInfo)
             resultDict['ResultIDArr'] , globalObjectDict['ResultArr'] = otherInfo['DFIDArr'] , otherInfo["DFArr"]
