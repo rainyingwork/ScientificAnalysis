@@ -1,4 +1,6 @@
-import os , copy , pprint
+import os , copy
+import threading
+from queue import Queue
 
 class OPSCtrl:
 
@@ -11,17 +13,36 @@ class OPSCtrl:
         project = opsInfo["Project"]
         opsVersion = opsInfo["OPSVersion"]
         print("start OPS , product is {} , project is {} , version is {}".format(product , project, opsVersion))
-        eval(f"exec('from {product}.{project}.circuit.CircuitMain import CircuitMain')")
-        circuitMain = eval(f"CircuitMain()")
         orderFunctionLayerArr = self.makeOrderLayerArr(opsInfo)
         for orderFunctionLayer in orderFunctionLayerArr :
+            threadList = []
+            threadQueue = Queue()
             for executeFunction in orderFunctionLayer :
-                print("  start function , version is {} ".format(executeFunction))
-                functionRestlt , globalObjectDict = eval(f"circuitMain.{executeFunction}({opsInfo})")
-                opsInfo["ResultJson"][executeFunction] = functionRestlt
-                allGlobalObjectDict[executeFunction] = globalObjectDict
-                print("  end function , version is {}".format(executeFunction))
+                thread = threading.Thread(target=self.runExecuteFunction, args=(executeFunction,opsInfo,threadQueue))
+                thread.start()
+                threadList.append(thread)
+            for thread in threadList:
+                thread.join()
+            for _ in threadList:
+                functionDict = threadQueue.get()
+                executeFunction = functionDict["ExecuteFunction"]
+                opsInfo["ResultJson"][executeFunction] = functionDict["FunctionRestlt"]
+                allGlobalObjectDict[executeFunction] = functionDict["GlobalObjectDict"]
         print("start OPS , product is {} , project is {} , version is {}".format(product , project, opsVersion))
+
+    def runExecuteFunction(self,executeFunction, opsInfo, threadQueue):
+        product = opsInfo["Product"]
+        project = opsInfo["Project"]
+        eval(f"exec('from {product}.{project}.circuit.CircuitMain import CircuitMain')")
+        circuitMain = eval(f"CircuitMain()")
+        print("  start function , version is {} ".format(executeFunction))
+        functionRestlt, globalObjectDict = eval(f"circuitMain.{executeFunction}({opsInfo})")
+        threadQueue.put({
+            "ExecuteFunction": executeFunction
+            , "FunctionRestlt": functionRestlt
+            , "GlobalObjectDict": globalObjectDict
+        })
+        print("  end function , version is {}".format(executeFunction))
 
     def makeOrderLayerArr(self, opsInfo):
         opsOrderDict = opsInfo['OPSOrderJson']
