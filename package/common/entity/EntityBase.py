@@ -21,6 +21,9 @@ class EntityBase (object):
         self.tableName = ""
         self.tableInfoDF = None
 
+    def getEntityId(self):
+        return self.entity["{}id".format(self.tableName)]
+
     def getEntity(self):
         return self.entity
 
@@ -37,7 +40,8 @@ class EntityBase (object):
         self.entity[columnName] = columnValue
 
     def insertEntity(self):
-        self.entity["{}id".format(self.tableName)] = self.getNextPrimaryKeyId()
+        if "{}id".format(self.tableName) not in self.entity.keys():
+            self.entity["{}id".format(self.tableName)] = self.getNextPrimaryKeyId()
         self.postgresCtrl.insertData(tableFullName="{}.{}".format(self.schemaName,self.tableName), insertTableInfoDF=self.tableInfoDF , insertData=self.entity)
 
     def updateEntity(self):

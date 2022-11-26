@@ -4,6 +4,7 @@ env
 */*/file/data
 */*/file/doc
 */*/file/model
+*/*/file/result
 *.pyc
 logs.log
 # 暫不上傳

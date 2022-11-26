@@ -28,8 +28,10 @@ class RawDataFunction(CommonFunction):
             resultDict['MakeDataKeys'], resultDict['MakeDataInfo'] = otherInfo['MakeDataKeys'], otherInfo["MakeDataInfo"]
         elif functionVersionInfo['FunctionType'] == "GetSQLData":
             otherInfo = self.rdGetSQLData(functionVersionInfo)
+            resultDict["SQLStrs"] = ""
         elif functionVersionInfo['FunctionType'] == "ExeSQLStrs":
             otherInfo = self.rdExeSQLStrs(functionVersionInfo)
+            resultDict["SQLStrs"] = ""
         elif functionVersionInfo['FunctionType'] == "MakeTagText":
             otherInfo = self.rdMakeTagText(functionVersionInfo)
         resultDict['Result'] = "OK"
@@ -157,6 +159,7 @@ class RawDataFunction(CommonFunction):
             xColumnsSQL = otherInfo["XColumnsSQL"]
             wheresSQL = otherInfo["WheresSQL"]
             groupKeysSQL = otherInfo["GroupKeysSQL"]
+            havingsSQL = otherInfo["HavingsSQL"]
             sql = """
                 SELECT [:CommonKeySQL] [:YColumnsSQL] [:XColumnsSQL] 
                 FROM observationdata.analysisdata AA
@@ -164,6 +167,7 @@ class RawDataFunction(CommonFunction):
                     AND ( 1 != 1 [:WheresSQL] 
                     )
                 GROUP BY [:GroupKeySQL]
+                HAVING SUM(1) = SUM(1) [:HavingsSQL]
                 ORDER BY [:GroupKeySQL]
             """
             sql = sql.replace("[:CommonKeySQL]", infoKeysSQL)
@@ -171,6 +175,7 @@ class RawDataFunction(CommonFunction):
             sql = sql.replace("[:XColumnsSQL]", xColumnsSQL)
             sql = sql.replace("[:WheresSQL]", wheresSQL)
             sql = sql.replace("[:GroupKeySQL]", groupKeysSQL)
+            sql = sql.replace("[:HavingsSQL]", havingsSQL)
             return sql
 
         doubleColumnNameArr = self.getDoubleColumnArr()
@@ -182,10 +187,11 @@ class RawDataFunction(CommonFunction):
         analysisDataInfoDF = otherInfo["AnalysisDataInfoDF"]
 
         infoKeysSQL = ""
-        groupKeysSQL = ""
-        wheresSQL = ""
         yColumnsSQL = ""
         xColumnsSQL = ""
+        wheresSQL = ""
+        groupKeysSQL = ""
+        havingsSQL = ""
 
         for dataKey in makeDataKeyArr:
             infoKeySQL = "\n                    AA.{} as {}".format(dataKey,dataKey) if infoKeysSQL == "" else "\n                    , AA.{} as {}".format(dataKey, dataKey)
@@ -201,8 +207,8 @@ class RawDataFunction(CommonFunction):
         sqlInfo = {}
         sqlInfoArr = []
         signleCloumnCount = 0
-        for dataIndex, dataRow in analysisDataInfoDF.iterrows():
-            for makeDataInfo in makeDataInfoArr:
+        for makeDataInfo in makeDataInfoArr:
+            for dataIndex, dataRow in analysisDataInfoDF.iterrows():
                 dtStr = (datetime.datetime.strptime(makeDataDateStr, "%Y-%m-%d") + datetime.timedelta(days=makeDataInfo["DTDiff"])).strftime("%Y%m%d")
                 if (dataRow["product"] != makeDataInfo["Product"]) \
                     | (dataRow["project"] != makeDataInfo["Project"]) \
@@ -215,6 +221,7 @@ class RawDataFunction(CommonFunction):
                 dtDiffStr = "p" + str(abs(makeDataInfo["DTDiff"])) if makeDataInfo["DTDiff"] >= 0 else "n" + str(abs(makeDataInfo["DTDiff"]))
                 columnNumberArr = makeDataInfo["ColumnNumbers"] if "ColumnNumbers" in makeDataInfo.keys() else []
                 for columnName in doubleColumnNameArr:
+                    sumSQL = ""
                     columnSQL = ""
                     haveDataindex = True if dataRow["dataindex"] != None else False
                     dataindex = int(dataRow["dataindex"]) if dataRow["dataindex"] != None else 1
@@ -225,16 +232,24 @@ class RawDataFunction(CommonFunction):
                     if dataRow[columnName] > 0 or isNoneDrop == False:
                         columnFullName = "{}_{}_{}_{}_{}".format(dataRow["product"], dataRow["project"], dtDiffStr, str(columnNumber),dataRow["version"])
                         if haveDataindex :
-                            columnSQL = "\n                    , SUM(CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' AND AA.commondata_013 ='{}' then AA.{} else null end ) as {}"
-                            columnSQL = columnSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], dataRow["dataindex"], columnName,columnFullName)
+                            sumSQL = "SUM(CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' AND AA.commondata_013 ='{}' then AA.{} else null end )"
+                            sumSQL = sumSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], dataRow["dataindex"], columnName)
+                            columnSQL = "\n                    , {} as {}".format(sumSQL, columnFullName)
                         else :
-                            columnSQL = "\n                    , SUM(CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' then AA.{} else null end ) as {}"
-                            columnSQL = columnSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], columnName,columnFullName)
+                            sumSQL = "SUM(CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' then AA.{} else null end )"
+                            sumSQL = sumSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], columnName)
+                            columnSQL = "\n                    , {} as {}".format(sumSQL, columnFullName)
+
                         if datatype == "Y":
                             yColumnsSQL = yColumnsSQL + columnSQL
-                        else:
+                        elif datatype == "X":
                             signleCloumnCount = signleCloumnCount + 1
                             xColumnsSQL = xColumnsSQL + columnSQL
+                        elif datatype == "Filter":
+                            havingSQLArr = makeDataInfo["HavingSQL"]
+                            if columnNumber in columnNumberArr :
+                                havingsSQL += "\n                    AND {} {}".format(sumSQL, havingSQLArr[columnNumberArr.index(columnNumber)])
+
                     if signleCloumnCount == 1:
                         sqlInfo = {}
                         sqlInfoArr.append(sqlInfo)
@@ -244,6 +259,7 @@ class RawDataFunction(CommonFunction):
                     sqlInfo["XColumnsSQL"] = xColumnsSQL
                     sqlInfo["WheresSQL"] = wheresSQL
                     sqlInfo["GroupKeysSQL"] = groupKeysSQL
+                    sqlInfo["HavingsSQL"] = havingsSQL
 
                     if signleCloumnCount == makeMaxCloumnCount:
                         signleCloumnCount = 0
