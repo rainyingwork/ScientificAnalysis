@@ -16,7 +16,7 @@ if __name__ == "__main__":
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_1"]
         opsInfo["OPSOrderJson"] = {
-            "ReplyOPSRecordId": 880
+            "ReplyOPSRecordId": 886
             , "ReplyExecuteArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2"]
             , "ExecuteArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2","M0_0_2"]
             , "OrderArr": [

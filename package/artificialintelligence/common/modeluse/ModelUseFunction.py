@@ -231,7 +231,7 @@ class ModelUseFunction(CommonFunction):
         resultDict['ModelDesign']['ModelDists'] = []
         product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
-        exeFunctionRDir = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
         for bestmodel in bestmodels:
             predictions = predict_model(bestmodel, data=testDF)
@@ -302,7 +302,7 @@ class ModelUseFunction(CommonFunction):
         resultDict['ModelDesign']['ModelDists'] = []
         product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
-        exeFunctionRDir = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
         for bestmodel in bestmodels:
             predictions = predict_model(bestmodel, data=testDF)
@@ -359,7 +359,7 @@ class ModelUseFunction(CommonFunction):
 
         product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
-        exeFunctionRDir = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
         modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
         modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldist['ModelFileName'])
@@ -417,7 +417,7 @@ class ModelUseFunction(CommonFunction):
 
         product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
-        exeFunctionRDir = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
         modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
         modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldist['ModelFileName'])

@@ -3,11 +3,20 @@ import threading
 import time
 from queue import Queue
 import pickle
+from dotenv import load_dotenv
+from package.common.osbasic.SSHCtrl import SSHCtrl
+
 
 class OPSCtrl:
 
     def __init__(self):
-        pass
+        load_dotenv(dotenv_path="env/ssh.env")
+        self.sshCtrl = SSHCtrl(
+            host=os.getenv("SSH_IP")
+            , port=int(os.getenv("SSH_PORT"))
+            , user=os.getenv("SSH_USER")
+            , passwd=os.getenv("SSH_PASSWD")
+        )
 
     def executeOPS(self, opsInfo):
         allGlobalObjectDict = {}
@@ -49,13 +58,17 @@ class OPSCtrl:
             opsRecordId = opsInfo["OPSRecordId"]
             from package.opsmanagement.entity.OPSDetailEntity import OPSDetailEntity
             functionRestlt["ExeFunctionLDir"] = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
-            functionRestlt["ExeFunctionRDir"] = "Product={}/Project={}/OPSVersion={}/OPSRecordId={}/EXEFunction={}"\
-                                                .format(product,project,opsVersion,opsRecordId,executeFunction)
+            functionRestlt["ExeFunctionRDir"] = "{}/{}/{}/{}/{}".format(product,project,opsVersion,opsRecordId,executeFunction)
             os.makedirs(functionRestlt["ExeFunctionLDir"]) if not os.path.isdir(functionRestlt["ExeFunctionLDir"]) else None
             with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "FunctionRestlt.pickle"), 'wb') as f:
                 pickle.dump(functionRestlt, f)
             with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "GlobalObjectDict.pickle"), 'wb') as f:
                 pickle.dump(globalObjectDict, f)
+            self.sshCtrl.execCommand("mkdir -p /Storage/OPSData/{}".format(functionRestlt["ExeFunctionRDir"]))
+            self.sshCtrl.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'],"FunctionRestlt.pickle")
+                                    , "/Storage/OPSData/{}/{}".format(functionRestlt['ExeFunctionRDir'],"FunctionRestlt.pickle") )
+            self.sshCtrl.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'],"GlobalObjectDict.pickle")
+                                    , "/Storage/OPSData/{}/{}".format(functionRestlt['ExeFunctionRDir'],"GlobalObjectDict.pickle") )
             opsDetailEntityCtrl = OPSDetailEntity()
             functionInfo = {}
             functionInfo["OPSRecordId"] = opsInfo["OPSRecordId"]
@@ -85,6 +98,12 @@ class OPSCtrl:
         project = opsInfo["Project"]
         opsVersion = opsInfo["OPSVersion"]
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(replyOPSRecordId),executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(replyOPSRecordId), executeFunction)
+        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
+        self.sshCtrl.downloadFile("/Storage/OPSData/{}/{}".format(exeFunctionRDir,"FunctionRestlt.pickle")
+                                    ,"{}/{}".format(exeFunctionLDir, "FunctionRestlt.pickle"))
+        self.sshCtrl.downloadFile("/Storage/OPSData/{}/{}".format(exeFunctionRDir,"GlobalObjectDict.pickle")
+                                    ,"{}/{}".format(exeFunctionLDir, "GlobalObjectDict.pickle"))
         with open('{}/{}'.format(exeFunctionLDir, '/FunctionRestlt.pickle'), 'rb') as fr:
             functionRestlt = pickle.load(fr)
         with open('{}/{}'.format(exeFunctionLDir, '/GlobalObjectDict.pickle'), 'rb') as god:

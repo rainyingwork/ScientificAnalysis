@@ -86,5 +86,4 @@ def makeRunOPSInfo (runType, product, project, opsVersion,opsOrderJson, paramete
         , "ParameterJson": json.loads(modelVersionEntity['parameterjson']) if parameterJson == {} else parameterJson
         , "ResultJson": json.loads(modelVersionEntity['resultjson']) if resultJson == {} else resultJson
     }
-
     return opsInfo
