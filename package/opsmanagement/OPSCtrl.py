@@ -16,13 +16,18 @@ class OPSCtrl:
         project = opsInfo["Project"]
         opsVersion = opsInfo["OPSVersion"]
         opsRecordId = opsInfo["OPSRecordId"]
-        print("start OPS , product is {} , project is {} , version is {} , opsrecordid is {}".format(product , project, opsVersion,opsRecordId))
+        print("Start OPS , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(product , project, opsVersion,opsRecordId))
         orderFunctionLayerArr = self.makeOrderLayerArr(opsInfo)
+        replyOPSRecordId = opsInfo['OPSOrderJson']["ReplyOPSRecordId"] if "ReplyOPSRecordId" in opsInfo['OPSOrderJson'].keys() else 0
+        replyExecuteArr =  opsInfo['OPSOrderJson']["ReplyExecuteArr"] if "ReplyExecuteArr" in opsInfo['OPSOrderJson'].keys() else []
         for orderFunctionLayer in orderFunctionLayerArr :
             threadList = []
             threadQueue = Queue()
             for executeFunction in orderFunctionLayer :
-                thread = threading.Thread(target=self.runExecuteFunction, args=(executeFunction,opsInfo,threadQueue))
+                if executeFunction in replyExecuteArr :
+                    thread = threading.Thread(target=self.replyExecuteFunction, args=(executeFunction,opsInfo,replyOPSRecordId,threadQueue))
+                else :
+                    thread = threading.Thread(target=self.runExecuteFunction, args=(executeFunction,opsInfo,threadQueue))
                 thread.daemon = True
                 thread.start() , time.sleep(0.5)
                 threadList.append(thread)
@@ -33,7 +38,7 @@ class OPSCtrl:
                 executeFunction = functionDict["ExecuteFunction"]
                 opsInfo["ResultJson"][executeFunction] = functionDict["FunctionRestlt"]
                 allGlobalObjectDict[executeFunction] = functionDict["GlobalObjectDict"]
-        print("end OPS , product is {} , project is {} , version is {} , opsrecordid is {}".format(product , project, opsVersion,opsRecordId))
+        print("End OPS , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(product , project, opsVersion,opsRecordId))
 
     def runExecuteFunction(self,executeFunction, opsInfo, threadQueue):
 
@@ -65,7 +70,7 @@ class OPSCtrl:
         project = opsInfo["Project"]
         eval(f"exec('from {product}.{project}.circuit.CircuitMain import CircuitMain')")
         circuitMain = eval(f"CircuitMain()")
-        print("  start function , version is {}  ".format(executeFunction))
+        print("  Start Function , Version is {}  ".format(executeFunction))
         functionRestlt, globalObjectDict = eval(f"circuitMain.{executeFunction}({opsInfo})")
         opsDetailId = makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt,globalObjectDict)
         threadQueue.put({
@@ -73,7 +78,23 @@ class OPSCtrl:
             , "FunctionRestlt": functionRestlt
             , "GlobalObjectDict": globalObjectDict
         })
-        print("  end function , version is {} , opsdetailid is {} ".format(executeFunction,opsDetailId))
+        print("  End Function , Version is {} , OPSDetailID is {} ".format(executeFunction,opsDetailId))
+
+    def replyExecuteFunction(self,executeFunction, opsInfo , replyOPSRecordId , threadQueue):
+        product = opsInfo["Product"]
+        project = opsInfo["Project"]
+        opsVersion = opsInfo["OPSVersion"]
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(replyOPSRecordId),executeFunction)
+        with open('{}/{}'.format(exeFunctionLDir, '/FunctionRestlt.pickle'), 'rb') as fr:
+            functionRestlt = pickle.load(fr)
+        with open('{}/{}'.format(exeFunctionLDir, '/GlobalObjectDict.pickle'), 'rb') as god:
+            globalObjectDict = pickle.load(god)
+        threadQueue.put({
+            "ExecuteFunction": executeFunction
+            , "FunctionRestlt": functionRestlt
+            , "GlobalObjectDict": globalObjectDict
+        })
+        print("  Reply Function , Version is {} , ReplyOPSDetailID is {} ".format(executeFunction,str(replyOPSRecordId)))
 
     def makeOrderLayerArr(self, opsInfo):
         opsOrderDict = opsInfo['OPSOrderJson']
