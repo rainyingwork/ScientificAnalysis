@@ -19,7 +19,7 @@ class OPSDetailEntity (EntityBase) :
         entity["modifytime"] = datetime.datetime.now()
         entity["deletetime"] = None
         entity["opsrecord"] = functionInfo["OPSRecordId"]
-        entity["exefunction"] = functionInfo["Exefunction"]
+        entity["exefunction"] = functionInfo["ExeFunction"]
         entity["parameterjson"] = json.dumps(functionInfo["ParameterJson"],ensure_ascii=False) if "ParameterJson" in functionInfo.keys() else '{}'
         entity["resultjson"] = json.dumps(functionInfo["ResultJson"],ensure_ascii=False) if "ResultJson" in functionInfo.keys() else '{}'
         entity["state"] = "FINISH"

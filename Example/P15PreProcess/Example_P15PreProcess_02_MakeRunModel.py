@@ -15,16 +15,6 @@ if __name__ == "__main__":
         }
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_1"]
-        opsInfo["OPSOrderJson"] = {
-            "ExecuteArr": ["R0_0_1","P0_0_1"]
-            , "OrderArr": [
-                {"Parent": "R0_0_1", "Child": "P0_0_1"}
-            ]
-            , "FunctionMemo": {
-                "R0_0_1": "撈取相關資料"
-                , "P0_0_1": "處理相關資料"
-            }
-        }
         opsInfo["ParameterJson"] = {
             "R0_0_1": {
                 "FunctionType": "GetXYData"

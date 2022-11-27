@@ -12,8 +12,8 @@ if __name__ == "__main__":
     opsInfo = copy.deepcopy(basicInfo)
     opsInfo["OPSVersion"] = ["V0_0_1"]
     opsInfo["OPSOrderJson"] = {
-        "ExecuteArr": ["R0_0_1","P0_0_1","M0_0_1"]
-        , "OrderArr": [
+        "ExeFunctionArr": ["R0_0_1","P0_0_1","M0_0_1"]
+        , "OrdFunctionArr": [
             {"Parent": "R0_0_1", "Child": "P0_0_1"}
             , {"Parent": "P0_0_1", "Child": "M0_0_1"}
         ]

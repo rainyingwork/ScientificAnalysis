@@ -11,8 +11,8 @@ class RawData() :
         rawDataFunction = RawDataFunction()
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["R0_0_0"])
         functionVersionInfo["Version"] = "R0_0_0"
-        resultObject = rawDataFunction.executionFunctionByFunctionType(functionVersionInfo)
-        return resultObject, {}
+        resultObject , globalObjectDict = rawDataFunction.executionFunctionByFunctionType(functionVersionInfo)
+        return resultObject, globalObjectDict
 
 
     @classmethod
@@ -259,6 +259,6 @@ class RawData() :
             AND AA.dt = '[:DateNoLine]' ; 
         """
         functionVersionInfo["SQLReplaceArr"] = rawDataFunction.getCommonSQLReplaceArr(functionInfo,functionVersionInfo)
-        resultObject = rawDataFunction.executionFunctionByFunctionType(functionVersionInfo)
-        return resultObject, {}
+        resultObject  , globalObjectDict = rawDataFunction.executionFunctionByFunctionType(functionVersionInfo)
+        return resultObject, globalObjectDict
 

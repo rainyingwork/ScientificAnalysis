@@ -11,8 +11,8 @@ if __name__ == "__main__":
     opsInfo = copy.deepcopy(basicInfo)
     opsInfo["OPSVersion"] = ["V0_0_1"]
     opsInfo["OPSOrderJson"] = {
-        "ExecuteArr":["S0_0_1"]
-        , "OrderArr":[
+        "ExeFunctionArr":["S0_0_1"]
+        , "OrdFunctionArr":[
         ]
         , "FunctionMemo":{
             "S0_0_1" : "Juice資料塞入正規資料庫"

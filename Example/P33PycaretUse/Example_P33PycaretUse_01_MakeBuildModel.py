@@ -12,8 +12,8 @@ if __name__ == "__main__":
     opsInfo = copy.deepcopy(basicInfo)
     opsInfo["OPSVersion"] = ["V0_0_1"]
     opsInfo["OPSOrderJson"] = {
-        "ExecuteArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2","M0_0_2"]
-        , "OrderArr": [
+        "ExeFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2","M0_0_2"]
+        , "OrdFunctionArr": [
             {"Parent": "R0_0_1", "Child": "P0_0_1"}
             , {"Parent": "P0_0_1", "Child": "M0_0_1"}
             , {"Parent": "M0_0_1", "Child": "R0_0_2"}
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     }
     opsInfo["ParameterJson"] = {}
     opsInfo["ResultJson"] = {}
-    # executeOPSCommon.main(opsInfo)
+    executeOPSCommon.main(opsInfo)
 
     opsInfo["OPSVersion"] = ["V0_0_2"]
     opsInfo["OPSOrderJson"] = {
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     }
     opsInfo["ParameterJson"] = {}
     opsInfo["ResultJson"] = {}
-    # executeOPSCommon.main(opsInfo)
+    executeOPSCommon.main(opsInfo)
 
     opsInfo["OPSVersion"] = ["V0_0_3"]
     opsInfo["OPSOrderJson"] = {

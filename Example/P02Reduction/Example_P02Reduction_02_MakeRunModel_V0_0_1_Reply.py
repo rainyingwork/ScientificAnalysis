@@ -14,12 +14,12 @@ if __name__ == "__main__":
             , "Project": ["P02Reduction"]
         }
         opsInfo = copy.deepcopy(basicInfo)
-        opsInfo["OPSVersion"] = ["V0_0_1"]
+        opsInfo["OPSVersion"] = ["V0_0_2"]
         opsInfo["OPSOrderJson"] = {
-            "ReplyOPSRecordId": 886
-            , "ReplyExecuteArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2"]
-            , "ExecuteArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2","M0_0_2"]
-            , "OrderArr": [
+            "RepOPSRecordId": 896
+            , "RepFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2"]
+            , "ExeFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2","M0_0_2"]
+            , "OrdFunctionArr": [
                 {"Parent": "R0_0_1", "Child": "P0_0_1"}
                 , {"Parent": "P0_0_1", "Child": "M0_0_1"}
                 , {"Parent": "M0_0_1", "Child": "R0_0_2"}
