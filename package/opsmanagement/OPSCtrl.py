@@ -174,7 +174,6 @@ class OPSCtrl:
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
         })
-        print("ddddddd {}".format(executeFunction))
         print("  End DCE Function , Function is {} ".format(executeFunction))
 
     def makeCompleteOPSOrderDict(self, opsOrderDict):
