@@ -12,7 +12,7 @@ opsVersionEntityCtrl = OPSVersionEntity()
 opsRecordEntityCtrl = OPSRecordEntity()
 inputCtrl = InputCtrl()
 
-def main(parametersData = {}):
+def main(parametersData = {},):
 
     runType = ""
     product = ""

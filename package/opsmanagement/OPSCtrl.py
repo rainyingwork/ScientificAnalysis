@@ -1,10 +1,11 @@
-import os , copy , shutil
+import os , sys, copy , shutil
 import threading
 import time
 from queue import Queue
 import pickle
 from dotenv import load_dotenv
 from package.common.osbasic.SSHCtrl import SSHCtrl
+
 
 class OPSCtrl:
 
@@ -16,18 +17,8 @@ class OPSCtrl:
             , user=os.getenv("SSH_USER")
             , passwd=os.getenv("SSH_PASSWD")
         )
-        self.sshCtrl_RPM = SSHCtrl(
-            host=os.getenv("SSH_IP")
-            , port=int(os.getenv("SSH_PORT"))
-            , user=os.getenv("SSH_USER")
-            , passwd=os.getenv("SSH_PASSWD")
-        )
-        self.sshCtrl_COE = SSHCtrl(
-            host=os.getenv("SSH_IP")
-            , port=int(os.getenv("SSH_PORT"))
-            , user=os.getenv("SSH_USER")
-            , passwd=os.getenv("SSH_PASSWD")
-        )
+        self.sshCtrl_RPM = self.sshCtrl_Storage
+        self.sshCtrl_COE = self.sshCtrl_Storage
 
     def executeDCE(self, opsInfo):
         product, project , opsVersion , opsRecordId = opsInfo["Product"] , opsInfo["Project"] , opsInfo["OPSVersion"] , opsInfo["OPSRecordId"]
@@ -39,7 +30,7 @@ class OPSCtrl:
             for executeFunction in orderFunctionLayer:
                 thread = threading.Thread(target=self.dceExecuteFunction,args=(executeFunction, opsInfo,threadQueue))
                 thread.daemon = True
-                thread.start(), time.sleep(0.5)
+                time.sleep(0.5), thread.start() , time.sleep(0.5)
                 threadList.append(thread)
             for thread in threadList:
                 thread.join()
@@ -65,12 +56,12 @@ class OPSCtrl:
                 if executeFunction in opsOrderDict["RepFunctionArr"] :
                     thread = threading.Thread(target=self.replyExecuteFunction, args=(executeFunction,opsInfo,opsOrderDict["RepOPSRecordId"] ,threadQueue))
                     thread.daemon = True
-                    thread.start(), time.sleep(0.5)
+                    time.sleep(0.5), thread.start() , time.sleep(0.5)
                     threadList.append(thread)
                 if executeFunction in opsOrderDict["RunFunctionArr"] :
                     thread = threading.Thread(target=self.runExecuteFunction, args=(executeFunction,opsInfo,threadQueue))
                     thread.daemon = True
-                    thread.start() , time.sleep(0.5)
+                    time.sleep(0.5), thread.start() , time.sleep(0.5)
                     threadList.append(thread)
             for thread in threadList:
                 thread.join()
@@ -82,7 +73,6 @@ class OPSCtrl:
         print("End OPS , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(product , project, opsVersion,opsRecordId))
 
     def runExecuteFunction(self,executeFunction, opsInfo, threadQueue):
-
         def makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt, globalObjectDict):
             product = opsInfo["Product"]
             project = opsInfo["Project"]
@@ -170,9 +160,9 @@ class OPSCtrl:
             print("  Start DCE Function , Function is {}  ".format(executeFunction))
             sshStr = "docker exec -it python310 python3 /Data/ScientificAnalysis/OPSCommon.py --RunType runfunc --Product {} --Project {} --OPSVersion {} --OPSRecordId {} --RunFunctionArr {}"
             sshStr = sshStr.format(product, project, opsVersion, opsRecordId, executeFunction)
-            if "C" in executeFunction or "O" in executeFunction  or "E" in executeFunction :
+            if "C" in executeFunction or "O" in executeFunction or "E" in executeFunction :
                 self.sshCtrl_COE.execSSHCommandReturn(sshStr)
-            elif "R" in executeFunction or "P" in executeFunction  or "M" in executeFunction  :
+            elif "R" in executeFunction or "P" in executeFunction or "M" in executeFunction :
                 self.sshCtrl_RPM.execSSHCommandReturn(sshStr)
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId),executeFunction)
         exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId), executeFunction)
@@ -184,6 +174,7 @@ class OPSCtrl:
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
         })
+        print("ddddddd {}".format(executeFunction))
         print("  End DCE Function , Function is {} ".format(executeFunction))
 
     def makeCompleteOPSOrderDict(self, opsOrderDict):
@@ -193,7 +184,6 @@ class OPSCtrl:
         return opsOrderDict
 
     def makeOrderLayerArr(self, opsOrderDict):
-
         exeFunctionArr = opsOrderDict['ExeFunctionArr']
         ordFunctionArr = opsOrderDict['OrdFunctionArr']
         orderLayerArr = []

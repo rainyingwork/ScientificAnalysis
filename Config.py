@@ -1,6 +1,10 @@
 import os
 import warnings ; warnings.filterwarnings('ignore')
 import pandas
+import threading
+from package.common.osbasic.ThredingCtrl import ThredingCtrl
+
+threading.excepthook = ThredingCtrl.stopThread
 
 pandas.set_option('display.max_columns', None)
 pandas.set_option('display.max_rows', None)
