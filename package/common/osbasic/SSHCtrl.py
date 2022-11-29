@@ -184,16 +184,16 @@ class SSHCtrl:
     @timethis
     def uploadDirBySFTP(self, localDir,remoteDir):
         try:
-            fileArr = self.getAllFilesInLocalDir(remoteDir)
+            fileArr = self.getAllFilesInLocalDir(localDir)
             for file in fileArr:
-                remoteFilename = file.replace(localDir, remoteDir)
-                remotePath = os.path.dirname(remoteFilename)
+                remoteFilename = remoteDir + file[len(localDir):]
+                remotePath = remoteFilename.rsplit('/', maxsplit=1)[0]
                 try:
                     self.__sftp.stat(remotePath)
                 except:
                     self.execSSHCommand('mkdir -p %s' % remotePath)
                 self.__sftp.put(file, remoteFilename)
-                print("Loacl " + str(file) + " file to remote " +  str(remoteFilename) +" file.")
+                print("Loacl " + str(file) + " file to remote " + str(remoteFilename) + " file.")
         except:
             print('ssh get dir from master failed.')
             print(traceback.format_exc())

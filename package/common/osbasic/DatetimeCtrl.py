@@ -1,7 +1,7 @@
 import datetime
 import calendar
 
-class DatetimeCtrl ():
+def DatetimeCtrl ():
 
     def getISOCalendar (makeDatetime , firstweekday ) :
         firstDayBasicToYear = datetime.datetime(makeDatetime.year, 1, 1, 0, 0, 0, 0).weekday() - (firstweekday - 1 )
