@@ -14,7 +14,7 @@ if __name__ == "__main__":
         }
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_2"]
-        opsInfo["OPSRecordId"] = [896]
+        opsInfo["OPSRecordId"] = [923]
         opsInfo["RunFunctionArr"] = ["R0_0_1"]
         executeOPSCommon.main(opsInfo)
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
         opsInfo["RunFunctionArr"] = ["P0_0_2"]
         executeOPSCommon.main(opsInfo)
 
-        # opsInfo["RunFunctionArr"] = ["M0_0_2"]
-        # executeOPSCommon.main(opsInfo)
+        opsInfo["RunFunctionArr"] = ["M0_0_2"]
+        executeOPSCommon.main(opsInfo)
 
 

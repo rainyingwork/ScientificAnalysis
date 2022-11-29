@@ -1,4 +1,4 @@
-import os ,sys ; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
+import os ,sys
 from package.common.database.PostgresCtrl import PostgresCtrl
 from dotenv import load_dotenv
 import pandas

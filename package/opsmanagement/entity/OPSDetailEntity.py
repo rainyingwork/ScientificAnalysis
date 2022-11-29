@@ -24,3 +24,19 @@ class OPSDetailEntity (EntityBase) :
         entity["resultjson"] = json.dumps(functionInfo["ResultJson"],ensure_ascii=False) if "ResultJson" in functionInfo.keys() else '{}'
         entity["state"] = "FINISH"
         return entity
+
+    def isHaveOPSDetailEntityByOPSRecordAndExeFunctionAndState(self,opsRecordId , exeFunction , state = "FINISH"):
+        sql = """
+            SELECT * 
+            FROM opsmanagement.opsdetail AA
+            WHERE 1 = 1 
+                AND AA.opsrecord = [:OPSRecordId]
+                AND AA.exefunction = '[:ExeFunction]'
+                AND AA.state = '[:State]'
+                AND AA.deletetime is null 
+           limit 1 
+        """.replace('[:OPSRecordId]', str(opsRecordId)).replace('[:ExeFunction]', exeFunction).replace('[:State]', state)
+        df = self.postgresCtrl.searchSQL(sql)
+        if len(df) == 0:
+            return False
+        return True

@@ -29,8 +29,11 @@ class SSHCtrl:
     def __del__(self):
         if self.__ssh:
             self.__ssh.close()
-        if self.__sftp:
-            self.__sftp.close()
+        try:
+            if self.__sftp:
+                self.__sftp.close()
+        except :
+            pass
 
     def connectSFTP(self):
         try:
