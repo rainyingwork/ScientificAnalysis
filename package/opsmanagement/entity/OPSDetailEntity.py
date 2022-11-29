@@ -13,7 +13,7 @@ class OPSDetailEntity (EntityBase) :
         self.tableName = "opsdetail"
         self.tableInfoDF = self.postgresCtrl.getTableInfoDF("{}.{}".format(self.schemaName,self.tableName ))
 
-    def makeOPSRecordEntityByFunctionInfo(self,functionInfo):
+    def makeOPSDetailEntityByFunctionInfo(self,functionInfo):
         entity = {}
         entity["createtime"] = datetime.datetime.now()
         entity["modifytime"] = datetime.datetime.now()
