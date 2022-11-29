@@ -1,6 +1,5 @@
 import os
-import time , datetime
-import json
+import datetime
 from dotenv import load_dotenv
 from package.common.database.PostgresCtrl import PostgresCtrl
 from package.artificialintelligence.common.common.CommonFunction import CommonFunction
@@ -19,16 +18,17 @@ class RawDataFunction(CommonFunction):
                 resultDict[key] = functionVersionInfo[key]
         if functionVersionInfo['FunctionType'] == "GetXYData":
             otherInfo = self.rdGetXYData(functionVersionInfo)
-            resultDict['ResultIDArr'] , globalObjectDict['ResultArr'] = otherInfo['DFIDArr'] , otherInfo["DFArr"]
+            globalObjectDict['ResultArr'] = otherInfo["DFArr"]
         elif functionVersionInfo['FunctionType'] == "GetXYDataByFunctionRusult":
             otherInfo = self.rdGetXYDataByFunctionRusult(functionVersionInfo)
-            resultDict['ResultIDArr'], globalObjectDict['ResultArr'] = otherInfo['DFIDArr'], otherInfo["DFArr"]
+            globalObjectDict['ResultArr'] = otherInfo["DFArr"]
         elif functionVersionInfo['FunctionType'] == "GetXYDataByDatabaseRusult":
             otherInfo = self.rdGetXYDataByDatabaseRusult(functionVersionInfo)
-            resultDict['ResultIDArr'], globalObjectDict['ResultArr'] = otherInfo['DFIDArr'], otherInfo["DFArr"]
+            globalObjectDict['ResultArr'] = otherInfo["DFArr"]
             resultDict['MakeDataKeys'], resultDict['MakeDataInfo'] = otherInfo['MakeDataKeys'], otherInfo["MakeDataInfo"]
         elif functionVersionInfo['FunctionType'] == "GetSQLData":
             otherInfo = self.rdGetSQLData(functionVersionInfo)
+            globalObjectDict['ResultArr'] = otherInfo["DFArr"]
             resultDict["SQLStrs"] = ""
         elif functionVersionInfo['FunctionType'] == "ExeSQLStrs":
             otherInfo = self.rdExeSQLStrs(functionVersionInfo)
@@ -45,14 +45,14 @@ class RawDataFunction(CommonFunction):
     def rdGetXYData(self, fvInfo):
         otherInfo = {}
         otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo ,otherInfo)
-        otherInfo["DFIDArr"] , otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo,otherInfo)
+        otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo,otherInfo)
         return otherInfo
 
     @classmethod
     def rdGetXYDataByFunctionRusult(self, fvInfo):
         otherInfo = {}
         otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
-        otherInfo["DFIDArr"], otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
+        otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
         return otherInfo
 
     @classmethod
@@ -62,16 +62,15 @@ class RawDataFunction(CommonFunction):
         fvInfo["MakeDataKeys"] = databaseResultJson["MakeDataKeys"]
         fvInfo["MakeDataInfo"] = databaseResultJson["MakeDataInfo"]
         otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
-        otherInfo["DFIDArr"], otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
+        otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
         otherInfo["MakeDataKeys"], otherInfo["MakeDataInfo"] = fvInfo["MakeDataKeys"] , fvInfo["MakeDataInfo"]
         return otherInfo
 
     @classmethod
     def rdGetSQLData(self, fvInfo):
         otherInfo = {}
-        otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo ,otherInfo)
-        dfIDArr = self.makeTagDataDFArrByDataInfo(fvInfo,otherInfo)
-        return dfIDArr
+        otherInfo["DFArr"] = self.makeGetSQLStrsByDataBase(fvInfo ,otherInfo)
+        return otherInfo
 
     @classmethod
     def rdExeSQLStrs(self, fvInfo):
@@ -267,13 +266,34 @@ class RawDataFunction(CommonFunction):
                         xColumnsSQL = ""
 
         dfArr = []
-        dfIDArr = []
         for sqlInfo in sqlInfoArr :
             sql = makeSingleTagDataSQL(fvInfo,sqlInfo)
             df = postgresCtrl.searchSQL(sql)
-            dfIDArr.append(id(df))
             dfArr.append(df)
-        return dfIDArr , dfArr
+        return dfArr
+
+    # ==================================================  ExeSQLStrs ==================================================
+
+    @classmethod
+    def makeGetSQLStrsByDataBase(self, fvInfo, otherInfo):
+        load_dotenv(dotenv_path="env/postgresql.env")
+        postgresCtrl = PostgresCtrl(
+            host=os.getenv("POSTGRES_HOST")
+            , port=int(os.getenv("POSTGRES_POST"))
+            , user=os.getenv("POSTGRES_USERNAME")
+            , password=os.getenv("POSTGRES_PASSWORD")
+            , database="scientificanalysis"
+            , schema="public"
+        )
+        sqlStrs = fvInfo['SQLStrs']
+        sqlReplaceArr = fvInfo["SQLReplaceArr"]
+        for sqlReplace in sqlReplaceArr:
+            sqlStrs = sqlStrs.replace(sqlReplace[0], sqlReplace[1])
+        sqlStrArr = sqlStrs.split(";")[:-1]
+        dfArr = []
+        for sqlStr in sqlStrArr:
+            dfArr.append(postgresCtrl.searchSQL(sqlStr, 3))
+        return dfArr
 
     # ==================================================  ExeSQLStrs ==================================================
 
@@ -302,7 +322,7 @@ class RawDataFunction(CommonFunction):
 
     @classmethod
     def makeTagTextByDataBase(self,fvInfo,otherInfo):
-        from package.artificialintelligence.virtualentity.TagText import TagText
+        from package.artificialintelligence.common.virtualentity.TagText import TagText
         tagText = TagText()
         load_dotenv(dotenv_path="env/postgresql.env")
         postgresCtrl = PostgresCtrl(

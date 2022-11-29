@@ -22,7 +22,7 @@ class PreProcessFunction(CommonFunction):
                 resultDict[key] = functionVersionInfo[key]
         if functionVersionInfo['FunctionType'] == "PPTagText":
             otherInfo = self.ppTagText(functionVersionInfo)
-            resultDict['ResultIDArr'] , globalObjectDict['ResultArr'] = otherInfo['DFIDArr'] , otherInfo["DFArr"]
+            globalObjectDict['ResultArr'] = otherInfo["DFArr"]
         resultDict['Result'] = "OK"
         return resultDict , globalObjectDict
 
@@ -31,7 +31,7 @@ class PreProcessFunction(CommonFunction):
     @classmethod
     def ppTagText(self, fvInfo):
         otherInfo = {}
-        otherInfo["DFIDArr"], otherInfo["DFArr"] = self.makeDFByPPTagText(fvInfo, otherInfo)
+        otherInfo["DFArr"] = self.makeDFByPPTagText(fvInfo, otherInfo)
         return otherInfo
     # ================================================= CommonFunction =================================================
 
@@ -93,7 +93,6 @@ class PreProcessFunction(CommonFunction):
 
         # --------------------------------------------------preprossDF--------------------------------------------------
 
-        preprossResultDFIDArr = []
         preprossResultDFArr = []
         for preprossDF in preprossDFArr :
             filter = preprossDF[preprossDF.columns[0]] != '~!@#$%^&*()_++_)(*&^%$#@!~'
@@ -123,7 +122,6 @@ class PreProcessFunction(CommonFunction):
                         elif processingFunctionName == "log":
                             preprossDF[columnName] = preprossDF[columnName].apply(lambda x: math.log(x, processingFunction['value']), axis=1)
             preprossDF = preprossDF[~filter]
-            preprossResultDFIDArr.append(id(preprossDF))
             preprossResultDFArr.append(preprossDF)
 
-        return preprossResultDFIDArr , preprossResultDFArr
+        return preprossResultDFArr
