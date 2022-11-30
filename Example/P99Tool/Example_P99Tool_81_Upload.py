@@ -13,3 +13,5 @@ sshCtrl = SSHCtrl(env="env/ssh.env")
 # sshCtrl.uploadFile("env/linux_postgresql.env","/mfs/Docker/Python310/Volumes/Data/ScientificAnalysis/env/postgresql.env")
 
 sshCtrl.uploadFile("package/opsmanagement/OPSCtrl.py","/mfs/Docker/Python310/Volumes/Data/ScientificAnalysis/package/opsmanagement/OPSCtrl.py")
+sshCtrl.uploadFile("OPSCommon.py","/mfs/Docker/Python310/Volumes/Data/ScientificAnalysis/OPSCommon.py")
+sshCtrl.uploadFile("Config.py","/mfs/Docker/Python310/Volumes/Data/ScientificAnalysis/Config.py")
