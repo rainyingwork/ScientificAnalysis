@@ -12,5 +12,6 @@ catboost_info
 # 暫不上傳
 UnitTest/*
 Example/P35NetworkX
-Project/RecommendationSystem
+ExerciseProject/RecommendationSystem
+OnlineExample
 RWTaiwan/TagData
