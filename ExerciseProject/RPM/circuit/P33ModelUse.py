@@ -30,8 +30,8 @@ class ModelUse() :
 
         mainRecencyDF = mainDF[['CustomerID', 'YYMMNum']].drop_duplicates()
         mainRecencyDF['RecencyFlag'] = mainRecencyDF.apply(makeRecencyLevel, axis=1)
-        mainRecencyDF = mainRecencyDF.groupby('CustomerID', as_index=False)['RecencyFlag'].max()
-        return {} ,{"ResultDF":mainRecencyDF}
+        mainFlagDF = mainRecencyDF.groupby('CustomerID', as_index=False)['RecencyFlag'].max()
+        return {} ,{"ResultDFArr": [mainFlagDF,mainRecencyDF]}
 
     @classmethod
     def M0_0_2(self, functionInfo):
@@ -64,8 +64,8 @@ class ModelUse() :
             return val
 
         mainFrequencyDF['FrequencyFlag'] = mainFrequencyDF.apply(makeFrequencyLevel, axis=1)
-        mainFrequencyDF = mainFrequencyDF[['CustomerID','FrequencyFlag']]
-        return {}, {"ResultDF": mainFrequencyDF}
+        mainFlagDF = mainFrequencyDF[['CustomerID','FrequencyFlag']]
+        return {}, {"ResultDFArr": [mainFlagDF,mainFrequencyDF]}
 
     @classmethod
     def M0_0_3(self, functionInfo):
@@ -98,8 +98,8 @@ class ModelUse() :
             return val
 
         mainMonetaryDF['MonetaryFlag'] = mainMonetaryDF.apply(makeMonetaryLevel, axis=1)
-        mainMonetaryDF = mainMonetaryDF[['CustomerID','MonetaryFlag']]
-        return {}, {"ResultDF": mainMonetaryDF}
+        mainFlagDF = mainMonetaryDF[['CustomerID','MonetaryFlag']]
+        return {}, {"ResultDFArr": [mainFlagDF,mainMonetaryDF]}
 
     @classmethod
     def M0_0_11(self, functionInfo):
@@ -107,9 +107,9 @@ class ModelUse() :
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_11"])
         functionVersionInfo["Version"] = "P0_0_1"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
-        mainRecencyDF = copy.deepcopy(globalObject["M0_0_1"]["ResultDF"])
-        mainFrequencyDF = copy.deepcopy(globalObject["M0_0_2"]["ResultDF"])
-        mainMonetaryDF = copy.deepcopy(globalObject["M0_0_3"]["ResultDF"])
+        mainRecencyDF = copy.deepcopy(globalObject["M0_0_1"]["ResultDFArr"][0])
+        mainFrequencyDF = copy.deepcopy(globalObject["M0_0_2"]["ResultDFArr"][0])
+        mainMonetaryDF = copy.deepcopy(globalObject["M0_0_3"]["ResultDFArr"][0])
 
         mainAllDF = pandas.merge(mainRecencyDF, mainFrequencyDF[['CustomerID', 'FrequencyFlag']], on=['CustomerID'], how='left')
         mainAllDF = pandas.merge(mainAllDF, mainMonetaryDF[['CustomerID', 'MonetaryFlag']], on=['CustomerID'], how='left')

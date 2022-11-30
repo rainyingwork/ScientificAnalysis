@@ -8,7 +8,7 @@ if __name__ == "__main__":
         , "Project": ["RPM"]
     }
     opsInfo = copy.deepcopy(basicInfo)
-    opsInfo["OPSVersion"] = ["V0_0_1"]
+    opsInfo["OPSVersion"] = ["V0_0_2"]
     opsInfo["OPSOrderJson"] = {
         "ExeFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","M0_0_2","M0_0_3","M0_0_11","CR0_0_1"]
         , "OrdFunctionArr": [
@@ -31,6 +31,14 @@ if __name__ == "__main__":
             , "CR0_0_1" : "詳細分析"
         }
     }
-    opsInfo["ParameterJson"] = {}
+    opsInfo["ParameterJson"] = {
+        "R0_0_1": {}
+        , "P0_0_1": {}
+        , "M0_0_1": {}
+        , "M0_0_2": {}
+        , "M0_0_3": {}
+        , "M0_0_11": {}
+        , "CR0_0_1": {}
+    }
     opsInfo["ResultJson"] = {}
     executeOPSCommon.main(opsInfo)

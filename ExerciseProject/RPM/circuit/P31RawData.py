@@ -19,8 +19,7 @@ class RawData() :
                 and AA.product = 'ExerciseProject'
                 and AA.project = 'RPM'
                 and AA.tablename = 'S0_0_1'
-                and AA.dt = '20220101'
-            limit 10
+                and AA.dt = '20220101' ; 
         """
         functionVersionInfo["SQLReplaceArr"] = rawDataFunction.getCommonSQLReplaceArr(functionInfo, functionVersionInfo)
         resultObject, globalObjectDict = rawDataFunction.executionFunctionByFunctionType(functionVersionInfo)

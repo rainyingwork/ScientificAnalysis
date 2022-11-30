@@ -292,7 +292,7 @@ class RawDataFunction(CommonFunction):
         sqlStrArr = sqlStrs.split(";")[:-1]
         dfArr = []
         for sqlStr in sqlStrArr:
-            dfArr.append(postgresCtrl.searchSQL(sqlStr, 3))
+            dfArr.append(postgresCtrl.searchSQL(sqlStr))
         return dfArr
 
     # ==================================================  ExeSQLStrs ==================================================
