@@ -74,6 +74,7 @@ class OPSCtrl:
 
     def runExecuteFunction(self,executeFunction, opsInfo, threadQueue):
         def makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt, globalObjectDict):
+            sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"), passwd=os.getenv("SSH_PASSWD"))
             product = opsInfo["Product"]
             project = opsInfo["Project"]
             opsVersion = opsInfo["OPSVersion"]
@@ -86,10 +87,10 @@ class OPSCtrl:
                 pickle.dump(functionRestlt, f)
             with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "GlobalObjectDict.pickle"), 'wb') as f:
                 pickle.dump(globalObjectDict, f)
-            self.sshCtrl_Storage.execCommand("mkdir -p /Storage/OPSData/{}".format(functionRestlt["ExeFunctionRDir"]))
-            self.sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'],"FunctionRestlt.pickle")
+            sshCtrl_Storage.execCommand("mkdir -p /Storage/OPSData/{}".format(functionRestlt["ExeFunctionRDir"]))
+            sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'],"FunctionRestlt.pickle")
                                     , "/Storage/OPSData/{}/{}".format(functionRestlt['ExeFunctionRDir'],"FunctionRestlt.pickle") )
-            self.sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'],"GlobalObjectDict.pickle")
+            sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'],"GlobalObjectDict.pickle")
                                     , "/Storage/OPSData/{}/{}".format(functionRestlt['ExeFunctionRDir'],"GlobalObjectDict.pickle") )
             opsDetailEntityCtrl = OPSDetailEntity()
             functionInfo = {}
