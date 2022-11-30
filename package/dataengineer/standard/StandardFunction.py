@@ -59,7 +59,6 @@ class StandardFunction():
         for column in StandardFunction.getStandardColumnNameArr():
             if column not in standardDataDF.columns:
                 standardDataDF[column] = None
-
         insertTableInfoDF = postgresCtrl.getTableInfoDF(tableFullName)
         postgresCtrl.insertDataList(tableFullName, insertTableInfoDF, standardDataDF)
 
@@ -78,6 +77,7 @@ class StandardFunction():
             , "integer_006", "integer_007", "integer_008", "integer_009", "integer_010"
             , "double_001", "double_002", "double_003", "double_004", "double_005"
             , "double_006", "double_007", "double_008", "double_009", "double_010"
+            , "time_001", "time_002"
             , "json_001", "json_002"]
         return columnNameArr
 
@@ -92,6 +92,7 @@ class StandardFunction():
             , "integer_006", "integer_007", "integer_008", "integer_009", "integer_010"
             , "double_001", "double_002", "double_003", "double_004", "double_005"
             , "double_006", "double_007", "double_008", "double_009", "double_010"
+            , "time_001", "time_002"
             , "json_001", "json_002"]
         return columnNameArr
 
@@ -125,6 +126,13 @@ class StandardFunction():
             , "double_006", "double_007", "double_008", "double_009", "double_010"
         ]
         return doubleColumns
+
+    @classmethod
+    def getDataTimeColumnNameArr(self):
+        timeColumns = [
+            "time_001", "time_002"
+        ]
+        return timeColumns
 
     @classmethod
     def getJsonColumnNameArr(self):
@@ -181,6 +189,8 @@ class StandardFunction():
         columnInfoMap["double_008"] = {"description": "double_008"}
         columnInfoMap["double_009"] = {"description": "double_009"}
         columnInfoMap["double_010"] = {"description": "double_010"}
+        columnInfoMap["time_001"] = {"description": "time_001"}
+        columnInfoMap["time_002"] = {"description": "time_002"}
         columnInfoMap["json_001"] = {"description": "json_001"}
         columnInfoMap["json_002"] = {"description": "json_002"}
         return columnInfoMap

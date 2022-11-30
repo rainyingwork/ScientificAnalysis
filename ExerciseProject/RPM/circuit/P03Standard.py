@@ -1,6 +1,23 @@
+import pandas
 
 class Standard () :
 
     @classmethod
     def S0_0_1(self, functionInfo):
-        return {} ,{}
+        from package.dataengineer.standard.StandardFunction import StandardFunction
+        insertDataDF = pandas.read_csv("ExerciseProject/RPM/file/data/data.csv",converters={'CustomerID':str})
+
+
+        insertDataDF.columns = [
+            'common_001'
+            , 'string_001'
+            , 'integer_001', 'integer_002'
+            , 'double_001', 'double_002', 'double_003', 'double_004'
+            , 'integer_003', 'integer_004'
+            , 'double_005', 'double_006', 'double_007', 'double_008'
+            , 'string_002'
+            , 'double_009', 'double_010', 'double_011'
+            , 'integer_005'
+        ]
+        StandardFunction.insertOverwriteStandardData("Example", "P13Standard", "S0_0_1", "20220101", insertDataDF)
+        return {"result": "OK"}, {}

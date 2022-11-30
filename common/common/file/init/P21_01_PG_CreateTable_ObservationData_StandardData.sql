@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS observationdata.standarddata (
     , double_008 double precision
     , double_009 double precision
     , double_010 double precision
+    , time_001 timestamp
+    , time_002 timestamp
     , json_001 text
     , json_002 text
 ) --PARTITION BY RANGE (product , project ,tablename,  dt) ;

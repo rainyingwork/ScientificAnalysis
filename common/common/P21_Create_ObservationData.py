@@ -19,7 +19,7 @@ postgresCtrl = PostgresCtrl(
 sqlFilePathArr = [
     ""
     #, "common/common/file/init/P21_00_PG_CreateSchema_ObservationData.sql"
-    #, "common/common/file/init/P21_01_PG_CreateTable_ObservationData_StandardData.sql"
+    , "common/common/file/init/P21_01_PG_CreateTable_ObservationData_StandardData.sql"
     #, "common/common/file/init/P21_02_PG_CreateTable_ObservationData_AnalysisData.sql"
 ]
 
