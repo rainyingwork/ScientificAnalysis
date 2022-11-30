@@ -79,7 +79,7 @@ class PostgresCtrl:
                 insertCodeStr = insertCodeStr.replace("[:Columns]", columnsStr)
                 insertCodeStr = insertCodeStr.replace("[:Values]", valuesListStr)
                 cursor.execute(insertCodeStr)
-                print("已寫入 {} {} 筆資料".format(tableName, str(insertCount)))
+                # print("已寫入 {} {} 筆資料".format(tableName, str(insertCount)))
                 valuesListStr = ""
                 insertCount = 0
 
@@ -88,7 +88,7 @@ class PostgresCtrl:
             insertCodeStr = insertCodeStr.replace("[:Columns]", columnsStr)
             insertCodeStr = insertCodeStr.replace("[:Values]", valuesListStr)
             cursor.execute(insertCodeStr)
-            print("已寫入 {} {} 筆資料".format(tableName, str(insertCount)))
+            # print("已寫入 {} {} 筆資料".format(tableName, str(insertCount)))
 
         cursor.execute("commit;")
         connect.close()
