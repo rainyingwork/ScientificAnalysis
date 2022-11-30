@@ -14,7 +14,7 @@ if __name__ == "__main__":
         , "OrdFunctionArr": [
         ]
         , "FunctionMemo": {
-            "S0_0_1": "Juice資料塞入正規資料庫"
+            "S0_0_1": "資料塞入標準資料庫"
         }
     }
     opsInfo["ParameterJson"] = {}
