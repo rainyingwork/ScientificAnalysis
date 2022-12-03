@@ -20,7 +20,8 @@ __pythonexePath = "{}/venv/Scripts/python.exe".format(sys.path[1])
 # os.system("{} -m pip install matplotlib==3.6.0".format(__pythonexePath))
 # os.system("{} -m pip install explainerdashboard==0.4.0".format(__pythonexePath))
 # os.system("{} -m pip install networkx==2.8.8".format(__pythonexePath))
-
+# os.system("{} -m pip install m2cgen==0.10.0".format(__pythonexePath))
+# os.system("{} -m pip install evidently==0.2.0".format(__pythonexePath))
 
 
 # import git

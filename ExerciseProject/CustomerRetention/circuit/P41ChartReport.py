@@ -14,12 +14,11 @@ class ChartReport() :
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
         mainDF = copy.deepcopy(globalObject["P0_0_1"]["ResultDF"])
-        g = mainDF.groupby(['CohortMonth', 'Month_Index'])
-        cohortData = g['CustomerID'].apply(pandas.Series.nunique).reset_index()
-        cohortCounts = cohortData.pivot(index='CohortMonth', columns='Month_Index', values='CustomerID')
+        groupDF = mainDF.groupby(['StartMonth', 'MonthIndex'])
+        cohortData = groupDF['CustomerID'].apply(pandas.Series.nunique).reset_index()
+        cohortCounts = cohortData.pivot(index='StartMonth', columns='MonthIndex', values='CustomerID')
         cohortSizes = cohortCounts.iloc[:, 0]
         retention = cohortCounts.divide(cohortSizes, axis=0) * 100
-        retention.round(2)
 
         month_list = ["Dec", "Jan", "Feb", "Mar", "Ap", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         plt.figure(figsize=(20, 10))
