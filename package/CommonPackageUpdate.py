@@ -23,7 +23,7 @@ __pythonexePath = "{}/venv/Scripts/python.exe".format(sys.path[1])
 # os.system("{} -m pip install m2cgen==0.10.0".format(__pythonexePath))
 # os.system("{} -m pip install evidently==0.2.0".format(__pythonexePath))
 # os.system("{} -m pip install mlxtend==0.21.0".format(__pythonexePath))
-os.system("{} -m pip install rake_nltk==1.0.6".format(__pythonexePath)) 
+os.system("{} -m pip install rake_nltk==1.0.6".format(__pythonexePath))
 
 
 # import git
