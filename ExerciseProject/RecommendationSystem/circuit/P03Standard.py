@@ -1,6 +1,6 @@
+from ExerciseProject.RecommendationSystem.circuit.CorrelationAnalysis.P03Standard import Standard as Standard_CorrelationAnalysis
 
-class Standard () :
-
-    @classmethod
-    def S0_0_1(self, functionInfo):
-        return {} ,{}
+class Standard (
+    Standard_CorrelationAnalysis
+    ) :
+    pass
