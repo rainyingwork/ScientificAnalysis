@@ -11,15 +11,16 @@ class CommonFunction(AnalysisFunction):
 
     @classmethod
     def getCommonSQLReplaceArr(self,functionInfo , functionVersionInfo) :
-        makeTime = datetime.datetime.strptime(functionVersionInfo["DataTime"], "%Y-%m-%d")
         sqlReplaceArr = [
             ["[:Product]", functionInfo['Product']]
             , ["[:Project]", functionInfo['Project']]
             , ["[:OPSVersion]", functionInfo['OPSVersion']]
             , ["[:FunctionVersion]", functionVersionInfo['Version']]
-            , ["[:DateLine]", makeTime.strftime("%Y-%m-%d")]
-            , ["[:DateNoLine]", makeTime.strftime("%Y%m%d")]
         ]
+        if "DataTime" in functionVersionInfo.keys() :
+            makeTime = datetime.datetime.strptime(functionVersionInfo["DataTime"], "%Y-%m-%d")
+            sqlReplaceArr.append(["[:DateLine]", makeTime.strftime("%Y-%m-%d")])
+            sqlReplaceArr.append(["[:DateLine]", makeTime.strftime("%Y-%m-%d")])
         return sqlReplaceArr
 
     @classmethod
