@@ -8,7 +8,7 @@ class StandardFunction():
     # ==================================================              ==================================================
 
     @classmethod
-    def insertOverwriteStandardData(self,product,project,tablename,dt,standardDataDF) :
+    def insertOverwriteStandardData(self,product,project,tablename,dt,standardDataDF, useType= 'SQL') :
         from dotenv import load_dotenv
         from package.common.database.PostgresCtrl import PostgresCtrl
         load_dotenv(dotenv_path="env/postgresql.env")
@@ -32,10 +32,13 @@ class StandardFunction():
             .replace("[:TableName]", tablename) \
             .replace("[:DT]", dt)
         postgresCtrl.executeSQL(deleteSQL)
-        self.insertStandardData(product, project, tablename, dt, standardDataDF)
+
+
+        self.insertStandardData(product, project, tablename, dt, standardDataDF , useType)
+
 
     @classmethod
-    def insertStandardData(self, product, project, tablename, dt, standardDataDF):
+    def insertStandardData(self, product, project, tablename, dt, standardDataDF , useType):
         from dotenv import load_dotenv
         from package.common.database.PostgresCtrl import PostgresCtrl
 
@@ -59,9 +62,12 @@ class StandardFunction():
         for column in StandardFunction.getStandardColumnNameArr():
             if column not in standardDataDF.columns:
                 standardDataDF[column] = None
+        standardDataDF = standardDataDF[self.getStandardColumnNameArr()]
         insertTableInfoDF = postgresCtrl.getTableInfoDF(tableFullName)
-        postgresCtrl.insertDataList(tableFullName, insertTableInfoDF, standardDataDF)
-
+        if useType == 'SQL' :
+            postgresCtrl.insertDataList(tableFullName, insertTableInfoDF, standardDataDF)
+        elif useType == 'IO' :
+            postgresCtrl.insertDataByIO(tableFullName, insertTableInfoDF, standardDataDF)
 
     # ==================================================              ==================================================
 
