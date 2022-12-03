@@ -7,7 +7,11 @@ infoMain = InfoMain()
 
 if __name__ == "__main__":
     dataMap = {
-        "Standard" : [infoMain.getInfo_S0_0_1()]
+        "Standard" : [
+            infoMain.getInfo_S0_0_1()
+            , infoMain.getInfo_S0_1_1()
+            , infoMain.getInfo_S0_1_2()
+        ]
     }
     fileName = "ExerciseProject_RecommendSys_StandardDoc.xlsx"
     initFilePath = 'common/common/file/doc/StandardDataDocInit.xlsx'

@@ -25,16 +25,16 @@ CREATE TABLE IF NOT EXISTS observationdata.standarddata (
     , string_008 text
     , string_009 text
     , string_010 text
-    , integer_001 integer
-    , integer_002 integer
-    , integer_003 integer
-    , integer_004 integer
-    , integer_005 integer
-    , integer_006 integer
-    , integer_007 integer
-    , integer_008 integer
-    , integer_009 integer
-    , integer_010 integer
+    , integer_001 bigint
+    , integer_002 bigint
+    , integer_003 bigint
+    , integer_004 bigint
+    , integer_005 bigint
+    , integer_006 bigint
+    , integer_007 bigint
+    , integer_008 bigint
+    , integer_009 bigint
+    , integer_010 bigint
     , double_001 double precision
     , double_002 double precision
     , double_003 double precision
