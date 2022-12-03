@@ -11,7 +11,7 @@ if __name__ == "__main__":
     }
     fileName = "ExerciseProject_RecommendSys_StandardDoc.xlsx"
     initFilePath = 'common/common/file/doc/StandardDataDocInit.xlsx'
-    outFilePath = 'ExerciseProject/RecommendSys/file/doc/{}'.format(fileName)
+    outFilePath = 'ExerciseProject/RecommendSys/file/doc'
     os.makedirs(outFilePath) if not os.path.isdir(outFilePath) else None
     standardDocumentCtrl.MakeStandardDoc(dataMap,initFilePath,'{}/{}'.format(outFilePath,fileName))
 
