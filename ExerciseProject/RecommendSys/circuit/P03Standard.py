@@ -1,0 +1,6 @@
+from ExerciseProject.RecommendSys.circuit.CorrelationAnalysis.P03Standard import Standard as Standard_CorrelationAnalysis
+
+class Standard (
+    Standard_CorrelationAnalysis
+    ) :
+    pass
