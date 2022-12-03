@@ -95,17 +95,14 @@ class PostgresCtrl:
 
     # 將Dataframe，使用IO方式，直接塞入資料庫指定Table
     def insertDataByIO(self, tableFullName, insertTableInfoDF, insertDataDF, ifExists="fail"):
-        postgreEngine = sqlalchemy.create_engine("postgresql://" + self.__user + ":" + self.__password + "@" + self.__host + ":" + str(self.__port) + "/" + self.__database)
+        from urllib.parse import quote_plus as urlquote
+        postgreEngine = sqlalchemy.create_engine("postgresql://" + self.__user + ":" + urlquote(self.__password) + "@" + self.__host + ":" + str(self.__port) + "/" + self.__database)
         stringDataIO = io.StringIO()
-        insertDataDF.to_csv(stringDataIO, sep="|", index=False)
-        pdPostgreEngine = pandas.io.sql.pandasSQL_builder(postgreEngine)
-        table = pandas.io.sql.SQLTable(tableFullName, pdPostgreEngine, frame=insertDataDF, index=False, if_exists=ifExists, schema=self.__schema)
-        table.create()
+        insertDataDF.to_csv(stringDataIO, sep="\t", index=False)
         stringDataIO.seek(0)
-        # string_data_io.readline()
         with postgreEngine.connect() as connection:
             with connection.connection.cursor() as cursor:
-                copyCmd = "COPY " + self.__schema + ".%s FROM STDIN HEADER DELIMITER '|' CSV" % tableFullName
+                copyCmd = "COPY %s FROM STDIN HEADER DELIMITER '\t' CSV" % tableFullName
                 cursor.copy_expert(copyCmd, stringDataIO)
             connection.connection.commit()
 
