@@ -2,30 +2,64 @@
 class PreProcess() :
 
     @classmethod
-    def P0_0_1(self, functionInfo):
-        import copy
+    def P0_1_1(self, functionInfo):
+        import copy , numpy
+        from ast import literal_eval
         from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
-        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_1"])
-        functionVersionInfo["Version"] = "P0_0_1"
-        globalObjectFDict = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])["R0_0_1"]
-        mainDF = globalObjectFDict["ResultArr"][0]
-        mainDF.columns = ["CustomerID", "Country", "InvoiceNo", "StockCode", "Description", "Quantity", "UnitPrice",
-                          "InvoiceDate"]
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_1_1"])
+        functionVersionInfo["Version"] = "P0_1_1"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+        movieMainDF = globalObject["R0_1_1"]["ResultArr"][0]
+        movieDetailDF = globalObject["R0_1_2"]["ResultArr"][0]
+        movieMainDF.columns = ['MovieID', 'Title', 'Cast', 'Crew']
+        movieDetailDF.columns = [
+            'MovieID'
+            , 'Genres', 'Keywords', 'ProductionCompanies', 'ProductionCountries', 'SpokenLanguages'
+            , 'Title', 'OriginalTitle', 'OriginalLanguage'
+            , 'Tagline', 'Homepage', 'Overview', 'Status'
+            , 'Budget', 'Revenue'
+            , 'VoteAverage', 'VoteCount', 'Popularity', 'Runtime'
+            , 'ReleaseDate'
+        ]
 
-        # 移除Description開頭為空的字符
-        mainDF['Description'] = mainDF['Description'].str.strip()
-        # 移除InvoiceNo為空的列(axis=0)並且回傳(inplace=False) --inplace=True為直接改
-        mainDF = mainDF.dropna(subset=['InvoiceNo'], axis=0, inplace=False)
-        # 移除InvoiceNo包含'C'(退貨)的發票
-        mainDF = mainDF[~mainDF['InvoiceNo'].str.contains('C')]
+        movieAllDF = movieMainDF.merge(movieDetailDF, on='MovieID')
+        mainDF = movieAllDF[['MovieID', 'OriginalTitle', 'OriginalLanguage', 'Overview', 'Genres', 'Keywords', 'Cast', 'Crew']]
 
-        # 稀疏矩陣(Sparse Matrix)
-        # unstack 針對樞紐的最後幾個項目轉為欄位
-        basketSMDF = mainDF.groupby(['InvoiceNo', 'Description'])['Quantity'].sum().unstack().reset_index().fillna(
-            0).set_index('InvoiceNo')
+        # 空值處理
+        mainDF['Overview'] = mainDF['Overview'].fillna('')
 
-        # 購物籃分析不考慮數量，將數量 >0 的值全部轉為 1。
-        basketSMDF = basketSMDF.applymap(lambda x: 1 if x > 0 else 0)
+        # JSON 轉為陣列Dict
+        mainDF['Genres'] = movieAllDF['Genres'].apply(literal_eval)
+        mainDF['Keywords'] = movieAllDF['Keywords'].apply(literal_eval)
+        mainDF['Cast'] = movieAllDF['Cast'].apply(literal_eval)
+        mainDF['Crew'] = movieAllDF['Crew'].apply(literal_eval)
 
-        return {}, {"ResultDF": basketSMDF}
+        def getDirector(crews):
+            for crew in crews:
+                if crew['job'] == 'Director':
+                    return crew['name']
+            return numpy.nan
+
+        # 陣列Dict 轉 陣列Str
+        mainDF['Genres'] = mainDF['Genres'].apply(lambda x : ([d['name'] for d in x]))
+        mainDF['Keywords'] = mainDF['Keywords'].apply(lambda x :([d['name'] for d in x][:3] if len([d['name'] for d in x]) > 5 else [d['name'] for d in x]))
+        mainDF['Cast'] = mainDF['Cast'].apply(lambda x :([d['name'] for d in x][:3] if len([d['name'] for d in x]) > 3 else [d['name'] for d in x]))
+        mainDF['Director'] = mainDF['Crew'].apply(getDirector)
+        mainDF = mainDF.drop('Crew', axis=1)
+
+        def cleanSpace(x):
+            if isinstance(x, list):
+                return [i.lower().replace(" ", "") for i in x]
+            else:
+                if isinstance(x, str):
+                    return x.lower().replace(" ", "")
+                else:
+                    return ''
+
+        # 陣列Str去除所有空白字元與轉小寫
+        features = ['Genres', 'Keywords', 'Cast', 'Director']
+        for feature in features:
+            mainDF[feature] = mainDF[feature].apply(cleanSpace)
+
+        return {}, {"ResultDF": mainDF}
 

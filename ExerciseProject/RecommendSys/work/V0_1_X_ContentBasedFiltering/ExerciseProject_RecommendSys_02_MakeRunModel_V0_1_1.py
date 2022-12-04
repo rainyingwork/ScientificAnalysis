@@ -13,7 +13,7 @@ if __name__ == "__main__":
         "ExeFunctionArr": ["S0_1_1","S0_1_2"]
         # , "RepOPSRecordId": 1149
         # , "RepFunctionArr": ["R0_1_1","P0_1_1"]
-        # , "RunFunctionArr": ["S0_1_2"]
+        , "RunFunctionArr": ["S0_1_1"]
         , "OrdFunctionArr": [
         ]
         , "FunctionMemo": {

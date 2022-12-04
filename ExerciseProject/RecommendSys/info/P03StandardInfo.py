@@ -53,8 +53,8 @@ class StandardInfo ():
         columnInfoMap["dt"] = {"description": "dt"}
         columnInfoMap["common_001"] = {"description": "電影編號", "memo": "movie_id"}
         columnInfoMap["string_001"] = {"description": "電影名稱", "memo": "title"}
-        columnInfoMap["string_002"] = {"description": "電影演員", "memo": "cast"}
-        columnInfoMap["string_003"] = {"description": "工作人員", "memo": "crew"}
+        columnInfoMap["string_009"] = {"description": "電影演員列表", "memo": "cast"}
+        columnInfoMap["string_010"] = {"description": "工作人員列表", "memo": "crew"}
 
         return columnInfoMap
 
@@ -89,7 +89,7 @@ class StandardInfo ():
         columnInfoMap["string_003"] = {"description": "電影原始語言","memo":"original_language"}
         columnInfoMap["string_004"] = {"description": "電影標題","memo":"tagline"}
         columnInfoMap["string_005"] = {"description": "電影官網","memo":"homepage"}
-        columnInfoMap["string_005"] = {"description": "電影說明","memo":"overview"}
+        columnInfoMap["string_006"] = {"description": "電影說明","memo":"overview"}
         columnInfoMap["string_010"] = {"description": "狀態","memo":"status"}
         columnInfoMap["integer_001"] = {"description": "預算","memo":"budget"}
         columnInfoMap["integer_002"] = {"description": "收入","memo":"revenue"}
