@@ -20,6 +20,7 @@ class UseProduct() :
         similarityWithOtherMovies = similarityWithOtherMovies.sort_values(ascending=False)
         recommendResult = {}
         recommendResult["NameList"] = similarityWithOtherMovies.index[:topN].tolist()
+        
         return {"RecommendResult":recommendResult}, {}
 
     @classmethod
@@ -41,4 +42,5 @@ class UseProduct() :
         similarityWithOtherMovies = similarityWithOtherMovies.sort_values(ascending=False)
         recommendResult = {}
         recommendResult["NameList"] = similarityWithOtherMovies.index[:topN].tolist()
+
         return {"RecommendResult": recommendResult}, {}

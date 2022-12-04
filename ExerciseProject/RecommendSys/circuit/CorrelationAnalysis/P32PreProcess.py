@@ -9,8 +9,7 @@ class PreProcess() :
         functionVersionInfo["Version"] = "P0_0_1"
         globalObjectFDict = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])["R0_0_1"]
         mainDF = globalObjectFDict["ResultArr"][0]
-        mainDF.columns = ["CustomerID", "Country", "InvoiceNo", "StockCode", "Description", "Quantity", "UnitPrice",
-                          "InvoiceDate"]
+        mainDF.columns = ["CustomerID", "Country", "InvoiceNo", "StockCode", "Description", "Quantity", "UnitPrice","InvoiceDate"]
 
         # 移除Description開頭為空的字符
         mainDF['Description'] = mainDF['Description'].str.strip()
@@ -21,8 +20,7 @@ class PreProcess() :
 
         # 稀疏矩陣(Sparse Matrix)
         # unstack 針對樞紐的最後幾個項目轉為欄位
-        basketSMDF = mainDF.groupby(['InvoiceNo', 'Description'])['Quantity'].sum().unstack().reset_index().fillna(
-            0).set_index('InvoiceNo')
+        basketSMDF = mainDF.groupby(['InvoiceNo', 'Description'])['Quantity'].sum().unstack().reset_index().fillna(0).set_index('InvoiceNo')
 
         # 購物籃分析不考慮數量，將數量 >0 的值全部轉為 1。
         basketSMDF = basketSMDF.applymap(lambda x: 1 if x > 0 else 0)

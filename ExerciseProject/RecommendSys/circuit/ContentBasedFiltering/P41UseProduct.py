@@ -27,4 +27,5 @@ class UseProduct() :
             return mainKeysDF['MovieID'].iloc[topIndexs].tolist() , mainKeysDF['Title'].iloc[topIndexs].tolist()
         recommendResult ={}
         recommendResult["IDList"] , recommendResult["NameList" ] = makeRecommendMovie(movieName, indices, CVMCS,n=topN)
+
         return {"RecommendResult":recommendResult}, {}
