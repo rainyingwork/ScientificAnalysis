@@ -3,7 +3,7 @@ import OPSCommon as executeOPSCommon
 
 if __name__ == "__main__":
     basicInfo = {
-        "RunType": ["runops"]
+        "RunType": ["buildops"]
         , "Product": ["ExerciseProject"]
         , "Project": ["RecommendSys"]
     }
