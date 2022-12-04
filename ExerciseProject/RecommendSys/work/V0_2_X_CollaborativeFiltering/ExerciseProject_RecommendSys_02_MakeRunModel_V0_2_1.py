@@ -8,17 +8,17 @@ if __name__ == "__main__":
         , "Project": ["RecommendSys"]
     }
     opsInfo = copy.deepcopy(basicInfo)
-    opsInfo["OPSVersion"] = ["V0_1_1"]
+    opsInfo["OPSVersion"] = ["V0_2_1"]
     opsInfo["OPSOrderJson"] = {
-        "ExeFunctionArr": ["S0_1_1","S0_1_2"]
-        # , "RepOPSRecordId": 1149
-        # , "RepFunctionArr": ["R0_1_1","P0_1_1"]
-        , "RunFunctionArr": ["S0_1_1"]
+        "ExeFunctionArr": ["S0_2_1", "S0_2_2"]
+        # , "RepOPSRecordId": 1214
+        # , "RepFunctionArr": ["R0_1_1", "R0_1_2", "P0_1_1", "M0_1_1", "M0_1_2"]
+        # , "RunFunctionArr": ["UP0_1_1"]
         , "OrdFunctionArr": [
         ]
         , "FunctionMemo": {
-            "S0_1_1": "電影主要資料匯入"
-            , "S0_1_2": "電影細項資料匯入"
+            "S0_2_1": "電影基本資料"
+            , "S0_2_2": "用戶評分資料"
         }
     }
     opsInfo["ParameterJson"] = {}

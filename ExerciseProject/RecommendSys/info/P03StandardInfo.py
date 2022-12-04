@@ -100,3 +100,51 @@ class StandardInfo ():
         columnInfoMap["time_001"] = {"description": "電影發行日","memo":"release_date"}
 
         return columnInfoMap
+
+    @classmethod
+    def getInfo_S0_2_1(self, makeInfo=None):
+        from package.dataengineer.standard.StandardFunction import StandardFunction
+        tableInfo = {
+            "Project": "推薦系統"
+            , "TableName": "S0_2_1"
+            , "Memo": "推薦系統\n電影主要資料"
+            , "DataType": "標準區"
+            , "StartDate": "2022-01-01"
+            , "EndDate": "2050-12-31"
+            , "CommentMemo": "推薦系統相關資料"
+        }
+
+        columnInfoMap = StandardFunction.getStandardColumnDocInfo()
+        columnInfoMap["TableInfo"] = tableInfo
+        columnInfoMap["product"] = {"description": "ExerciseProject"}
+        columnInfoMap["project"] = {"description": "RecommendSys"}
+        columnInfoMap["tablename"] = {"description": "S0_2_1"}
+        columnInfoMap["dt"] = {"description": "dt"}
+        columnInfoMap["common_001"] = {"description": "電影編號", "memo": "movie_id"}
+        columnInfoMap["string_001"] = {"description": "電影名稱", "memo": "movie_title"}
+        return columnInfoMap
+
+
+    @classmethod
+    def getInfo_S0_2_2(self, makeInfo=None):
+        from package.dataengineer.standard.StandardFunction import StandardFunction
+        tableInfo = {
+            "Project": "推薦系統"
+            , "TableName": "S0_2_2"
+            , "Memo": "推薦系統\n用戶評分資料"
+            , "DataType": "標準區"
+            , "StartDate": "2022-01-01"
+            , "EndDate": "2050-12-31"
+            , "CommentMemo": "推薦系統相關資料"
+        }
+
+        columnInfoMap = StandardFunction.getStandardColumnDocInfo()
+        columnInfoMap["TableInfo"] = tableInfo
+        columnInfoMap["product"] = {"description": "ExerciseProject"}
+        columnInfoMap["project"] = {"description": "RecommendSys"}
+        columnInfoMap["tablename"] = {"description": "S0_2_2"}
+        columnInfoMap["dt"] = {"description": "dt"}
+        columnInfoMap["common_001"] = {"description": "電影編號", "memo": "id"}
+        columnInfoMap["common_002"] = {"description": "用戶編號", "memo": "user_id"}
+        columnInfoMap["integer_001"] = {"description": "評分", "memo": "rating"}
+        return columnInfoMap

@@ -11,6 +11,8 @@ if __name__ == "__main__":
             infoMain.getInfo_S0_0_1()
             , infoMain.getInfo_S0_1_1()
             , infoMain.getInfo_S0_1_2()
+            , infoMain.getInfo_S0_2_1()
+            , infoMain.getInfo_S0_2_2()
         ]
     }
     fileName = "ExerciseProject_RecommendSys_StandardDoc.xlsx"
