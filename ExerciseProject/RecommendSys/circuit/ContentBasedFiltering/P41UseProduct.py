@@ -11,9 +11,10 @@ class UseProduct() :
         mainKeysDF = globalObject["M0_1_2"]["ResultDF"]
         CVMCS = globalObject["M0_1_2"]["CVMCS"]
         movieName = functionVersionInfo["MovieName"]
+        topN = functionVersionInfo["TopN"] if "TopN" in functionVersionInfo.keys() else 5
 
         indices = pandas.Series(mainKeysDF.index, index=mainKeysDF['Title'])
-        def makeRecommendMovie(title, indices, CVMCS , n=5):
+        def makeRecommendMovie(title, indices, CVMCS , n):
             # 找到該電影的index編號
             if title not in indices.index:
                 return
@@ -25,5 +26,5 @@ class UseProduct() :
             topIndexs = list(scores.iloc[1:n].index)
             return mainKeysDF['MovieID'].iloc[topIndexs].tolist() , mainKeysDF['Title'].iloc[topIndexs].tolist()
         recommendResult ={}
-        recommendResult["IDList"] , recommendResult["NameList" ] = makeRecommendMovie(movieName, indices, CVMCS )
+        recommendResult["IDList"] , recommendResult["NameList" ] = makeRecommendMovie(movieName, indices, CVMCS,n=topN)
         return {"RecommendResult":recommendResult}, {}
