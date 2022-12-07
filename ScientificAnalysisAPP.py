@@ -1,8 +1,8 @@
-import os; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
-import json
+import os, json; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
+from flask import Flask, request
 from package.opsmanagement.LWLCtrl import LWLCtrl
 from package.common.osbasic.BaseFunction import timethis
-from flask import Flask, request
+
 
 app = Flask(__name__)
 lwlCtrl = LWLCtrl()
@@ -10,7 +10,7 @@ lwlCtrl = LWLCtrl()
 @app.route("/ExerciseProject/RecommendSys/V0_0_2", methods=['GET'])
 @timethis
 def RecommendSysV0_0_2():
-    # /ExerciseProject/RecommendSys/V0_0_2?MovieName=Bride Wars
+    # http://127.0.0.1:5000/ExerciseProject/RecommendSys/V0_0_2?MovieName=Bride%20Wars
     opsInfo = getJsonRecommendSysV0_0_2()
     opsInfo["ParameterJson"]["UP0_1_1"] = {"MovieName": request.values.get('MovieName')}
     lwlCtrl.executeRunFunction(opsInfo)
