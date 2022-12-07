@@ -1,6 +1,6 @@
-import os ,sys ; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
+import os; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
 from Example.P01Basic.info.InfoMain import InfoMain
-from package.dataengineer.standard.DocumentCtrl import DocumentCtrl as StandardDocumentCtrl
+from package.dataengineer.common.standard.DocumentCtrl import DocumentCtrl as StandardDocumentCtrl
 
 standardDocumentCtrl = StandardDocumentCtrl()
 infoMain = InfoMain()

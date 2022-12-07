@@ -1,4 +1,4 @@
-from package.dataengineer.standard.StandardFunction import StandardFunction
+from package.dataengineer.common.standard.StandardFunction import StandardFunction
 
 class StandardInfo(StandardFunction):
 
