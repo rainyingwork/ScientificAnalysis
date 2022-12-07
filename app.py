@@ -11,12 +11,12 @@ lwlCtrl = LWLCtrl()
 @timethis
 def RecommendSysV0_0_2():
     # /ExerciseProject/RecommendSys/V0_0_2?MovieName=Bride Wars
-    opsInfo = getJsonRecommendSys_V0_0_2()
+    opsInfo = getJsonRecommendSysV0_0_2()
     opsInfo["ParameterJson"]["UP0_1_1"] = {"MovieName": request.values.get('MovieName')}
     lwlCtrl.executeRunFunction(opsInfo)
     return json.dumps(opsInfo["ResultJson"],ensure_ascii=False)
 
-def getJsonRecommendSys_V0_0_2():
+def getJsonRecommendSysV0_0_2():
     opsInfo = {
         "RunType": ["runops"]
         , "Product": ["ExerciseProject"]
@@ -35,7 +35,7 @@ def getJsonRecommendSys_V0_0_2():
     opsInfo["ResultJson"] = {}
     return opsInfo
 
-lwlCtrl.executePreviewReading(getJsonRecommendSys_V0_0_2())
+lwlCtrl.executePreviewReading(getJsonRecommendSysV0_0_2())
 
 app.run()
 
