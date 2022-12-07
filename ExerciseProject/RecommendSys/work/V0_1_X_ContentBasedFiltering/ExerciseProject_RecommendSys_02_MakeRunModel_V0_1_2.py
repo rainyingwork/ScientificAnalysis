@@ -11,9 +11,9 @@ if __name__ == "__main__":
     opsInfo["OPSVersion"] = ["V0_1_2"]
     opsInfo["OPSOrderJson"] = {
         "ExeFunctionArr": ["R0_1_1", "R0_1_2", "P0_1_1", "M0_1_1", "M0_1_2","UP0_1_1"]
-        # , "RepOPSRecordId": 1214
-        # , "RepFunctionArr": ["R0_1_1", "R0_1_2", "P0_1_1", "M0_1_1", "M0_1_2"]
-        # , "RunFunctionArr": ["UP0_1_1"]
+        , "RepOPSRecordId": 1214
+        , "RepFunctionArr": ["R0_1_1", "R0_1_2", "P0_1_1", "M0_1_1", "M0_1_2"]
+        , "RunFunctionArr": ["UP0_1_1"]
         , "OrdFunctionArr": [
              {"Parent": "R0_1_1", "Child": "P0_1_1"}
             , {"Parent": "R0_1_2", "Child": "P0_1_1"}

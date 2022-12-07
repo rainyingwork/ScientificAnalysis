@@ -1,9 +1,33 @@
 import os
+from package.dataengineer.common.common.CommonFunction import CommonFunction
 
-class StandardFunction():
+class StandardFunction(CommonFunction):
 
     def __init__(self):
         pass
+
+    @classmethod
+    def executionFunctionByFunctionType(self, functionVersionInfo):
+        resultDict = {}
+        globalObjectDict = {}
+        for key in functionVersionInfo.keys():
+            if key not in ["ResultArr"] :
+                resultDict[key] = functionVersionInfo[key]
+
+        if functionVersionInfo['FunctionType'] == "ExeSQLStrs":
+            otherInfo = self.sdExeSQLStrs(functionVersionInfo)
+            resultDict["SQLStrs"] = ""
+        resultDict['Result'] = "OK"
+        return resultDict , globalObjectDict
+
+
+    # ==================================================              ==================================================
+
+    @classmethod
+    def sdExeSQLStrs(self, fvInfo):
+        otherInfo = {}
+        self.makeExeSQLStrsByDataBase(fvInfo, otherInfo)
+        return otherInfo
 
     # ==================================================              ==================================================
 
@@ -32,10 +56,7 @@ class StandardFunction():
             .replace("[:TableName]", tablename) \
             .replace("[:DT]", dt)
         postgresCtrl.executeSQL(deleteSQL)
-
-
         self.insertStandardData(product, project, tablename, dt, standardDataDF , useType)
-
 
     @classmethod
     def insertStandardData(self, product, project, tablename, dt, standardDataDF , useType):

@@ -35,6 +35,9 @@ class ModelUseFunction(CommonFunction):
             elif functionVersionInfo['ModelFunction'] == "UsePycaretModelByDatabaseRusult":
                 otherInfo = self.muAutoMLByUsePycaretModelByDatabaseRusult(functionVersionInfo)
                 resultDict = otherInfo['ResultInfo']
+        elif functionVersionInfo['FunctionType'] == "ExeSQLStrs":
+            otherInfo = self.muExeSQLStrs(functionVersionInfo)
+            resultDict["SQLStrs"] = ""
         resultDict['Result'] = "OK"
         return resultDict, globalObjectDict
 
@@ -72,6 +75,12 @@ class ModelUseFunction(CommonFunction):
             otherInfo["ResultInfo"] = self.makeAutoMLByUsePycaretModelClassification(fvInfo, otherInfo)
         elif fvInfo["ModelParameter"]["TaskType"] == "Regression":
             otherInfo["ResultInfo"] = self.makeAutoMLByUsePycaretModelRegression(fvInfo, otherInfo)
+        return otherInfo
+
+    @classmethod
+    def muExeSQLStrs(self, fvInfo):
+        otherInfo = {}
+        self.makeExeSQLStrsByDataBase(fvInfo, otherInfo)
         return otherInfo
 
     # ================================================= CommonFunction =================================================

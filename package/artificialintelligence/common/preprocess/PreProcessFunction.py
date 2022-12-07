@@ -23,6 +23,9 @@ class PreProcessFunction(CommonFunction):
         if functionVersionInfo['FunctionType'] == "PPTagText":
             otherInfo = self.ppTagText(functionVersionInfo)
             globalObjectDict['ResultArr'] = otherInfo["DFArr"]
+        elif functionVersionInfo['FunctionType'] == "ExeSQLStrs":
+            otherInfo = self.ppExeSQLStrs(functionVersionInfo)
+            resultDict["SQLStrs"] = ""
         resultDict['Result'] = "OK"
         return resultDict , globalObjectDict
 
@@ -33,6 +36,13 @@ class PreProcessFunction(CommonFunction):
         otherInfo = {}
         otherInfo["DFArr"] = self.makeDFByPPTagText(fvInfo, otherInfo)
         return otherInfo
+
+    @classmethod
+    def ppExeSQLStrs(self, fvInfo):
+        otherInfo = {}
+        self.makeExeSQLStrsByDataBase(fvInfo, otherInfo)
+        return otherInfo
+
     # ================================================= CommonFunction =================================================
 
     @classmethod

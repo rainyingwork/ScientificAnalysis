@@ -4,7 +4,7 @@ class StandardInfo ():
 
     @classmethod
     def getInfo_S0_0_1(self, makeInfo=None):
-        from package.dataengineer.standard.StandardFunction import StandardFunction
+        from package.dataengineer.common.standard.StandardFunction import StandardFunction
         tableInfo = {
             "Project": "推薦系統"
             , "TableName": "S0_0_1"
@@ -34,7 +34,7 @@ class StandardInfo ():
 
     @classmethod
     def getInfo_S0_1_1(self, makeInfo=None):
-        from package.dataengineer.standard.StandardFunction import StandardFunction
+        from package.dataengineer.common.standard.StandardFunction import StandardFunction
         tableInfo = {
             "Project": "推薦系統"
             , "TableName": "S0_1_1"
@@ -60,7 +60,7 @@ class StandardInfo ():
 
     @classmethod
     def getInfo_S0_1_2(self, makeInfo=None):
-        from package.dataengineer.standard.StandardFunction import StandardFunction
+        from package.dataengineer.common.standard.StandardFunction import StandardFunction
         tableInfo = {
             "Project": "推薦系統"
             , "TableName": "S0_1_2"
@@ -103,7 +103,7 @@ class StandardInfo ():
 
     @classmethod
     def getInfo_S0_2_1(self, makeInfo=None):
-        from package.dataengineer.standard.StandardFunction import StandardFunction
+        from package.dataengineer.common.standard.StandardFunction import StandardFunction
         tableInfo = {
             "Project": "推薦系統"
             , "TableName": "S0_2_1"
@@ -127,7 +127,7 @@ class StandardInfo ():
 
     @classmethod
     def getInfo_S0_2_2(self, makeInfo=None):
-        from package.dataengineer.standard.StandardFunction import StandardFunction
+        from package.dataengineer.common.standard.StandardFunction import StandardFunction
         tableInfo = {
             "Project": "推薦系統"
             , "TableName": "S0_2_2"
