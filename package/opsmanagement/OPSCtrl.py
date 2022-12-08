@@ -149,7 +149,7 @@ class OPSCtrl:
             , "FunctionRestlt": functionRestlt
             , "GlobalObjectDict": globalObjectDict
         })
-        print("  Reply Function , Version is {} , ReplyOPSDetailID is {} ".format(executeFunction,str(repOPSRecordId)))
+        print("  Reply Function , Version is {} , ReplyOPSRecordID is {} ".format(executeFunction,str(repOPSRecordId)))
 
     def dceExecuteFunction(self,executeFunction, opsInfo,threadQueue):
         sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD"))
