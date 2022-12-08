@@ -25,7 +25,10 @@ __pythonexePath = "{}/venv/Scripts/python.exe".format(sys.path[1])
 # os.system("{} -m pip install mlxtend==0.21.0".format(__pythonexePath))
 # os.system("{} -m pip install rake_nltk==1.0.6".format(__pythonexePath))
 # os.system("{} -m pip install Flask==2.2.2".format(__pythonexePath))
-os.system("{} -m pip install impyla==0.18.0".format(__pythonexePath))
+# os.system("{} -m pip install impyla==0.18.0".format(__pythonexePath))
+os.system("{} -m pip install hdfs==2.7.0".format(__pythonexePath))
+#os.system("{} -m pip install pyspark==3.3.1".format(__pythonexePath))
+# os.system("{} -m pip install py4j==0.10.9.7".format(__pythonexePath))
 
 
 
