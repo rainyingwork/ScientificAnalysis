@@ -15,10 +15,10 @@ if __name__ == "__main__":
         , "PreProcess": []
         , "ModelUse": []
     }
-    os.makedirs('ExerciseProject/RPM/file/doc/') if not os.path.isdir('ExerciseProject/RPM/file/doc/') else None
-    fileName = "ExerciseProject_RPM_StandardDoc.xlsx"
+    os.makedirs('ExerciseProject/RFM/file/doc/') if not os.path.isdir('ExerciseProject/RFM/file/doc/') else None
+    fileName = "ExerciseProject_RFM_StandardDoc.xlsx"
     initFilePath = 'common/common/file/doc/StandardDataDocInit.xlsx'
-    outFilePath = 'ExerciseProject/RPM/file/doc/{}'.format(fileName)
+    outFilePath = 'ExerciseProject/RFM/file/doc/{}'.format(fileName)
     standardDocumentCtrl.MakeStandardDoc(dataMap,initFilePath,outFilePath)
 
 
