@@ -1,7 +1,9 @@
 import os , shutil
 import sys
 
-__pythonexePath = "{}/venv/Scripts/python.exe".format(sys.path[1])
+pythonEXEPath = "bin" if os.name == "posix" else "Scripts"
+
+__pythonexePath = "{}/venv/{}/python".format(sys.path[1],pythonEXEPath)
 # os.system("{} -m pip install --upgrade pip".format(__pythonexePath))
 # os.system("{} -m pip install gitpython".format(__pythonexePath))
 # os.system("{} -m pip install matplotlib".format(__pythonexePath))
