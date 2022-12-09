@@ -3,14 +3,10 @@ import time , datetime
 import numpy ,pandas
 import pprint
 from dotenv import load_dotenv
-from sklearn.linear_model import LassoCV
-
-from sklearn.model_selection import train_test_split
 from package.common.osbasic.SSHCtrl import SSHCtrl
 from package.common.database.PostgresCtrl import PostgresCtrl
 from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
 from package.artificialintelligence.common.common.CommonFunction import CommonFunction
-
 
 class ModelUseFunction(CommonFunction):
 
@@ -129,6 +125,7 @@ class ModelUseFunction(CommonFunction):
 
     @classmethod
     def makeTagFilterByLasso(self,fvInfo, otherInfo):
+        from sklearn.linear_model import LassoCV
         makeDataKeys = fvInfo['MakeDataKeys']
         makeDataInfoArr = fvInfo['MakeDataInfo']
 
@@ -206,6 +203,7 @@ class ModelUseFunction(CommonFunction):
 
     @classmethod
     def makeAutoMLByTrainPycaretDefultClassification(self, fvInfo, otherInfo):
+        from sklearn.model_selection import train_test_split
         from sklearn.metrics import confusion_matrix
         from pycaret.classification import setup
         from pycaret.classification import compare_models
@@ -274,6 +272,7 @@ class ModelUseFunction(CommonFunction):
 
     @classmethod
     def makeAutoMLByTrainPycaretDefultRegression(self, fvInfo, otherInfo):
+        from sklearn.model_selection import train_test_split
         from sklearn.metrics import explained_variance_score
         from sklearn.metrics import mean_absolute_error
         from sklearn.metrics import mean_squared_error

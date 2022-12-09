@@ -1,6 +1,6 @@
 import os , copy , shutil
 import threading
-import time
+import time , pprint
 from queue import Queue
 import pickle
 from dotenv import load_dotenv
@@ -41,6 +41,7 @@ class OPSCtrl:
                 opsInfo["ResultJson"][executeFunction] = functionDict["FunctionRestlt"]
                 allGlobalObjectDict[executeFunction] = functionDict["GlobalObjectDict"]
         print("End OPS , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(product , project, opsVersion,opsRecordId))
+        pprint.pprint(opsInfo["ResultJson"])
 
     def runExecuteFunction(self,executeFunction, opsInfo, threadQueue):
         def makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt, globalObjectDict):
