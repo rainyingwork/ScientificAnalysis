@@ -10,7 +10,8 @@ env
 logs.log
 catboost_info
 # 暫不上傳
-UnitTest/*
+UnitTestLocal/*
+UnitTest/TensorFlow
 Example/P35NetworkX
 OnlineExample
 RWTaiwan/TagData
