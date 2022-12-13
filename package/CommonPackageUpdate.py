@@ -31,7 +31,7 @@ os.system("{} -m pip install scikit-learn==1.1.2".format(__pythonexePath))
 # os.system("{} -m pip install Flask==2.2.2".format(__pythonexePath))
 # os.system("{} -m pip install impyla==0.18.0".format(__pythonexePath))
 # os.system("{} -m pip install hdfs==2.7.0".format(__pythonexePath))
-#os.system("{} -m pip install pyspark==3.3.1".format(__pythonexePath))
+# os.system("{} -m pip install pyspark==3.3.1".format(__pythonexePath))
 # os.system("{} -m pip install py4j==0.10.9.7".format(__pythonexePath))
 # os.system("{} -m pip install tensorflow==2.11.0".format(__pythonexePath))
 

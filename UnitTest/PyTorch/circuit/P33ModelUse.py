@@ -22,13 +22,16 @@ class ModelUse() :
                 super(NeuralNetwork, self).__init__()
                 # 建立類神經網路各層
                 self.flatten = nn.Flatten()  # 轉為一維向量
+                # 繼承名稱無法修改
                 self.linear_relu_stack = nn.Sequential(
-                    nn.Linear(28 * 28, 512),  # 線性轉換
-                    nn.ReLU(),  # ReLU 轉換
-                    nn.Linear(512, 512),
-                    nn.ReLU(),
-                    nn.Linear(512, 10)
+                    nn.Linear(28 * 28, 512), # 輸入層 (輸入數量,輸出數量) 用Linear實現全連接層
+                    nn.ReLU(), # 激勵函數 ReLU
+                    # nn.MaxPool2d(2) # 池化層 此處用不到 但可以放在激勵函數後面
+                    nn.Linear(512, 512), # 中間層 (輸入數量,輸出數量)
+                    nn.ReLU(), # 激勵函數 ReLU
+                    nn.Linear(512, 10) # 輸出層 (輸入數量,輸出數量)
                 )
+
             def forward(self, x):
                 # 定義資料如何通過類神經網路各層
                 x = self.flatten(x)
@@ -36,16 +39,16 @@ class ModelUse() :
                 return logits
 
         # 訓練模型方法
-        def runTrainModel(dataloader, model, loss_fn, optimizer):
+        def runTrainModel(dataLoader, model, lossFN, optimizer):
             # 資料總筆數並將將模型設定為訓練模式(train)
-            size = len(dataloader.dataset)
+            size = len(dataLoader.dataset)
             model.train()
             # 批次讀取資料進行訓練
-            for batch, (x, y) in enumerate(dataloader):
+            for batch, (x, y) in enumerate(dataLoader):
                 # 將資料放置於 GPU 或 CPU
                 x, y = x.to(device), y.to(device)
                 pred = model(x)  # 計算預測值
-                loss = loss_fn(pred, y)  # 計算損失值（loss）
+                loss = lossFN(pred, y)  # 計算損失值（loss）
                 optimizer.zero_grad()  # 重設參數梯度（gradient）
                 loss.backward()  # 反向傳播（backpropagation）
                 optimizer.step()  # 更新參數
@@ -55,37 +58,37 @@ class ModelUse() :
                     print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
         # 測試模型方法
-        def runTestModel(dataloader, model, loss_fn):
+        def runTestModel(dataLoader, model, lossFN):
             # 資料總筆數
-            size = len(dataloader.dataset)
+            size = len(dataLoader.dataset)
             # 批次數量
-            num_batches = len(dataloader)
+            numBatches = len(dataLoader)
             # 將模型設定為驗證模式
             model.eval()
             # 初始化數值
-            test_loss, correct = 0, 0
+            testLoss, correct = 0, 0
             # 驗證模型準確度
             with torch.no_grad():  # 不要計算參數梯度
-                for X, y in dataloader:
+                for x, y in dataLoader:
                     # 將資料放置於 GPU 或 CPU
-                    X, y = X.to(device), y.to(device)
+                    x, y = x.to(device), y.to(device)
                     # 計算預測值
-                    pred = model(X)
+                    pred = model(x)
                     # 計算損失值的加總值
-                    test_loss += loss_fn(pred, y).item()
+                    testLoss += lossFN(pred, y).item()
                     # 計算預測正確數量的加總值
                     correct += (pred.argmax(1) == y).type(torch.float).sum().item()
             # 計算平均損失值與正確率
-            test_loss /= num_batches
-            correct /= size
-            print(f"Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+            testLoss = testLoss / numBatches
+            correct = correct / size
+            print(f"Test Error: \n Accuracy: {(100 * correct):>0.1f}%, Avg loss: {testLoss:>8f} \n")
 
-        # 批次載入資料筆數
-        batch_size = 64
+        # 批次載入筆數：因為要分次處理與訓練所以要設定批次載入資料筆數
+        batchSize = 64
 
         # 建立 DataLoader
-        trainDataLoader = DataLoader(trainData, batch_size=batch_size)
-        testDataLoader = DataLoader(testData, batch_size=batch_size)
+        trainDataLoader = DataLoader(trainData, batch_size=batchSize)
+        testDataLoader = DataLoader(testData, batch_size=batchSize)
 
         # 使用CPU(cpu)或是使用GPU(cuda)模型
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -93,11 +96,11 @@ class ModelUse() :
         print(f"Using {device} device")
         print(model)
 
-        # 損失函數lossFN 與 學習優化器optimizer
+        # 損失函數：使用交叉熵誤差CrossEntropy 與 學習優化器optimizer
         lossFN = nn.CrossEntropyLoss()
         optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
 
-        # 設定 epochs 數
+        # 訓練次數：設定同一批資料訓練的次數
         epochs = 5
 
         # 開始訓練模型
@@ -112,6 +115,6 @@ class ModelUse() :
 
         # 儲存模型參數
         torch.save(model.state_dict(), pytorchModelFilePath)
-
+        # Accuracy: 65.6%, Avg loss: 1.069365
         return {}, {"PyTorchModelFilePath":pytorchModelFilePath}
 

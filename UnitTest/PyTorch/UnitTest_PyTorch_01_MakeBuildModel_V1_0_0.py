@@ -1,21 +1,16 @@
 import os , copy; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
-import Config
-import OPSCommon_local as executeOPSCommon
+import OPSCommon as executeOPSCommon
 
 if __name__ == "__main__":
     basicInfo = {
-        "RunType": ["runops"]
+        "RunType": ["buildops"]
         , "Product": ["UnitTest"]
         , "Project": ["PyTorch"]
     }
     opsInfo = copy.deepcopy(basicInfo)
-    opsInfo["OPSVersion"] = ["V0_0_1"]
-    opsInfo["OPSRecordId"] = [9999]
+    opsInfo["OPSVersion"] = ["V1_0_0"]
     opsInfo["OPSOrderJson"] =  {
         "ExeFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","UP0_0_1"]
-        , "RepOPSRecordId": 9999
-        , "RepFunctionArr": ["R0_0_1","P0_0_1","M0_0_1"]
-        , "RunFunctionArr": ["UP0_0_1"]
         , "OrdFunctionArr": [
             {"Parent": "R0_0_1", "Child": "P0_0_1"}
             , {"Parent": "P0_0_1", "Child": "M0_0_1"}
@@ -44,4 +39,6 @@ if __name__ == "__main__":
             , "ItemNo": 30
         }
     }
+    opsInfo["ResultJson"] = {}
+
     executeOPSCommon.main(opsInfo)
