@@ -2,17 +2,17 @@
 class UseProduct() :
 
     @classmethod
-    def UP0_0_1(self, functionInfo):
+    def UP1_0_1(self, functionInfo):
         import copy
         import torch
         from torch import nn
         from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
-        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP0_0_1"])
-        functionVersionInfo["Version"] = "UP0_0_1"
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP1_0_1"])
+        functionVersionInfo["Version"] = "UP1_0_1"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
-        testData = globalObject["P0_0_1"]["TestData"]
-        pytorchModelFilePath = globalObject["M0_0_1"]["PyTorchModelFilePath"]
+        testData = globalObject["P1_0_1"]["TestData"]
+        pytorchModelFilePath = globalObject["M1_0_1"]["PyTorchModelFilePath"]
         itemNo = functionVersionInfo["ItemNo"]
 
         class NeuralNetwork(nn.Module):

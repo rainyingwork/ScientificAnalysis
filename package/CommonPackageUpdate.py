@@ -38,6 +38,7 @@ os.system("{} -m pip install scikit-learn==1.1.2".format(__pythonexePath))
 # os.system("{} -m pip install torch==1.13.0".format(__pythonexePath))
 # os.system("{} -m pip install torchvision==1.14.0".format(__pythonexePath))
 # os.system("{} -m pip install torchaudio==1.13.0".format(__pythonexePath))
+os.system("{} -m pip install pillow==9.3.0".format(__pythonexePath))
 
 
 
