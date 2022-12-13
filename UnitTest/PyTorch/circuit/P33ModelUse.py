@@ -1,6 +1,48 @@
 
 class ModelUse() :
-    
+
+    @classmethod
+    def M0_4_0(self, functionInfo):
+        import torch
+        import torch.nn as nn
+        import torch.optim as optim
+        import matplotlib.pyplot as plt
+
+        torch.manual_seed(0)
+
+        w = torch.tensor([1, 3, 5]).float()
+        x = torch.cat([torch.ones(100, 1), torch.randn(100, 2)], dim=1)
+        y = torch.mv(x, w) + torch.randn(100) * 0.3
+        y = y.unsqueeze(1)
+        print(x.shape, y.shape)
+
+        model = nn.Sequential(nn.Linear(3, 1, bias=False))
+
+        myloss = nn.MSELoss()
+        myoptim = optim.Adam(model.parameters(), lr=0.1)
+
+        losses = []
+        epochs = 101
+        for epoch in range(epochs):
+            y_pred = model(x)
+            loss = myloss(y_pred, y)
+            losses.append(loss.item())
+            myoptim.zero_grad()
+            loss.backward()
+            myoptim.step()
+
+            if epoch % 20 == 0:
+                print(f"epoch={epoch}, loss={loss.item():.3f}")
+
+        # plt.plot(losses)
+        # plt.xlabel("epoch")
+        # plt.ylabel("losses")
+        # plt.show()
+
+        print(list(model.parameters()))
+
+        return {}, {}
+
     @classmethod
     def M1_0_1(self, functionInfo):
         import copy
@@ -118,44 +160,3 @@ class ModelUse() :
         # Accuracy: 65.6%, Avg loss: 1.069365
         return {}, {"PyTorchModelFilePath":pytorchModelFilePath}
 
-    @classmethod
-    def M0_0_1(self, functionInfo):
-        import torch
-        import torch.nn as nn
-        import torch.optim as optim
-        import matplotlib.pyplot as plt
-
-        torch.manual_seed(0)
-
-        w = torch.tensor([1, 3, 5]).float()
-        x = torch.cat([torch.ones(100, 1), torch.randn(100, 2)], dim=1)
-        y = torch.mv(x, w) + torch.randn(100) * 0.3
-        y = y.unsqueeze(1)
-        print(x.shape, y.shape)
-
-        model = nn.Sequential(nn.Linear(3, 1, bias=False))
-
-        myloss = nn.MSELoss()
-        myoptim = optim.Adam(model.parameters(), lr=0.1)
-
-        losses = []
-        epochs = 101
-        for epoch in range(epochs):
-            y_pred = model(x)
-            loss = myloss(y_pred, y)
-            losses.append(loss.item())
-            myoptim.zero_grad()
-            loss.backward()
-            myoptim.step()
-
-            if epoch % 20 == 0:
-                print(f"epoch={epoch}, loss={loss.item():.3f}")
-
-        # plt.plot(losses)
-        # plt.xlabel("epoch")
-        # plt.ylabel("losses")
-        # plt.show()
-
-        print(list(model.parameters()))
-
-        return {}, {}
