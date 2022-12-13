@@ -80,6 +80,7 @@ class ModelUse() :
 
         x = data.iloc[:, 1:]
         y = data.iloc[:, 0]
+        # 資料標準化
         x = (x - x.mean()) / x.std()
 
         print(x.head())
@@ -155,7 +156,166 @@ class ModelUse() :
 
         return {}, {}
 
+    @classmethod
+    def M0_6_0(self, functionInfo):
+        import numpy as np
+        import pandas as pd
+        import matplotlib.pyplot as plt
+        from sklearn.model_selection import train_test_split
+        from sklearn.utils import shuffle
+        from sklearn.metrics import accuracy_score
+        import torch
+        import torch.nn as nn
+        import torch.nn.functional as F
+        import torch.optim as optim
+        from torch.utils.data import TensorDataset, DataLoader
 
+        # 設定隨機種子
+        torch.manual_seed(10)
+        np.random.seed(10)
+
+        # 讀取資料
+        data = pd.read_csv("UnitTest/PyTorch/file/data/UCI_Credit_Card.csv")
+        print(data.shape) # (30000, 25)
+
+        print(data.head())
+
+        data = data.drop(columns=["ID"])
+
+        x = data.iloc[:, :-1]
+        y = data.iloc[:, -1]
+        print(x.shape, y.shape) # (30000, 23) (30000,)
+
+        # 資料標準化
+        x = (x - x.min()) / (x.max() - x.min())
+        print(x.head())
+
+        # 拆分數據成2個子集，x_new : x_test = 80:20
+        # 再拆分數據集x_new成2個子集, x_train : x_dev = 75:25
+        x_new, x_test, y_new, y_test = train_test_split(x, y, test_size=0.2, random_state=1)
+        x_train, x_dev, y_train, y_dev = train_test_split(x_new, y_new, test_size=0.25, random_state=0)
+        print(x_train.shape, x_dev.shape, x_test.shape) # (18000, 23) (6000, 23) (6000, 23)
+
+        x_train_t = torch.tensor(x_train.values).float()
+        y_train_t = torch.tensor(y_train.values).long()
+        x_dev_t = torch.tensor(x_dev.values).float()
+        y_dev_t = torch.tensor(y_dev.values).long()
+        x_test_t = torch.tensor(x_test.values).float()
+        y_test_t = torch.tensor(y_test.values).long()
+
+        train_ds = TensorDataset(x_train_t, y_train_t)
+        dev_ds = TensorDataset(x_dev_t, y_dev_t)
+        test_ds = TensorDataset(x_test_t, y_test_t)
+
+        batch_size = 100
+        train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
+        dev_loader = DataLoader(dev_ds, batch_size=batch_size, shuffle=False)
+        test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False)
+
+        x_, y_ = next(iter(train_loader))
+        print(x_.shape, y_.shape) # torch.Size([100, 23]) torch.Size([100])
+
+        class Classifier(nn.Module):
+            def __init__(self, input_size):
+                super().__init__()
+                self.hidden_1 = nn.Linear(input_size, 100)
+                self.hidden_2 = nn.Linear(100, 100)
+                self.output = nn.Linear(100, 2)
+
+            def forward(self, x):
+                z = F.relu(self.hidden_1(x))
+                z = F.relu(self.hidden_2(z))
+                o = F.log_softmax(self.output(z), dim=1)
+                return o
+
+        model = Classifier(x_train.shape[1])
+        print(model)
+        """
+        Classifier(
+          (hidden_1): Linear(in_features=23, out_features=100, bias=True)
+          (hidden_2): Linear(in_features=100, out_features=100, bias=True)
+          (output): Linear(in_features=100, out_features=2, bias=True)
+        )
+        """
+
+        # 損失函數：使用NLLLoss 與 學習函數：使用Adam
+        criterion = nn.NLLLoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+        epochs = 51
+        train_losses, dev_losses, train_accs, dev_accs = [], [], [], []
+
+        for epoch in range(epochs):
+            train_loss = 0
+            train_acc = 0
+
+            model.train()
+            for x_batch, y_batch in train_loader:
+                pred = model(x_batch)
+                loss = criterion(pred, y_batch)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                train_loss += loss.item()
+
+                ps = torch.exp(pred)
+                top_p, top_class = ps.topk(1, dim=1)
+                train_acc += accuracy_score(y_batch, top_class)
+
+            # 驗證
+            dev_loss = 0
+            dev_acc = 0
+
+            with torch.no_grad():
+                model.eval()
+                pred_dev = model(x_dev_t)
+                dev_loss = criterion(pred_dev, y_dev_t)
+
+                ps_dev = torch.exp(pred_dev)
+                top_p, top_class_dev = ps_dev.topk(1, dim=1)
+
+                dev_loss = dev_loss.item()
+                dev_acc = accuracy_score(y_dev_t, top_class_dev) * 100
+
+            train_loss = train_loss / len(train_loader)
+            train_acc = train_acc / len(train_loader) * 100
+
+            train_losses.append(train_loss)
+            dev_losses.append(dev_loss)
+            train_accs.append(train_acc)
+            dev_accs.append(dev_acc)
+
+            model.eval()
+            if epoch % 10 == 0:
+                print(f"Epoch:{epoch}, train_loss:{train_loss:.3f}, val_loss:{dev_loss:.3f}" \
+                      f"\t  train_acc:{train_acc:.2f}%, val_acc:{dev_acc:.2f}%")
+
+        # fig = plt.figure(figsize=(15, 5))
+        # plt.plot(train_losses, label="training loss")
+        # plt.plot(dev_losses, label="validation loss", linestyle="--")
+        # plt.legend(frameon=False, fontsize=15)
+        # plt.show()
+
+        # fig = plt.figure(figsize=(15, 5))
+        # plt.plot(train_accs, label="training accuracy")
+        # plt.plot(dev_accs, label="validation accuracy", linestyle="--")
+        # plt.legend(frameon=False, fontsize=15)
+        # plt.show()
+
+        torch.save(model.state_dict(), "UnitTest/PyTorch/file/result/V0_6_0/9999/M0_6_0/credit_model.pt")
+
+        model2 = Classifier(x_test.shape[1])
+        model2.load_state_dict(torch.load("UnitTest/PyTorch/file/result/V0_6_0/9999/M0_6_0/credit_model.pt"))
+
+        model2.eval()
+        test_pred = model2(x_test_t)
+        test_pred = torch.exp(test_pred)
+        value, y_test_pred = test_pred.topk(1, dim=1)
+        acc_test = accuracy_score(y_test_t, y_test_pred) * 100
+        print(f"acc_test:{acc_test:.2f}%") # acc_test:81.63%
+
+        return {}, {}
 
 
     @classmethod
