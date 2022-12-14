@@ -3,100 +3,81 @@ class ModelUse():
     @classmethod
     def M0_0_1(self, functionInfo):
         import torch
-        from PIL import Image
         import numpy as np
-        import matplotlib.pyplot as plt
+        import glob # 多圖撈取模組
+        from PIL import Image
 
-        a1 = torch.tensor(1, dtype=torch.int16)
-        print(a1.shape)
-        print(a1)
+        # torch.Tensor 浮點數張量，可用於GPU計算
+        # torch.tensor 一般張量，視輸入而定
 
-        a2 = torch.Tensor([1, 2, 3, 4, 5])
-        print(a2.shape)
-        print(a2)
+        example01 = torch.tensor(1,dtype=torch.int16)
+        print(example01.shape) # torch.Size([])
+        print(example01) # tensor(1,dtype=torch.int16)
 
-        a3 = torch.Tensor([[1, 2, 3], [4, 5, 6]])
-        print(a3.shape)
-        print(a3)
+        example02 = torch.Tensor([1, 2, 3, 4, 5])
+        print(example02.shape) # torch.Size([5])
+        print(example02) # tensor([1., 2., 3., 4., 5.]) 沒有dtype代表就是float，也會看到後面有.
+        print(example02[:3]) # tensor([1., 2., 3.]) 操作的方式其實與一般操作很像
+        print(example02[:-1]) # tensor([1., 2., 3., 4.])
 
-        panda = np.array(Image.open('Example/P36PyTorch/file/data/imgs/panda1.jpg'))
-        plt.imshow(panda)
-        plt.show()
+        example03 = torch.Tensor([[1, 2, 3], [4, 5, 6]])
+        print(example03.shape) # torch.Size([2, 3])
+        print(example03) # tensor([[1., 2., 3.],[4., 5., 6.]])
 
-        a4 = torch.from_numpy(panda)
-        print(a4.shape)
+        example04 = torch.Tensor([[1, 2, 3], [4, 5, 6]])
+        print(example04)  # tensor([[1., 2., 3.],[4., 5., 6.]])
+        print(example04.tolist())  # [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]] 轉成純陣列
+        print(example04.numel())  # 6 張量中元素的總數
 
-        a2 = torch.Tensor([1, 2, 3, 4, 5])
-        print(a2[:3])
+        print(torch.arange(1, 6, 2)) # tensor([1,3,5]) torch.arange(start,end,step) 整數切
+        print(torch.linspace(1, 10, 3)) # tensor([1.0,5.5,10.0]) torch.linspace(start,end,step) 均勻切
+        print(torch.randn(2, 3)) # tensor([[2.05,-0.02,-0.17],[0.23,-0.28,-0.33]]) 為浮點數的X維張量
+        print(torch.randperm(5)) # tensor([4, 2, 1, 3, 0]) 為整數的X維張量
+        print(torch.eye(2, 3)) # tensor([[1., 0., 0.],[0., 1., 0.]]) 對角線為1的X維張量
 
-        print(a2[:-1])
+        example05 = torch.arange(0, 6)
+        print(example05) # tensor([0, 1, 2, 3, 4, 5]) torch.arange(start,end) 整數切
+        print(example05.view(2, 3)) # tensor([[0, 1, 2],[3, 4, 5]]) 切成2個3列陣列
+        print(example05.view(-1, 2)) # tensor([[0, 1],[2, 3],[4, 5]]) 切成n個2列陣列，n由系統運算
 
-        plt.imshow(a4[:, :, 0].numpy())
-        plt.show()
+        example06 = example05.view(2, 3)
+        example06 = example06.unsqueeze(1) # 在軸1擴展維度
+        print(example06) # tensor([[[0, 1, 2]],[[3, 4, 5]]])
+        print(example06.shape) # torch.Size([2, 1, 3])
 
-        plt.imshow(a4[0:300, 100:500, 0].numpy())
-        plt.show()
+        example07 = torch.arange(0, 6)
+        example07 = example07.view(1, 1, 1, 2, 3)
+        print(example07.shape) # torch.Size([1, 1, 1, 2, 3])
 
-        import glob
-        pandas = glob.glob("Example/P36PyTorch/file/data/imgs/*.jpg")
-        print(pandas)
+        example08 = example07.squeeze(0) # 降低軸0維度
+        print(example08.shape) # torch.Size([1, 1, 2, 3])
+        example09 = example08.squeeze() # 刪除維度為1的軸
+        print(example09.shape) # torch.Size([2, 3])
 
-        panda_img = []
-        for panda in pandas:
-            temp = Image.open(panda).resize((224, 224))
-            panda_img.append(np.array(temp))
+        example10 = torch.arange(0, 12)
+        print(example10) # tensor([0,1,2,3,4,5,6,7,8,9,10,11])
+        print(example10.resize_(2,6)) # tensor([[0,1,2,3,4,5],[6,7,8,9,10,11]])
+        print(example10.resize_(1,6)) # tensor([0,1,2,3,4,5])
+        print(example10.resize_(3,6)) # tensor([[0,1,2,3,4,5],[6,7,8,9,10,11],[4322,4550,43228,4322,432,432]]) 多出來的張量會給數字
 
-        panda_img = np.array(panda_img)
-        a5 = torch.from_numpy(panda_img)
-        print(a5.shape)
+        # 讀取單一圖檔
+        pandaNP = np.array(Image.open('Example/P36PyTorch/file/data/imgs/panda1.jpg'))
+        pandaTensor = torch.from_numpy(pandaNP)
+        print(pandaTensor.shape) # torch.Size([426, 640, 3])
 
-        b = torch.Tensor([[1, 2, 3], [4, 5, 6]])
-        print(b)
+        # 讀取多個圖檔
+        pandaList = glob.glob("Example/P36PyTorch/file/data/imgs/*.jpg")
+        print(pandaList)
+        pandaNPList = []
+        for panda in pandaList:
+             tempPanda = Image.open(panda).resize((224, 224))
+             pandaNPList.append(np.array(tempPanda))
 
-        print(b.tolist())
+        # 轉成多維向量
+        pandaNPList = np.array(pandaNPList)
+        pandaTensor = torch.from_numpy(pandaNPList)
+        print(pandaTensor.shape) # torch.Size([4, 224, 224, 3])
 
-        print(b.numel())
-
-        print(torch.arange(1, 6, 2))
-
-        print(torch.linspace(1, 10, 3))
-
-        print(torch.randn(2, 3))
-
-        print(torch.randperm(5))
-
-        print(torch.eye(2, 3))
-
-        d1 = torch.arange(0, 6)
-        print(d1.view(2, 3))
-
-        print(d1.view(-1, 3))
-
-        d2 = d1.view(2, 3)
-        d3 = d2.unsqueeze(1)
-        print(d3.shape)
-
-        d5 = torch.arange(0, 6)
-        d6 = d5.view(1, 1, 1, 2, 3)
-        print(d6.shape)
-
-        d7 = d6.squeeze(0)
-        print(d7.shape)
-
-        d8 = d6.squeeze()
-        print(d8.shape)
-
-        f = torch.arange(0, 12)
-        print(f)
-
-        print(f.resize_(2, 6))
-
-        print(f.resize_(1, 6))
-
-        print(f)
-
-        print(f.resize_(3, 6))
-        plt.close()
         return {}, {}
 
     @classmethod
