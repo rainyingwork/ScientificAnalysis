@@ -10,7 +10,7 @@ if __name__ == "__main__":
         basicInfo = {
             "RunType": ["runops"]
             , "Product": ["Example"]
-            , "Project": ["P15PreProcess"]
+            , "Project": ["P30PreProcess"]
         }
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_1"]
@@ -20,8 +20,8 @@ if __name__ == "__main__":
                 , "DataTime" : dateInfo['DataTime']
                 , "MakeDataKeys": ["common_001"]
                 , "MakeDataInfo": [
-                    {"DataType": "Y", "Product": "Example", "Project": "P14RawData", "Version": "R0_0_1", "DTDiff": 0, "ColumnNumbers": [1]}
-                    , {"DataType": "X", "Product": "Example", "Project": "P14RawData", "Version": "R0_0_1", "DTDiff": 0, "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]}
+                    {"DataType": "Y", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0, "ColumnNumbers": [1]}
+                    , {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0, "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]}
                 ]
             }
             , "P0_0_1": {
