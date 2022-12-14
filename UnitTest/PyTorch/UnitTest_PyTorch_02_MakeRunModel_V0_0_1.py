@@ -9,21 +9,13 @@ if __name__ == "__main__":
         , "Project": ["PyTorch"]
     }
     opsInfo = copy.deepcopy(basicInfo)
-    opsInfo["OPSVersion"] = ["V0_5_0"]
+    opsInfo["OPSVersion"] = ["V0_0_1"]
     opsInfo["OPSRecordId"] = [9999]
     opsInfo["OPSOrderJson"] =  {
-        "ExeFunctionArr": ["M0_5_0"]
-        # "ExeFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","UP0_0_1"]
-        # , "RepOPSRecordId": 9999
-        # , "RepFunctionArr": ["R0_0_1","P0_0_1","M0_0_1"]
-        # , "RunFunctionArr": ["UP0_0_1"]
+        "ExeFunctionArr": ['M0_0_1']
         , "OrdFunctionArr": [
         ]
-        , "FunctionMemo": {
-            "M0_5_0" :""
-        }
+        , "FunctionMemo": {}
     }
-    opsInfo["ParameterJson"] = {
-        "M0_5_0": {}
-    }
+    opsInfo["ParameterJson"] = {}
     executeOPSCommon.main(opsInfo)

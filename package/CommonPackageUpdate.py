@@ -32,14 +32,12 @@ __pythonexePath = "{}/venv/{}/python".format(sys.path[1],pythonEXEPath)
 # os.system("{} -m pip install pyspark==3.3.1".format(__pythonexePath))
 # os.system("{} -m pip install py4j==0.10.9.7".format(__pythonexePath))
 # os.system("{} -m pip install tensorflow==2.11.0".format(__pythonexePath))
-
 # os.system("{} -m pip install torch==1.13.0".format(__pythonexePath))
-# os.system("{} -m pip install torchvision==1.14.0".format(__pythonexePath))
+# os.system("{} -m pip install torchvision==0.14.0".format(__pythonexePath))
 # os.system("{} -m pip install torchaudio==1.13.0".format(__pythonexePath))
 # os.system("{} -m pip install pillow==9.3.0".format(__pythonexePath))
 # os.system("{} -m pip install tqdm==4.64.1".format(__pythonexePath))
 # os.system("{} -m pip install gym==0.26.2".format(__pythonexePath))
-
 
 
 

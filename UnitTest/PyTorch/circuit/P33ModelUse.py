@@ -19,7 +19,7 @@ class ModelUse():
         print(a3.shape)
         print(a3)
 
-        panda = np.array(Image.open('UnitTest/PT/file/UnitTest/PT/file/data/imgs/panda1.jpg'))
+        panda = np.array(Image.open('UnitTest/PyTorch/file/data/imgs/panda1.jpg'))
         plt.imshow(panda)
         plt.show()
 
@@ -38,7 +38,7 @@ class ModelUse():
         plt.show()
 
         import glob
-        pandas = glob.glob("UnitTest/PT/file/UnitTest/PT/file/data/imgs/*.jpg")
+        pandas = glob.glob("UnitTest/PyTorch/file/data/imgs/*.jpg")
         print(pandas)
 
         panda_img = []
@@ -96,7 +96,7 @@ class ModelUse():
         print(f)
 
         print(f.resize_(3, 6))
-
+        plt.close()
         return {}, {}
 
     @classmethod
@@ -440,10 +440,10 @@ class ModelUse():
         # plt.legend(frameon=False, fontsize=15)
         # plt.show()
 
-        torch.save(model.state_dict(), "UnitTest/PyTorch/file/result/V0_6_0/9999/M0_6_0/credit_model.pt")
+        torch.save(model.state_dict(), "UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_5/credit_model.pt")
 
         model2 = Classifier(x_test.shape[1])
-        model2.load_state_dict(torch.load("UnitTest/PyTorch/file/result/V0_6_0/9999/M0_6_0/credit_model.pt"))
+        model2.load_state_dict(torch.load("UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_5/credit_model.pt"))
 
         model2.eval()
         test_pred = model2(x_test_t)
@@ -466,7 +466,7 @@ class ModelUse():
 
         torch.manual_seed(10)
 
-        iris_data = pd.read_csv('UnitTest/PT/file/data/iris.csv')
+        iris_data = pd.read_csv('UnitTest/PyTorch/file/data/iris.csv')
         print(iris_data.head())
 
         print(iris_data['Species'].unique())
@@ -545,7 +545,7 @@ class ModelUse():
         torch.save(model.state_dict(), "iris_model.pt")
 
         model2 = Iris_Model()
-        model2.load_state_dict(torch.load("iris_model.pt"))
+        model2.load_state_dict(torch.load("UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_6/iris_model.pt"))
 
         pred = model2(test_x_t)
         _, pred_class = torch.max(pred, dim=1)
@@ -570,8 +570,8 @@ class ModelUse():
             transforms.ToTensor(),
         ])
 
-        train_data = datasets.MNIST('data/', train=True, download=True, transform=transform)
-        test_data = datasets.MNIST('data/', train=False, transform=transform)
+        train_data = datasets.MNIST('UnitTest/PyTorch/file/data/', train=True, download=True, transform=transform)
+        test_data = datasets.MNIST('UnitTest/PyTorch/file/data/', train=False, transform=transform)
 
         train_x = train_data.data
         train_y = train_data.targets
@@ -617,7 +617,7 @@ class ModelUse():
                 op = F.log_softmax(x, dim=1)
                 return op
 
-        device = torch.device('cuda:0')
+        device = torch.device('cpu')
         model = ConvNet().to(device)
 
         myloss = nn.NLLLoss()
@@ -665,10 +665,10 @@ class ModelUse():
                     print('Overall Loss: {:.4f}, Overall Accuracy: {}/{} ({:.2f}%)'.format(
                         num1, success, num2, num3))
 
-        torch.save(model.state_dict(), "data/mnist_model.pt")
+        torch.save(model.state_dict(), "UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_7/mnist_model.pt")
 
         model2 = ConvNet()
-        model2.load_state_dict(torch.load("data/mnist_model.pt"))
+        model2.load_state_dict(torch.load("UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_7/mnist_model.pt"))
         model2 = model2.to(device)
 
         test(model2, device, test_dataloader, myloss)
@@ -698,7 +698,7 @@ class ModelUse():
         import numpy as np
         import pandas as pd
 
-        img = Image.open("data/dog.jpg")
+        img = Image.open("UnitTest/PyTorch/file/data/dog.jpg")
         img.show()
 
         preprocess = transforms.Compose([
@@ -722,7 +722,7 @@ class ModelUse():
         out_class = np.argmax(out_numpy, axis=1)  # 找出最大值的索引
         print(out_class)
 
-        df = pd.read_csv("data/imagenet_classes.csv", header=None)
+        df = pd.read_csv("UnitTest/PyTorch/file/data/imagenet_classes.csv", header=None)
         print(df.head())
 
         label = df.iloc[out_class].values
@@ -773,11 +773,11 @@ class ModelUse():
         ])
 
         train_dataset = datasets.ImageFolder(
-            root="data/bees_ants/train",
+            root="UnitTest/PyTorch/file/data/bees_ants/train",
             transform=train_transforms
         )
         val_dataset = datasets.ImageFolder(
-            root="data/bees_ants/val",
+            root="UnitTest/PyTorch/file/data/bees_ants/val",
             transform=val_transforms
         )
         train_loader = torch.utils.data.DataLoader(
@@ -868,7 +868,7 @@ class ModelUse():
 
         plt.show()
 
-        torch.save(model.state_dict(), "bee.pt")
+        torch.save(model.state_dict(), "UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_9/bee.pt")
 
         return {}, {}
 
@@ -886,7 +886,7 @@ class ModelUse():
         from tqdm import tqdm  # pip install tqdm
 
         import UnitTest.PyTorch.package.cifar10_model as cifar10_model
-        model_file = "cifar10_model.pt"
+        model_file = "UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
         epochs = 50
         end_loss = 0.65
 
@@ -901,7 +901,7 @@ class ModelUse():
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        train_data = datasets.CIFAR10('data/cifar10/train', train=True, download=True, transform=transform)
+        train_data = datasets.CIFAR10('UnitTest/PyTorch/file/data/cifar10/train', train=True, download=True, transform=transform)
         print(train_data.data.shape)
 
         dev_size = 0.2
@@ -992,7 +992,7 @@ class ModelUse():
         from torch.utils.data import DataLoader
 
         import UnitTest.PyTorch.package.cifar10_model as cifar10_model
-        model_file = "cifar10_model.pt"
+        model_file = "UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
 
         transform = transforms.Compose([
             transforms.ToTensor(),
@@ -1001,7 +1001,7 @@ class ModelUse():
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        test_data = datasets.CIFAR10('data/cifar10/test', train=False, download=True, transform=transform)
+        test_data = datasets.CIFAR10('UnitTest/PyTorch/file/data/cifar10/test', train=False, download=True, transform=transform)
 
         batch_size = 100
         test_loader = DataLoader(test_data, batch_size=batch_size)
@@ -1052,7 +1052,7 @@ class ModelUse():
         from tqdm import tqdm
 
         import UnitTest.PyTorch.package.cifar10_resnet as cifar10_model
-        model_file = "cifar10_resnet.pt"
+        model_file = "UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_11/cifar10_resnet.pt"
         epochs = 10
         end_loss = 0.45
 
@@ -1067,7 +1067,7 @@ class ModelUse():
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        train_data = datasets.CIFAR10('data/cifar10/train', train=True, download=True, transform=transform)
+        train_data = datasets.CIFAR10('UnitTest/PyTorch/file/data/cifar10/train', train=True, download=True, transform=transform)
         print(train_data.data.shape)
 
         dev_size = 0.2
@@ -1150,7 +1150,7 @@ class ModelUse():
         return {}, {}
 
     @classmethod
-    def M0_0_11Tset(self, functionInfo):
+    def M0_0_11Test(self, functionInfo):
         import torch
         from torch import nn
         from torchvision import datasets
@@ -1158,7 +1158,7 @@ class ModelUse():
         from torch.utils.data import DataLoader
 
         import UnitTest.PyTorch.package.cifar10_resnet as cifar10_model
-        model_file = "cifar10_resnet.pt"
+        model_file = "UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_11/cifar10_resnet.pt"
 
         transform = transforms.Compose([
             transforms.ToTensor(),
@@ -1167,7 +1167,7 @@ class ModelUse():
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        test_data = datasets.CIFAR10('data/cifar10/test', train=False, download=True, transform=transform)
+        test_data = datasets.CIFAR10('UnitTest/PyTorch/file/data/cifar10/test', train=False, download=True, transform=transform)
 
         batch_size = 100
         test_loader = DataLoader(test_data, batch_size=batch_size)
@@ -1214,7 +1214,7 @@ class ModelUse():
 
         torch.manual_seed(10)
 
-        df = pd.read_csv('data/Sales_Transactions_dataset_weekly.csv')
+        df = pd.read_csv('UnitTest/PyTorch/file/data/Sales_Transactions_dataset_weekly.csv')
         df.head()
 
         df = df.iloc[:, 1:53]
@@ -1314,19 +1314,19 @@ class ModelUse():
             review_list = []
             label_list = []
             for label in ['pos', 'neg']:
-                for fname in tqdm(os.listdir(f"data/aclImdb/train/{label}/")):
+                for fname in tqdm(os.listdir(f"UnitTest/PyTorch/file/data/aclImdb/train/{label}/")):
                     if 'txt' not in fname:
                         continue
-                    with open(os.path.join(f"data/aclImdb/train/{label}/", fname), encoding="utf-8") as f:
+                    with open(os.path.join(f"UnitTest/PyTorch/file/data/aclImdb/train/{label}/", fname), encoding="utf-8") as f:
                         review_list += [f.read()]
                         label_list += [label]
 
             # 使用 pickle 儲存
             mydict = {'review': review_list, 'label': label_list}
-            with open('data/imdb.pt', 'wb') as f:
+            with open('UnitTest/PyTorch/file/data/imdb.pt', 'wb') as f:
                 pickle.dump(mydict, f)
 
-        with open('data/imdb.pt', 'rb') as f:
+        with open('UnitTest/PyTorch/file/data/imdb.pt', 'rb') as f:
             new_dict = pickle.load(f)
         review_list = new_dict["review"]
         label_list = new_dict["label"]
@@ -1746,7 +1746,7 @@ class ModelUse():
 
         epochs = 3000
         for epoch in range(epochs):
-            state = env.reset()
+            state = env.reset()[0]
             score = 0
 
             for step in range(50):
@@ -1755,8 +1755,10 @@ class ModelUse():
                 else:
                     action = env.action_space.sample()
 
-                new_state, reward, done, info = env.step(action)
-                # print(new_state,reward)
+                # new_state, reward, done, info = env.step(action)
+                new_state, reward, terminated, truncated, info = env.step(action)
+                done = terminated or truncated
+
                 max_value = reward + gamma * np.max(qtable[new_state, :])
                 qtable[state, action] += alpha * (max_value - qtable[state, action])
                 state = new_state
@@ -1785,7 +1787,7 @@ class ModelUse():
         # !pip install pygame
         states = []
 
-        state = env.reset()
+        state = env.reset()[0]
         env.render()
         states.append(state)
 
@@ -1793,13 +1795,14 @@ class ModelUse():
         done = False
         # 最多執行50步
         for step in range(50):
-
             # 取得最佳動作
             action = np.argmax(qtable[state, :])
             # print("action:",action)
 
             # 執行動作
-            new_state, reward, done, info = env.step(action)
+            new_state, reward, terminated, truncated, info = env.step(action)
+            done = terminated or truncated
+
             state = new_state
             states.append(state)
             env.render()
@@ -1866,7 +1869,7 @@ class ModelUse():
         tot_score = 0
         scores = []
         for epoch in range(epochs + 1):
-            observation = env.reset()  # get car_pos, car_v
+            observation = env.reset()[0]  # get car_pos, car_v
             state = digitize_state(observation)  # get state
             score = 0
 
@@ -1879,7 +1882,8 @@ class ModelUse():
                     action = env.action_space.sample()
                     # action=np.random.choice(n_action)
 
-                new_observation, reward, done, info = env.step(action)
+                new_observation, reward, terminated, truncated, info = env.step(action)
+                done = terminated or truncated
                 new_state = digitize_state(new_observation)  # get new state
                 # print(new_state)
 
@@ -1934,7 +1938,7 @@ class ModelUse():
 
         states = []
 
-        observation = env.reset()
+        observation = env.reset()[0]
         state = digitize_state(observation)
 
         env.render()
@@ -1949,7 +1953,8 @@ class ModelUse():
             action = np.argmax(qtable[state, :])
 
             # 執行動作
-            new_observation, reward, done, info = env.step(action)
+            new_observation, reward, terminated, truncated, info = env.step(action)
+            done = terminated or truncated
             new_state = digitize_state(new_observation)
 
             observation = new_observation
@@ -1986,12 +1991,12 @@ class ModelUse():
 
         env = gym.make('CartPole-v1')
 
-        env.reset()
+        env.reset()[0]
         n_state = env.observation_space.shape[0]
         n_action = env.action_space.n
         print(n_state, n_action)
 
-        state = env.reset()
+        state = env.reset()[0]
         print(state)
         state_size = env.observation_space.shape[0]
         # state = np.reshape(state, [1, state_size])
@@ -2107,13 +2112,14 @@ class ModelUse():
         eps = eps_start
 
         for epoch in range(1, epochs + 1):
-            state = env.reset()
+            state = env.reset()[0]
             state_size = env.observation_space.shape[0]
 
             score = 0
             for i in range(max_t):
                 action = agent.act(state, eps)
-                next_state, reward, done, _ = env.step(action)
+                next_state, reward, terminated, truncated, _ = env.step(action)
+                done = terminated or truncated
 
                 reward = reward if not done or score == 499 else -10
                 agent.step(state, action, next_state, reward, done)
@@ -2138,11 +2144,13 @@ class ModelUse():
 
         def play_game():
             done = False
-            state = env.reset()
+            state = env.reset()[0]
             epoch = 0
             while (not done):
                 action = agent.act(state)
-                next_state, reward, done, _ = env.step(action)
+                next_state, reward, terminated, truncated, _ = env.step(action)
+                done = terminated or truncated
+
                 env.render()
                 state = next_state
                 epoch += 1
@@ -2263,7 +2271,7 @@ class ModelUse():
         print("模型訓練完成！")
 
         # 模型儲存位置
-        pytorchModelFilePath = "UnitTest/PyTorch/file/result/V0_0_1/9999/M0_0_1/Model.pth"
+        pytorchModelFilePath = "UnitTest/PyTorch/file/result/V1_0_1/9999/M1_0_1/Model.pth"
 
         # 儲存模型參數
         torch.save(model.state_dict(), pytorchModelFilePath)

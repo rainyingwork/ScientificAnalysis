@@ -2,7 +2,7 @@ import os
 # ==================================================      ==================================================
 import warnings ; warnings.filterwarnings('ignore')
 # ==================================================      ==================================================
-import matplotlib ; matplotlib.use('TkAgg')
+import matplotlib ; matplotlib.use('Agg')
 # ==================================================      ==================================================
 import threading
 from package.common.osbasic.ThredingCtrl import ThredingCtrl
