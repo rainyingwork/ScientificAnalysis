@@ -40,6 +40,7 @@ __pythonexePath = "{}/venv/{}/python".format(sys.path[1],pythonEXEPath)
 # os.system("{} -m pip install gym==0.26.2".format(__pythonexePath))
 
 
+os.system("{} -m pip install --upgrade pycaret".format(__pythonexePath))
 
 # import git
 # import errno

@@ -16,9 +16,9 @@ if __name__ == "__main__":
         opsInfo["OPSVersion"] = ["V0_0_1"]
         opsInfo["OPSOrderJson"] = {
             "ExeFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2","M0_0_2"]
-            , "RepOPSRecordId": 1098
-            , "RepFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2"]
-            , "RunFunctionArr": ["M0_0_2"]
+            # , "RepOPSRecordId": 1098
+            # , "RepFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2"]
+            # , "RunFunctionArr": ["M0_0_2"]
             , "OrdFunctionArr": [
                 {"Parent": "R0_0_1", "Child": "P0_0_1"}
                 , {"Parent": "P0_0_1", "Child": "M0_0_1"}
@@ -39,8 +39,8 @@ if __name__ == "__main__":
                 , "MakeMaxColumnCount": 30
                 , "MakeDataKeys": ["common_001"]
                 , "MakeDataInfo": [
-                    {"DataType": "Y", "Product": "Example", "Project": "P14RawData", "Version": "R0_0_1", "DTDiff": 0, "ColumnNumbers": [1]}
-                    , {"DataType": "X", "Product": "Example", "Project": "P14RawData", "Version": "R0_0_1", "DTDiff": 0, "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]}
+                    {"DataType": "Y", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0, "ColumnNumbers": [1]}
+                    , {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0, "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]}
                 ]
             }
             , "P0_0_1": {
