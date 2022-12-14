@@ -5,7 +5,7 @@ import OPSCommon_local as executeOPSCommon
 if __name__ == "__main__":
     basicInfo = {
         "RunType": ["runops"]
-        , "Product": ["UnitTest"]
+        , "Product": ["Example"]
         , "Project": ["P36PyTorch"]
     }
     opsInfo = copy.deepcopy(basicInfo)

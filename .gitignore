@@ -9,6 +9,8 @@ env
 *.pyc
 logs.log
 catboost_info
+venv
+venvpypy
 # 暫不上傳
 UnitTestLocal/*
 Example/P35NetworkX
