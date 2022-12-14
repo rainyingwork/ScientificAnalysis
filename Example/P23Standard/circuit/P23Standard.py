@@ -17,5 +17,5 @@ class Standard () :
             ,'double_009','double_010','double_011'
             ,'integer_005'
         ]
-        StandardFunction.insertOverwriteStandardData("Example","P13Standard","S0_0_1","20220101",insertDataDF)
+        StandardFunction.insertOverwriteStandardData("Example","P23Standard","S0_0_1","20220101",insertDataDF)
         return {"result": "OK"} , {}

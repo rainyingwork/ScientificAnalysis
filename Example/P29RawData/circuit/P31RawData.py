@@ -254,7 +254,7 @@ class RawData() :
         FROM observationdata.standarddata AA 
         WHERE 1 = 1 
             AND AA.product = 'Example'
-            AND AA.project = 'P13Standard'
+            AND AA.project = 'P23Standard'
             AND AA.tablename = 'S0_0_1'
             AND AA.dt = '[:DateNoLine]' ; 
         """
