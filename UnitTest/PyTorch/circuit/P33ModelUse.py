@@ -1,8 +1,145 @@
-
-class ModelUse() :
+class ModelUse():
 
     @classmethod
-    def M0_4_0(self, functionInfo):
+    def M0_0_1(self, functionInfo):
+        import torch
+        from PIL import Image
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        a1 = torch.tensor(1, dtype=torch.int16)
+        print(a1.shape)
+        print(a1)
+
+        a2 = torch.Tensor([1, 2, 3, 4, 5])
+        print(a2.shape)
+        print(a2)
+
+        a3 = torch.Tensor([[1, 2, 3], [4, 5, 6]])
+        print(a3.shape)
+        print(a3)
+
+        panda = np.array(Image.open('UnitTest/PT/file/UnitTest/PT/file/data/imgs/panda1.jpg'))
+        plt.imshow(panda)
+        plt.show()
+
+        a4 = torch.from_numpy(panda)
+        print(a4.shape)
+
+        a2 = torch.Tensor([1, 2, 3, 4, 5])
+        print(a2[:3])
+
+        print(a2[:-1])
+
+        plt.imshow(a4[:, :, 0].numpy())
+        plt.show()
+
+        plt.imshow(a4[0:300, 100:500, 0].numpy())
+        plt.show()
+
+        import glob
+        pandas = glob.glob("UnitTest/PT/file/UnitTest/PT/file/data/imgs/*.jpg")
+        print(pandas)
+
+        panda_img = []
+        for panda in pandas:
+            temp = Image.open(panda).resize((224, 224))
+            panda_img.append(np.array(temp))
+
+        panda_img = np.array(panda_img)
+        a5 = torch.from_numpy(panda_img)
+        print(a5.shape)
+
+        b = torch.Tensor([[1, 2, 3], [4, 5, 6]])
+        print(b)
+
+        print(b.tolist())
+
+        print(b.numel())
+
+        print(torch.arange(1, 6, 2))
+
+        print(torch.linspace(1, 10, 3))
+
+        print(torch.randn(2, 3))
+
+        print(torch.randperm(5))
+
+        print(torch.eye(2, 3))
+
+        d1 = torch.arange(0, 6)
+        print(d1.view(2, 3))
+
+        print(d1.view(-1, 3))
+
+        d2 = d1.view(2, 3)
+        d3 = d2.unsqueeze(1)
+        print(d3.shape)
+
+        d5 = torch.arange(0, 6)
+        d6 = d5.view(1, 1, 1, 2, 3)
+        print(d6.shape)
+
+        d7 = d6.squeeze(0)
+        print(d7.shape)
+
+        d8 = d6.squeeze()
+        print(d8.shape)
+
+        f = torch.arange(0, 12)
+        print(f)
+
+        print(f.resize_(2, 6))
+
+        print(f.resize_(1, 6))
+
+        print(f)
+
+        print(f.resize_(3, 6))
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_2(self, functionInfo):
+        import torch
+        import matplotlib.pyplot as plt
+
+        torch.manual_seed(0)
+
+        w = torch.tensor([1, 3, 5]).float()
+
+        X = torch.cat([torch.ones(100, 1), torch.randn(100, 2)], dim=1)  # X=[1, x1, x2]
+        y = torch.mv(X, w) + torch.randn(100) * 0.3
+        print(X.shape, y.shape)
+
+        w_pred = torch.randn(3, requires_grad=True)
+        lr = 0.01
+
+        losses = []
+        epochs = 200
+        for epoch in range(epochs + 1):
+            w_pred.grad = None  # 清除上一次計算的梯度值
+            y_pred = torch.mv(X, w_pred)
+            loss = torch.mean((y - y_pred) ** 2)  # 計算MSE
+            loss.backward()
+
+            w_pred.data = w_pred.data - lr * w_pred.grad.data  # 梯度更新
+            losses.append(loss.item())  # 記錄loss值
+
+            if (epoch) % 50 == 0:
+                print(f"epoch:{epoch}, Loss: {loss.item():.3f}")
+
+        # plt.plot(losses)
+        # plt.xlabel("epoch")
+        # plt.ylabel("losses")
+        # plt.show()
+
+        print(w_pred.data)
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_3(self, functionInfo):
         import torch
         import torch.nn as nn
         import torch.optim as optim
@@ -44,7 +181,7 @@ class ModelUse() :
         return {}, {}
 
     @classmethod
-    def M0_5_0(self, functionInfo):
+    def M0_0_4(self, functionInfo):
         import pandas as pd
         from sklearn.model_selection import train_test_split
         import torch
@@ -157,7 +294,7 @@ class ModelUse() :
         return {}, {}
 
     @classmethod
-    def M0_6_0(self, functionInfo):
+    def M0_0_5(self, functionInfo):
         import numpy as np
         import pandas as pd
         import matplotlib.pyplot as plt
@@ -317,6 +454,1704 @@ class ModelUse() :
 
         return {}, {}
 
+    @classmethod
+    def M0_0_6(self, functionInfo):
+        import torch
+        import torch.nn as nn
+        from torch.utils.data import Dataset, DataLoader
+        from sklearn.preprocessing import LabelEncoder
+        from sklearn.model_selection import train_test_split
+        import pandas as pd
+        import numpy as np
+
+        torch.manual_seed(10)
+
+        iris_data = pd.read_csv('UnitTest/PT/file/data/iris.csv')
+        print(iris_data.head())
+
+        print(iris_data['Species'].unique())
+
+        labelencoder = LabelEncoder()
+        iris_data['Species'] = labelencoder.fit_transform(iris_data['Species'])
+        print(iris_data['Species'].unique())
+
+        iris_x = iris_data[['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm']]
+        iris_y = iris_data['Species']
+        print(iris_x.shape, iris_y.shape)
+
+        iris_x = (iris_x - iris_x.min()) / (iris_x.max() - iris_x.min())
+        print(iris_x.head())
+
+        train_x, test_x, train_y, test_y = train_test_split(iris_x, iris_y, test_size=0.15, random_state=10)
+        print(train_x.shape, test_x.shape)
+
+        train_x_t = torch.tensor(train_x.values).float()
+        train_y_t = torch.tensor(train_y.values).long().unsqueeze(1)
+        test_x_t = torch.tensor(test_x.values).float()
+        test_y_t = torch.tensor(test_y.values).long().unsqueeze(1)
+
+        print(train_x_t.shape, train_y_t.shape)
+
+        class dataset(Dataset):
+            def __init__(self, x, y):
+                self.x = x
+                self.y = y
+                self.n_sample = len(x)
+
+            def __getitem__(self, index):
+                return self.x[index], self.y[index]
+
+            def __len__(self):
+                return self.n_sample
+
+        train_ds = dataset(train_x_t, train_y_t)
+
+        train_loader = DataLoader(dataset=train_ds, batch_size=20, shuffle=True)
+
+        class Iris_Model(nn.Module):
+            def __init__(self):
+                super(Iris_Model, self).__init__()
+                self.net = nn.Sequential(
+                    nn.Linear(train_x.shape[1], 100),
+                    nn.ReLU(),
+                    nn.Linear(100, 100),
+                    nn.ReLU(),
+                    nn.Linear(100, 100),
+                    nn.ReLU(),
+                    nn.Linear(100, 3)
+                )
+
+            def forward(self, x):
+                return self.net(x)
+
+        model = Iris_Model()
+
+        criterion = nn.CrossEntropyLoss()
+        optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+
+        epochs = 200
+        for i in range(epochs + 1):
+            # model.train()
+            for samples, labels in train_loader:
+                pre = model(samples)
+                labels = labels.view(-1)
+                loss = criterion(pre, labels)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+            if i % 50 == 0:
+                print(f"epch={i:3d}, loss={loss:.3f}")
+
+        torch.save(model.state_dict(), "iris_model.pt")
+
+        model2 = Iris_Model()
+        model2.load_state_dict(torch.load("iris_model.pt"))
+
+        pred = model2(test_x_t)
+        _, pred_class = torch.max(pred, dim=1)
+        n_correct = (test_y_t.view(-1) == pred_class).sum()
+        print(f"valid_acc={n_correct / len(test_x_t):.4f}")
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_7(self, functionInfo):
+        import torch
+        import torch.nn as nn
+        import torch.nn.functional as F
+        import torch.optim as optim
+        from torch.utils.data import DataLoader
+        from torchvision import datasets, transforms
+        import matplotlib.pyplot as plt
+
+        torch.manual_seed(0)
+
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+        ])
+
+        train_data = datasets.MNIST('data/', train=True, download=True, transform=transform)
+        test_data = datasets.MNIST('data/', train=False, transform=transform)
+
+        train_x = train_data.data
+        train_y = train_data.targets
+        test_x = test_data.data
+        test_y = test_data.targets
+        print(train_x.shape, train_y.shape, test_x.shape, test_y.shape)
+
+        img, label = train_data[0]
+        print(img.shape)  # shape:(C,H,W)
+
+        print(img.min(), img.max())
+
+        img2 = img.permute(1, 2, 0)  # shape:(H,W,C)
+        plt.imshow(img2, cmap='gray')
+
+        print(label)
+
+        train_dataloader = DataLoader(train_data, batch_size=32, shuffle=True)
+        test_dataloader = DataLoader(test_data, batch_size=500, shuffle=False)
+
+        class ConvNet(nn.Module):
+            def __init__(self):
+                super(ConvNet, self).__init__()
+                self.cn1 = nn.Conv2d(1, 16, 3, 1)
+                self.cn2 = nn.Conv2d(16, 32, 3, 1)
+                self.dp1 = nn.Dropout(0.10)
+                self.dp2 = nn.Dropout(0.25)
+                self.fc1 = nn.Linear(12 * 12 * 32, 64)
+                self.fc2 = nn.Linear(64, 10)
+
+            def forward(self, x):
+                x = self.cn1(x)
+                x = F.relu(x)
+                x = self.cn2(x)
+                x = F.relu(x)
+                x = F.max_pool2d(x, 2)
+                x = torch.flatten(x, 1)
+                x = self.fc1(x)
+                x = self.dp1(x)
+                x = F.relu(x)
+                x = self.fc2(x)
+                x = self.dp2(x)
+                op = F.log_softmax(x, dim=1)
+                return op
+
+        device = torch.device('cuda:0')
+        model = ConvNet().to(device)
+
+        myloss = nn.NLLLoss()
+        myoptim = optim.Adadelta(model.parameters(), lr=0.5)
+
+        def train(model, device, train_dataloader, myloss, myoptim, epoch):
+            model.train()
+
+            for b_i, (X, y) in enumerate(train_dataloader):
+                X, y = X.to(device), y.to(device)
+                pred_prob = model(X)
+                loss = myloss(pred_prob, y)
+
+                myoptim.zero_grad()
+                loss.backward()
+                myoptim.step()
+
+                if b_i % 200 == 0:
+                    num1 = b_i * len(X)
+                    num2 = len(train_dataloader.dataset)
+                    num3 = 100 * b_i / len(train_dataloader)
+                    print('epoch:{} [{}/{} ({:.0f}%)]\t training loss: {:.6f}'.format(
+                        epoch, num1, num2, num3, loss.item()))
+
+        epochs = 3
+        for epoch in range(epochs):
+            train(model, device, train_dataloader, myloss, myoptim, epoch)
+
+        def test(model, device, test_dataloader, myloss):
+            model.eval()
+            loss = 0
+            success = 0
+            with torch.no_grad():
+                for X, y in test_dataloader:
+                    X, y = X.to(device), y.to(device)
+                    pred_prob = model(X)
+                    loss += myloss(pred_prob, y).item()
+
+                    pred = pred_prob.argmax(dim=1, keepdim=True)
+                    success += pred.eq(y.view_as(pred)).sum().item()
+
+                    num1 = loss / len(test_dataloader)
+                    num2 = len(test_dataloader.dataset)
+                    num3 = 100 * success / len(test_dataloader.dataset)
+                    print('Overall Loss: {:.4f}, Overall Accuracy: {}/{} ({:.2f}%)'.format(
+                        num1, success, num2, num3))
+
+        torch.save(model.state_dict(), "data/mnist_model.pt")
+
+        model2 = ConvNet()
+        model2.load_state_dict(torch.load("data/mnist_model.pt"))
+        model2 = model2.to(device)
+
+        test(model2, device, test_dataloader, myloss)
+
+        model2 = model2.to("cpu")
+        sample_data, sample_targets = next(iter(test_dataloader))
+        print(sample_data.shape)
+
+        print(sample_data[10].shape)
+
+        plt.imshow(sample_data[10][0], cmap='gray')
+
+        pred_label = model2(sample_data).max(dim=1)[1][10]
+        print(pred_label)
+
+        print(f"Model prediction is : {pred_label}")
+        print(f"Ground truth is : {sample_targets[10]}")
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_8(self, functionInfo):
+        from PIL import Image
+        import torch
+        from torchvision import transforms
+        from torchvision import models
+        import numpy as np
+        import pandas as pd
+
+        img = Image.open("data/dog.jpg")
+        img.show()
+
+        preprocess = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(244),
+            transforms.ToTensor()
+        ])
+
+        img2 = preprocess(img)
+        print(img2.shape)
+
+        img3 = torch.unsqueeze(img2, 0)
+        print(img3.shape)
+
+        resnet = models.resnet18(weights='ResNet18_Weights.DEFAULT')
+
+        resnet.eval()
+        out = resnet(img3)
+
+        out_numpy = out.detach().numpy()  # 轉為NumPy
+        out_class = np.argmax(out_numpy, axis=1)  # 找出最大值的索引
+        print(out_class)
+
+        df = pd.read_csv("data/imagenet_classes.csv", header=None)
+        print(df.head())
+
+        label = df.iloc[out_class].values
+        print(label)
+
+        score = torch.nn.functional.softmax(out, dim=1)[0] * 100
+        print(score.shape)
+
+        print(f"score:{score[out_class].item():.2f}")
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_9(self, functionInfo):
+
+        import torch
+        import torch.nn as nn
+        import torch.optim as optim
+        import numpy as np
+        import random
+        import torchvision
+        from torchvision import datasets, models
+        from torchvision import transforms
+        import matplotlib.pyplot as plt
+
+        torch.manual_seed(1234)
+        np.random.seed(1234)
+        random.seed(1234)
+
+        train_transforms = transforms.Compose([
+            transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                [0.485, 0.456, 0.406],
+                [0.229, 0.224, 0.225]
+            )
+        ])
+
+        val_transforms = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                [0.485, 0.456, 0.406],
+                [0.229, 0.224, 0.225]
+            )
+        ])
+
+        train_dataset = datasets.ImageFolder(
+            root="data/bees_ants/train",
+            transform=train_transforms
+        )
+        val_dataset = datasets.ImageFolder(
+            root="data/bees_ants/val",
+            transform=val_transforms
+        )
+        train_loader = torch.utils.data.DataLoader(
+            train_dataset,
+            batch_size=4,
+            shuffle=True,
+            num_workers=4
+        )
+        val_loader = torch.utils.data.DataLoader(
+            val_dataset,
+            batch_size=4,
+            shuffle=True,
+            num_workers=4
+        )
+        model = models.resnet18(weights='ResNet18_Weights.DEFAULT')
+        print(model.fc)
+        model.fc = nn.Linear(model.fc.in_features, 2)
+        print(model.fc)
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        model = model.to(device)
+        print(device)
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+        from torch.optim.lr_scheduler import StepLR
+        exp_lr_scheduler = StepLR(optimizer, step_size=7, gamma=0.1)
+
+        epochs = 21
+        for epoch in range(epochs):
+            model.train()
+            losses = 0.0
+            corrects = 0
+            for inputs, labels in train_loader:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+                optimizer.zero_grad()
+                outputs = model(inputs)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+
+                _, preds = torch.max(outputs, 1)
+                losses += loss.item() / inputs.size(0)
+                corrects += torch.sum(preds == labels.data) / inputs.size(0)
+
+            exp_lr_scheduler.step()
+            train_loss = losses / len(train_loader)
+            train_acc = corrects / len(train_loader)
+
+            model.eval()
+            losses = 0.0
+            corrects = 0
+            for inputs, labels in val_loader:
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+                outputs = model(inputs)
+                loss = criterion(outputs, labels)
+                _, preds = torch.max(outputs, 1)
+                losses += loss.item() / inputs.size(0)
+                corrects += torch.sum(preds == labels.data) / inputs.size(0)
+
+            val_loss = losses / len(val_loader)
+            val_acc = corrects.double() / len(val_loader)
+
+            print(f"epoch: {epoch}, Train loss: {train_loss:.4f}, acc:{train_acc:.4f}, \
+            Val loss: {val_loss:.4f}, acc:{val_acc:.4f}")
+
+        inputs, classes = next(iter(val_loader))  # 取得一批圖像
+        class_name = val_dataset.classes
+
+        outputs = model(inputs.to(device))  # 預測輸出
+        _, preds = torch.max(outputs, 1)
+        title = [class_name[x] for x in preds]
+        print(inputs.shape)
+        print(title)
+
+        import matplotlib.pyplot as plt
+
+        out = torchvision.utils.make_grid(inputs)  # 顯示圖像
+        out = out.numpy().transpose((1, 2, 0))
+        mean = np.array([0.485, 0.456, 0.406])
+        std = np.array([0.229, 0.224, 0.225])
+        out = std * out + mean
+        out = np.clip(out, 0, 1)
+
+        plt.imshow(out)
+        if title is not None:
+            plt.title(title)
+
+        plt.show()
+
+        torch.save(model.state_dict(), "bee.pt")
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_10Train(self, functionInfo):
+        import numpy as np
+        import random
+        import torch
+        from torch import nn, optim
+        from torchvision import datasets
+        import torchvision.transforms as transforms
+        from torch.utils.data.sampler import SubsetRandomSampler
+        from torch.utils.data import DataLoader
+        import matplotlib.pyplot as plt
+        from tqdm import tqdm  # pip install tqdm
+
+        import UnitTest.PyTorch.package.cifar10_model as cifar10_model
+        model_file = "cifar10_model.pt"
+        epochs = 50
+        end_loss = 0.65
+
+        torch.manual_seed(10)
+        np.random.seed(10)
+        random.seed(10)
+
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=(0.4914, 0.4822, 0.4465),
+                std=(0.2470, 0.2435, 0.2616))
+        ])
+
+        train_data = datasets.CIFAR10('data/cifar10/train', train=True, download=True, transform=transform)
+        print(train_data.data.shape)
+
+        dev_size = 0.2
+        idx = list(range(len(train_data)))
+        np.random.shuffle(idx)
+        split_size = int(np.floor(dev_size * len(train_data)))
+        train_idx, dev_idx = idx[split_size:], idx[:split_size]
+        train_sampler = SubsetRandomSampler(train_idx)
+        dev_sampler = SubsetRandomSampler(dev_idx)
+
+        batch_size = 100
+        train_loader = DataLoader(train_data, batch_size=batch_size, sampler=train_sampler)
+        dev_loader = DataLoader(train_data, batch_size=batch_size, sampler=dev_sampler)
+        print(len(train_loader), len(dev_loader))
+
+        data_batch, label_batch = next(iter(train_loader))
+        print(data_batch.size(), label_batch.size())
+
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"deivce:{device}")
+
+        model = cifar10_model.CNN().to(device)
+
+        loss_function = nn.NLLLoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+        train_losses = []
+        dev_losses = []
+        x_axis = []
+        for epoch in range(epochs + 1):
+            train_loss = 0
+            # 訓練資料
+            model.train()
+            for data, target in tqdm(train_loader):
+                data = data.to(device)
+                target = target.to(device)
+
+                pred = model(data)
+                loss = loss_function(pred, target)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                train_loss += loss.item()
+
+            train_loss = train_loss / len(train_loader)
+
+            x_axis.append(epoch)
+            with torch.no_grad():
+                dev_loss = 0
+                # 驗證資料
+                model.eval()
+                for data_dev, target_dev in tqdm(dev_loader):
+                    data_dev = data_dev.to(device)
+                    target_dev = target_dev.to(device)
+
+                    dev_pred = model(data_dev)
+                    loss2 = loss_function(dev_pred, target_dev)
+                    dev_loss += loss2.item()
+
+                dev_loss = dev_loss / len(dev_loader)
+
+            train_losses.append(train_loss)
+            dev_losses.append(dev_loss)
+
+            print(f"epoch: {epoch}, Train_loss: {train_loss:.3f}, Valid_loss: {dev_loss:.3f}")
+
+            if train_loss < end_loss:
+                break
+
+        plt.plot(x_axis, train_losses, label="training loss")
+        plt.plot(x_axis, dev_losses, label="validation loss")
+        plt.legend(frameon=False)
+        plt.xlabel('epoch')
+        plt.ylabel('losses')
+        plt.show()
+
+        model = model.to("cpu")
+        torch.save(model.state_dict(), model_file)
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_10Test(self, functionInfo):
+        import torch
+        from torch import nn
+        from torchvision import datasets
+        import torchvision.transforms as transforms
+        from torch.utils.data import DataLoader
+
+        import UnitTest.PyTorch.package.cifar10_model as cifar10_model
+        model_file = "cifar10_model.pt"
+
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=(0.4914, 0.4822, 0.4465),
+                std=(0.2470, 0.2435, 0.2616))
+        ])
+
+        test_data = datasets.CIFAR10('data/cifar10/test', train=False, download=True, transform=transform)
+
+        batch_size = 100
+        test_loader = DataLoader(test_data, batch_size=batch_size)
+        print(len(test_loader))
+
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"deivce:{device}")
+
+        model = cifar10_model.CNN()
+        model.load_state_dict(torch.load(model_file))
+        # print(model)
+
+        model = model.to(device)
+
+        loss_function = nn.NLLLoss()
+
+        num_correct = 0.0
+        test_loss = 0
+        # 測試資料
+        model.eval()
+        for data_test, target_test in test_loader:
+            data_test = data_test.to(device)
+            target_test = target_test.to(device)
+
+            test_pred = model(data_test)
+            loss3 = loss_function(test_pred, target_test)
+            test_loss += loss3.item()
+            _, predicted = torch.max(test_pred, 1)
+            num_correct += (predicted == target_test).float().sum()
+
+        test_loss = test_loss / len(test_loader)
+        num_correct = num_correct / (len(test_loader) * batch_size)
+        print(f"test_loss: {test_loss:.3f}, correct: {num_correct:.3f}")
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_11Train(self, functionInfo):
+        import numpy as np
+        import random
+        import torch
+        from torch import nn, optim
+        from torchvision import datasets
+        import torchvision.transforms as transforms
+        from torch.utils.data.sampler import SubsetRandomSampler
+        from torch.utils.data import DataLoader
+        import matplotlib.pyplot as plt
+        from tqdm import tqdm
+
+        import UnitTest.PyTorch.package.cifar10_resnet as cifar10_model
+        model_file = "cifar10_resnet.pt"
+        epochs = 10
+        end_loss = 0.45
+
+        torch.manual_seed(10)
+        np.random.seed(10)
+        random.seed(10)
+
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=(0.4914, 0.4822, 0.4465),
+                std=(0.2470, 0.2435, 0.2616))
+        ])
+
+        train_data = datasets.CIFAR10('data/cifar10/train', train=True, download=True, transform=transform)
+        print(train_data.data.shape)
+
+        dev_size = 0.2
+        idx = list(range(len(train_data)))
+        np.random.shuffle(idx)
+        split_size = int(np.floor(dev_size * len(train_data)))
+        train_idx, dev_idx = idx[split_size:], idx[:split_size]
+        train_sampler = SubsetRandomSampler(train_idx)
+        dev_sampler = SubsetRandomSampler(dev_idx)
+
+        batch_size = 100
+        train_loader = DataLoader(train_data, batch_size=batch_size, sampler=train_sampler)
+        dev_loader = DataLoader(train_data, batch_size=batch_size, sampler=dev_sampler)
+        print(len(train_loader), len(dev_loader))
+
+        data_batch, label_batch = next(iter(train_loader))
+        print(data_batch.size(), label_batch.size())
+
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"deivce:{device}")
+
+        model = cifar10_model.CNN().to(device)
+
+        loss_function = nn.NLLLoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+        train_losses = []
+        dev_losses = []
+        x_axis = []
+        for epoch in range(epochs + 1):
+            train_loss = 0
+            # 訓練資料
+            model.train()
+            for data, target in tqdm(train_loader):
+                data = data.to(device)
+                target = target.to(device)
+
+                pred = model(data)
+                loss = loss_function(pred, target)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                train_loss += loss.item()
+
+            train_loss = train_loss / len(train_loader)
+
+            x_axis.append(epoch)
+            with torch.no_grad():
+                dev_loss = 0
+                # 驗證資料
+                model.eval()
+                for data_dev, target_dev in tqdm(dev_loader):
+                    data_dev = data_dev.to(device)
+                    target_dev = target_dev.to(device)
+
+                    dev_pred = model(data_dev)
+                    loss2 = loss_function(dev_pred, target_dev)
+                    dev_loss += loss2.item()
+
+                dev_loss = dev_loss / len(dev_loader)
+
+            train_losses.append(train_loss)
+            dev_losses.append(dev_loss)
+
+            print(f"epoch: {epoch}, Train_loss: {train_loss:.3f}, Valid_loss: {dev_loss:.3f}")
+
+            if train_loss < end_loss:
+                break
+
+        plt.plot(x_axis, train_losses, label="training loss")
+        plt.plot(x_axis, dev_losses, label="validation loss")
+        plt.legend(frameon=False)
+        plt.xlabel('epoch')
+        plt.ylabel('losses')
+        plt.show()
+
+        model = model.to("cpu")
+        torch.save(model.state_dict(), model_file)
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_11Tset(self, functionInfo):
+        import torch
+        from torch import nn
+        from torchvision import datasets
+        import torchvision.transforms as transforms
+        from torch.utils.data import DataLoader
+
+        import UnitTest.PyTorch.package.cifar10_resnet as cifar10_model
+        model_file = "cifar10_resnet.pt"
+
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=(0.4914, 0.4822, 0.4465),
+                std=(0.2470, 0.2435, 0.2616))
+        ])
+
+        test_data = datasets.CIFAR10('data/cifar10/test', train=False, download=True, transform=transform)
+
+        batch_size = 100
+        test_loader = DataLoader(test_data, batch_size=batch_size)
+        print(len(test_loader))
+
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"deivce:{device}")
+
+        model = cifar10_model.CNN()
+        model.load_state_dict(torch.load(model_file))
+        # print(model)
+
+        model = model.to(device)
+
+        loss_function = nn.NLLLoss()
+
+        num_correct = 0.0
+        test_loss = 0
+        # 測試資料
+        model.eval()
+        for data_test, target_test in test_loader:
+            data_test = data_test.to(device)
+            target_test = target_test.to(device)
+
+            test_pred = model(data_test)
+            loss3 = loss_function(test_pred, target_test)
+            test_loss += loss3.item()
+            _, predicted = torch.max(test_pred, 1)
+            num_correct += (predicted == target_test).float().sum()
+
+        test_loss = test_loss / len(test_loader)
+        num_correct = num_correct / (len(test_loader) * batch_size)
+        print(f"test_loss: {test_loss:.3f}, correct: {num_correct:.3f}")
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_12(self, functionInfo):
+        import pandas as pd
+        import matplotlib.pyplot as plt
+        import torch
+        from torch import nn, optim
+        from sklearn.model_selection import train_test_split
+
+        torch.manual_seed(10)
+
+        df = pd.read_csv('data/Sales_Transactions_dataset_weekly.csv')
+        df.head()
+
+        df = df.iloc[:, 1:53]
+        print(df.shape)
+
+        plot_data = df.sample(5, random_state=0)
+        x = range(1, 53)
+        plt.figure(figsize=(10, 5))
+        for i, row in plot_data.iterrows():
+            plt.plot(x, row)
+        plt.legend(plot_data.index)
+        plt.xlabel("Weeks")
+        plt.ylabel("Sales")
+        plt.show()
+
+        x = df.iloc[:, :-1]  # w0 - w50
+        y = df.iloc[:, -1]  # w51
+
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=1)
+        print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)
+
+        x_train_t = torch.tensor(x_train.values).float().unsqueeze(1)  # (batch, seq, input)
+        y_train_t = torch.tensor(y_train.values).float().unsqueeze(1)
+        x_test_t = torch.tensor(x_test.values).float().unsqueeze(1)
+        y_test_t = torch.tensor(y_test.values).float().unsqueeze(1)
+        print(x_train_t.shape, y_train_t.shape)
+        print(x_test_t.shape, y_test_t.shape)
+
+        class RNN(nn.Module):
+            def __init__(self, input_size, hidden_size, num_layers):
+                super().__init__()
+                self.hidden_size = hidden_size
+                self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
+                self.fc1 = nn.Linear(hidden_size, 50)
+                self.relu = nn.ReLU()
+                self.fc2 = nn.Linear(50, 1)
+
+            def forward(self, x, hidden):
+                out, hidden = self.rnn(x, hidden)
+                out = out.view(-1, self.hidden_size)
+                out = self.fc1(out)
+                out = self.relu(out)
+                out = self.fc2(out)
+                return out, hidden
+
+        model = RNN(51, 100, 1)
+        print(model)
+
+        myloss = nn.MSELoss()
+        myoptim = optim.Adam(model.parameters(), lr=0.001)
+
+        epochs = 10000
+        losses = []
+        for i in range(epochs + 1):
+            pred, hidden = model(x_train_t, None)
+            loss = myloss(y_train_t, pred)
+
+            myoptim.zero_grad()
+            loss.backward()
+            myoptim.step()
+
+            losses.append(loss.item())
+            if i % 1000 == 0:
+                print(f"epoch:{i:5d}, loss:{loss.item():.3f}")
+
+        x_range = range(len(losses))
+        plt.xlabel('epochs')
+        plt.ylabel('loss function')
+        plt.plot(x_range, losses)
+        plt.show()
+
+        pred, hidden = model(x_test_t, None)
+        loss = myloss(y_test_t, pred)
+        print(f"loss:{loss.item():.3f}")
+
+        for i in range(20):
+            truth = y_test_t[i].item()
+            pred2 = pred[i].item()
+            print(f"truth:{truth:3.0f}   pred:{pred2:5.2f}")
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_13(self, functionInfo):
+        import torch
+        import torch.nn as nn
+        import torch.optim as optim
+        from torch.utils.data import DataLoader, TensorDataset
+        torch.manual_seed(123)
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+        import os
+        from tqdm import tqdm
+        import pickle
+
+        def read_data():
+            review_list = []
+            label_list = []
+            for label in ['pos', 'neg']:
+                for fname in tqdm(os.listdir(f"data/aclImdb/train/{label}/")):
+                    if 'txt' not in fname:
+                        continue
+                    with open(os.path.join(f"data/aclImdb/train/{label}/", fname), encoding="utf-8") as f:
+                        review_list += [f.read()]
+                        label_list += [label]
+
+            # 使用 pickle 儲存
+            mydict = {'review': review_list, 'label': label_list}
+            with open('data/imdb.pt', 'wb') as f:
+                pickle.dump(mydict, f)
+
+        with open('data/imdb.pt', 'rb') as f:
+            new_dict = pickle.load(f)
+        review_list = new_dict["review"]
+        label_list = new_dict["label"]
+
+        print(len(review_list), len(label_list))
+
+        print(review_list[0])
+
+        review_list2 = [review.lower() for review in review_list]
+        print(review_list2[0])
+
+        from string import punctuation
+        # string.punctuation : 所有的標點字元
+
+        review_list3 = [''.join([letter for letter in review if letter not in punctuation]) for review in review_list2]
+
+        print(review_list3[0])
+
+        reviews_blob = ' '.join(review_list3)
+
+        review_words = reviews_blob.split()
+        print(review_words[:10])
+
+        from collections import Counter
+        count_words = Counter(review_words)
+        print(count_words['bromwell'])
+
+        sorted_review_words = count_words.most_common(len(review_words))
+        print(sorted_review_words[:10])  # 印出前10名出現最多的單詞
+
+        vocab_to_token = {word: idx + 1 for idx, (word, count) in enumerate(sorted_review_words)}
+        print(list(vocab_to_token.items())[:10])  # 印出字典前10個元素
+
+        reviews_tokenized = []
+        for review in review_list3:
+            word_to_token = [vocab_to_token[word] for word in review.split()]
+            reviews_tokenized.append(word_to_token)
+        print(review_list3[0])
+        print("len=", len(review_list3[0]))
+        print()
+        print(reviews_tokenized[0])
+        print("len=", len(reviews_tokenized[0]))
+
+        encoded_label_list = [1 if label == 'pos' else 0 for label in label_list]
+
+        reviews_len = [len(review) for review in reviews_tokenized]  # 計算 reviews_tokenized 每則 review 的長度
+        print(reviews_len[:10])
+
+        n_zero = [i for i, n in enumerate(reviews_len) if n == 0]
+        print(n_zero)  # 沒有長度為0的分詞 review
+
+        import numpy as np
+        # encoded_label_list 轉成 numpy
+        encoded_label_list = np.array([encoded_label_list[i] for i, n in enumerate(reviews_len) if n > 0],
+                                      dtype='float32')
+
+        def pad_sequence(reviews_tokenized, num):
+            padded_reviews = np.zeros((len(reviews_tokenized), num), dtype=int)
+            for idx, review in enumerate(reviews_tokenized):
+                review_len = len(review)
+                if review_len <= num:
+                    zeros = list(np.zeros(num - review_len))
+                    new_sequence = zeros + review
+                elif review_len > num:
+                    new_sequence = review[0:num]
+                padded_reviews[idx, :] = np.array(new_sequence)
+            return padded_reviews
+
+        padded_reviews = pad_sequence(reviews_tokenized, 512)
+
+        num = int(0.75 * len(padded_reviews))
+        x_train = padded_reviews[:num]
+        y_train = encoded_label_list[:num]
+        x_val = padded_reviews[num:]
+        y_val = encoded_label_list[num:]
+
+        x_train_t = torch.tensor(x_train).to(device)
+        y_train_t = torch.tensor(y_train).to(device)
+        x_val_t = torch.tensor(x_val).to(device)
+        y_val_t = torch.tensor(y_val).to(device)
+        print(x_train_t.shape)  # (batch_size, input_dim)
+        print(x_val_t.shape)
+
+        train_ds = TensorDataset(x_train_t, y_train_t)
+        val_ds = TensorDataset(x_val_t, y_val_t)
+
+        train_loader = DataLoader(train_ds, batch_size=32, shuffle=True)
+        val_loader = DataLoader(val_ds, batch_size=32, shuffle=True)
+
+        x_, y_ = next(iter(train_loader))
+        print(x_.shape, y_.shape)
+
+        class LSTM(nn.Module):
+            def __init__(self, n_input, n_embed, n_hidden, n_output):
+                super().__init__()
+                self.n_hidden = n_hidden
+                self.embedding_layer = nn.Embedding(n_input, n_embed)
+                self.lstm_layer = nn.LSTM(n_embed, n_hidden, num_layers=1)
+                self.fc_layer = nn.Linear(n_hidden, n_output)
+
+            def forward(self, x):
+                # x shape: (seq,batch)=(512,32)
+                x = self.embedding_layer(x)
+                # x shape: (seq,batch,feature)=(512,32,100)
+                out, hidden = self.lstm_layer(x)
+                # hidden[0] shape: (num_layers, batch, feature)=(1,32,50)
+                out = self.fc_layer(hidden[0].squeeze(0))
+                return out
+
+        n_input = len(vocab_to_token) + 1
+        model = LSTM(n_input, 100, 50, 1).to(device)
+        print(model)
+        print(n_input)
+
+        myloss = nn.BCEWithLogitsLoss()
+        myoptim = optim.Adam(model.parameters(), lr=0.001)
+
+        def myacc(predictions, ground_truth):
+            rounded_predictions = torch.round(torch.sigmoid(predictions))
+            success = (rounded_predictions == ground_truth).float()  # convert into float for division
+            accuracy = success.sum() / len(success)
+            return accuracy
+
+        # import time
+        # 訓練
+        epochs = 10
+        for epoch in range(epochs):
+            # time_start=time.time()
+            train_loss = 0
+            val_loss = 0
+            train_acc = 0
+            val_acc = 0
+
+            model.train()
+            for xx, yy in (train_loader):
+                pred = model(xx.T)
+                pred = pred.squeeze()
+
+                loss = myloss(pred, yy)
+                myoptim.zero_grad()
+                loss.backward()
+                myoptim.step()
+
+                acc = myacc(pred, yy)
+
+                train_loss += loss.item()
+                train_acc += acc.item()
+
+            with torch.no_grad():
+                model.eval()
+                for xx2, yy2 in (val_loader):
+                    pred2 = model(xx2.T).squeeze()
+                    loss2 = myloss(pred2, yy2)
+                    acc2 = myacc(pred2, yy2)
+
+                    val_loss += loss2.item()
+                    val_acc += acc2.item()
+
+            train_loss = train_loss / len(train_loader)
+            val_loss = val_loss / len(val_loader)
+            train_acc = train_acc / len(train_loader) * 100
+            val_acc = val_acc / len(val_loader) * 100
+
+            print(f"epoch:{epoch:2d}, train_loss: {train_loss:.3f}, val_loss:{val_loss:.3f}, " \
+                  f"train_acc: {train_acc:.2f}%, val_acc:{val_acc:.2f}%")
+
+        def sentiment_inference(model, sentence):
+            model.eval()
+
+            # text transformations
+            sentence = sentence.lower()
+            sentence = ''.join([c for c in sentence if c not in punctuation])
+            tokenized = [vocab_to_token[word] for word in sentence.split()]
+            tokenized = np.pad(tokenized, (512 - len(tokenized), 0), 'constant')
+
+            # model inference
+            model_input = torch.LongTensor(tokenized).to(device)
+            model_input = model_input.unsqueeze(1)
+            pred = torch.sigmoid(model(model_input))
+            pred2 = torch.round(pred, decimals=3)
+            return pred.item()
+
+        out1 = sentiment_inference(model, 'This film is horrible')
+        print(f"{out1:.3f}")
+        out2 = sentiment_inference(model, 'Director tried too hard but this film is bad')
+        print(f"{out2:.3f}")
+        out3 = sentiment_inference(model, 'Decent movie, although could be shorter')
+        print(f"{out3:.3f}")
+        out4 = sentiment_inference(model, "I loved the movie, every part of it")
+        print(f"{out4:.3f}")
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_14(self, functionInfo):
+
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        R = np.array([
+            [-1, -1, -1, -1, 0, -1],  # state 0
+            [-1, -1, -1, 0, -1, 100],  # state 1
+            [-1, -1, -1, 0, -1, -1],  # state 2
+            [-1, 0, 0, -1, 0, -1],  # state 3
+            [0, -1, -1, 0, -1, 100],  # state 4
+            [-1, 0, -1, -1, 0, 100]  # state 5
+        ], dtype='float')
+        print(f"R:\n {R}")
+
+        Q = np.zeros((6, 6))
+        print(f"Q:\n {Q}")
+
+        gamma = 0.8
+        state = 1
+
+        def available_actions(state):
+            current_state = R[state, :]
+            av_act = np.where(current_state >= 0)[0]
+            return av_act
+
+        av_act = available_actions(state)
+        print(f"av_act: {av_act}")
+
+        def get_action(av_act):
+            action = int(np.random.choice(av_act, size=1))
+            return action
+
+        action = get_action(av_act)
+        print(f"action: {action}")
+
+        def Q_learning(state, action, gamma):
+            new_state = action
+            reward = R[state, action]
+            Q[state, action] = reward + gamma * np.max(Q[new_state, :])
+            if new_state == 5:
+                done = True
+            else:
+                done = False
+
+            if (np.max(Q) > 0):
+                score = np.sum(Q) / np.max(Q) * 100
+            else:
+                score = 0
+            score = np.round(score, 2)
+
+            return new_state, reward, done, score
+
+        new_state, reward, done, score = Q_learning(state, action, gamma)
+        print(f"new_state:{new_state},reward:{reward},done:{done}, Q:\n {Q}")
+
+        epochs = 600
+        scores = []
+        for epoch in range(epochs):
+            state = np.random.randint(0, 6)
+            for step in range(20):
+                av_act = available_actions(state)
+                action = get_action(av_act)
+                new_state, reward, done, score = Q_learning(state, action, gamma)
+                state = new_state
+                if done:
+                    # print(f"done. score:{score}")
+                    break
+            scores.append(score)
+
+        Q = np.round(Q, 0)
+        print(f"final Q:\n {Q}")
+
+        plt.plot(scores)
+        plt.xlabel("epoch")
+        plt.ylabel("score")
+        plt.show()
+
+        states = []
+        state = 0
+        states.append(state)
+
+        while state != 5:
+            new_state = np.argmax(Q[state, :])
+            state = new_state
+            states.append(state)
+
+        print(states)
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_15(self, functionInfo):
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        R = np.array([
+            [-1, 0, 0, -1],  # state 0
+            [-1, 0, -1, 0],  # state 1
+            [-1, -1, 0, 0],  # state 2
+            [0, 0, 0, -1],  # state 3
+            [-1, -1, 0, 0],  # state 4
+            [0, -1, -1, -1],  # state 5
+            [0, -1, -1, -1],  # state 6
+            [0, 100, -1, -1],  # state 7
+            [-1, -1, -1, 0],  # state 8
+        ], dtype='float')
+
+        Q = np.zeros((9, 4))
+
+        gamma = 0.9
+        alpha = 0.8
+        state = 0
+
+        def available_actions(state):
+            current_state = R[state, :]
+            av_act = np.where(current_state >= 0)[0]
+            return av_act
+
+        av_act = available_actions(state)
+        print(f"av_act: {av_act}")
+
+        def get_action(av_act):
+            action = int(np.random.choice(av_act, size=1))
+            return action
+
+        action = get_action(av_act)
+        print(f"action: {action}")
+
+        def Q_learning(state, action, gamma):
+            if action == 0:  # up
+                new_state = state - 3
+            if action == 1:  # right
+                new_state = state + 1
+            if action == 2:  # down
+                new_state = state + 3
+            if action == 3:  # left
+                new_state = state - 1
+
+            reward = R[state, action]
+            max_value = reward + gamma * np.max(Q[new_state, :])
+            Q[state, action] = Q[state, action] + alpha * (max_value - Q[state, action])
+            if new_state == 8:
+                done = True
+            else:
+                done = False
+
+            if (np.max(Q) > 0):
+                score = np.sum(Q) / np.max(Q) * 100
+            else:
+                score = 0
+            score = np.round(score, 2)
+
+            return new_state, reward, done, score
+
+        new_state, reward, done, score = Q_learning(state, action, gamma)
+        print(f"new_state:{new_state},reward:{reward},done:{done}, Q:\n {Q}")
+
+        epochs = 30
+        scores = []
+        for epoch in range(epochs):
+            state = 0
+            for step in range(20):
+                av_act = available_actions(state)
+                action = get_action(av_act)
+                new_state, reward, done, score = Q_learning(state, action, gamma)
+                state = new_state
+                if done:
+                    # print(f"done. score:{score}")
+                    break
+            scores.append(score)
+
+        Q = np.round(Q, 0)
+        print(f"final Q:\n {Q}")
+
+        plt.plot(scores)
+        plt.xlabel("epoch")
+        plt.ylabel("score")
+        plt.show()
+
+        states = []
+        state = 0
+        states.append(state)
+
+        while state != 8:
+            action = np.argmax(Q[state, :])
+            if action == 0:  # up
+                new_state = state - 3
+            if action == 1:  # right
+                new_state = state + 1
+            if action == 2:  # down
+                new_state = state + 3
+            if action == 3:  # left
+                new_state = state - 1
+            state = new_state
+            # print(state)
+            states.append(state)
+
+        print(states)
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_16(self, functionInfo):
+        import numpy as np
+        import gym  # pip install gym==0.23.1
+        import matplotlib.pyplot as plt
+
+        np.random.seed(10)
+
+        env = gym.make('FrozenLake-v1', is_slippery=False)
+
+        action_size = env.action_space.n
+        state_size = env.observation_space.n
+        print(action_size, state_size)
+
+        qtable = np.zeros((state_size, action_size))
+
+        eps = 1
+        scores = []
+        gamma = 0.9
+        alpha = 0.5
+
+        epochs = 3000
+        for epoch in range(epochs):
+            state = env.reset()
+            score = 0
+
+            for step in range(50):
+                if np.random.rand() > eps:
+                    action = np.argmax(qtable[state, :])
+                else:
+                    action = env.action_space.sample()
+
+                new_state, reward, done, info = env.step(action)
+                # print(new_state,reward)
+                max_value = reward + gamma * np.max(qtable[new_state, :])
+                qtable[state, action] += alpha * (max_value - qtable[state, action])
+                state = new_state
+
+                if done:
+                    break
+
+            if (np.max(qtable) > 0):
+                score = np.sum(qtable) / np.max(qtable) * 100
+            else:
+                score = 0
+            score = np.round(score, 2)
+
+            scores.append(score)
+
+            eps = 0.01 + (0.09 * np.exp(0.005 * epoch))
+
+        Q = np.round(qtable, 2)
+        print(f"final Q:\n {Q}")
+
+        plt.plot(scores)
+        plt.xlabel("epoch")
+        plt.ylabel("score")
+        plt.show()
+
+        # !pip install pygame
+        states = []
+
+        state = env.reset()
+        env.render()
+        states.append(state)
+
+        step = 0
+        done = False
+        # 最多執行50步
+        for step in range(50):
+
+            # 取得最佳動作
+            action = np.argmax(qtable[state, :])
+            # print("action:",action)
+
+            # 執行動作
+            new_state, reward, done, info = env.step(action)
+            state = new_state
+            states.append(state)
+            env.render()
+
+            if done:
+                print("Number of Steps", step + 1)
+                break
+
+        print(states)
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_17(self, functionInfo):
+        import gym
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        # 忽略 warning
+        import warnings
+        warnings.filterwarnings("ignore")
+
+        np.random.seed(10)
+
+        env = gym.envs.make('MountainCar-v0')
+        n_state = env.observation_space.shape[0]  # car position, car velocity
+        n_action = env.action_space.n  # acc to left, no acc, acc to right
+        print(n_state, n_action)
+
+        # 計算轉換成離散值的臨界值
+        def bins(clip_min, clip_max, num):
+            return np.linspace(clip_min, clip_max, num + 1)[1:-1]
+
+        car_position = bins(-1.2, 0.6, 10)  # 分成10份
+        car_velocity = bins(-0.07, 0.07, 10)  # 分成10份
+        print(car_position)
+        print(car_velocity)
+
+        # 將連續值轉換成離散變數
+        num_pos = 10
+        num_v = 10
+
+        def digitize_state(observation):
+            car_pos, car_v = observation
+            digitized = [
+                np.digitize(car_pos, bins=bins(-1.2, 0.6, num_pos)),
+                np.digitize(car_v, bins=bins(-0.07, 0.07, num_v)), ]
+
+            return digitized[0] + (digitized[1] * num_pos)
+
+        # Q表格初始化
+        # qtable=np.zeros((20*14, n_action))
+        qtable = np.random.uniform(low=-1, high=1, size=(num_pos * num_v, n_action))
+        print(qtable.shape)
+
+        # 設定變數
+        eps = 1
+        scores = []
+        gamma = 0.99
+        alpha = 0.01
+        eps_decay_rate = 0.998
+
+        epochs = 10000
+        tot_score = 0
+        scores = []
+        for epoch in range(epochs + 1):
+            observation = env.reset()  # get car_pos, car_v
+            state = digitize_state(observation)  # get state
+            score = 0
+
+            for step in range(300):
+                rad = np.random.rand()
+                # print(rad, eps)
+                if rad > eps:
+                    action = np.argmax(qtable[state, :])
+                else:
+                    action = env.action_space.sample()
+                    # action=np.random.choice(n_action)
+
+                new_observation, reward, done, info = env.step(action)
+                new_state = digitize_state(new_observation)  # get new state
+                # print(new_state)
+
+                if done:
+                    reward = -200
+
+                pos = new_observation[0]  # car position
+                if pos >= 0.5:
+                    reward += 2000
+                elif pos >= 0.45:
+                    reward += 100
+                elif pos >= 0.4:
+                    reward += 20
+                elif pos >= 0.3:
+                    reward += 10
+                elif pos >= 0.2:
+                    reward += 5
+
+                score += reward
+
+                max_value = reward + gamma * np.max(qtable[new_state, :])
+                qtable[state, action] += alpha * (max_value - qtable[state, action])
+
+                # observateion=new_observation
+
+                state = new_state
+
+                if done:
+                    break
+
+            score = np.round(score, 2)
+            # scores.append(score)
+            tot_score += score
+            eps = eps * eps_decay_rate
+            eps = max(eps, 0.01)
+
+            if epoch % 100 == 0:
+                print(f"epoch:{epoch},score:{tot_score / 100}, eps={eps:.3f}")
+                scores.append(tot_score / 100)
+                tot_score = 0
+
+            if epoch > 2000 and np.mean(scores[-20:]) > 1600:
+                print("training completed!")
+                break
+
+        Q = np.round(qtable, 2)
+
+        plt.plot(scores)
+        plt.xlabel("epoch")
+        plt.ylabel("score")
+        plt.show()
+
+        states = []
+
+        observation = env.reset()
+        state = digitize_state(observation)
+
+        env.render()
+        states.append(observation)
+
+        step = 0
+        done = False
+
+        # 最多執行300步
+        for step in range(300):
+            # 取得最佳動作
+            action = np.argmax(qtable[state, :])
+
+            # 執行動作
+            new_observation, reward, done, info = env.step(action)
+            new_state = digitize_state(new_observation)
+
+            observation = new_observation
+            pos = observation[0]
+            state = new_state
+            states.append(observation)
+            env.render()
+
+            if done:
+                print(f"position: {pos:.3f}")
+                print("Number of Steps", step + 1)
+                break
+
+        # print(states)
+
+        return {}, {}
+
+    @classmethod
+    def M0_0_18(self, functionInfo):
+        import numpy as np
+        import matplotlib.pyplot as plt
+        import gym
+        import random
+        import torch
+        from torch import nn
+        from torch import optim
+        import torch.nn.functional as F
+        from collections import namedtuple, deque
+
+        torch.manual_seed(10)
+        random.seed(10)
+        np.random.seed(10)
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+        env = gym.make('CartPole-v1')
+
+        env.reset()
+        n_state = env.observation_space.shape[0]
+        n_action = env.action_space.n
+        print(n_state, n_action)
+
+        state = env.reset()
+        print(state)
+        state_size = env.observation_space.shape[0]
+        # state = np.reshape(state, [1, state_size])
+        # print(state)
+
+        Tr = namedtuple('Tr', ('state', 'action', 'next_state', 'reward', 'done'))
+
+        class DQN(nn.Module):
+            def __init__(self, state_size, action_size):
+                super(DQN, self).__init__()
+
+                self.fc1 = nn.Linear(state_size, 24)
+                self.fc2 = nn.Linear(24, 24)
+                self.fc3 = nn.Linear(24, action_size)
+
+            def forward(self, state):
+                x = F.relu(self.fc1(state))
+                x = F.relu(self.fc2(x))
+                x = self.fc3(x)
+                return x
+
+        batch_size = 32
+        capacity = 10000
+
+        class ReplayMemory:
+            def __init__(self, capacity):
+                self.capacity = capacity
+                self.memory = []
+                self.index = 0
+
+            def push(self, state, action, next_state, reward, done):
+                if len(self.memory) < self.capacity:
+                    self.memory.append(None)
+                self.memory[self.index] = Tr(state, action, next_state, reward, done)
+                self.index = (self.index + 1) % self.capacity
+
+            def sample(self, batch_size):
+                return random.sample(self.memory, batch_size)
+
+            def sample_torch(self, batch_size):
+                Trs = self.sample(batch_size)
+                state_batch = np.vstack([tr.state for tr in Trs if tr is not None])
+                action_batch = np.vstack([tr.action for tr in Trs if tr is not None])
+                next_state_batch = np.vstack([tr.next_state for tr in Trs if tr is not None])
+                reward_batch = np.vstack([tr.reward for tr in Trs if tr is not None])
+                done_batch = np.vstack([tr.done for tr in Trs if tr is not None])
+
+                states = torch.from_numpy(state_batch).float().to(device)
+                actions = torch.from_numpy(action_batch).long().to(device)
+                next_states = torch.from_numpy(next_state_batch).float().to(device)
+                rewards = torch.from_numpy(reward_batch).float().to(device)
+                dones = torch.from_numpy(done_batch).float().to(device)
+
+                return (states, actions, next_states, rewards, dones)
+
+            def __len__(self):
+                return len(self.memory)
+
+        class Agent:
+            def __init__(self, n_state, n_action):
+                self.n_state = n_state
+                self.n_action = n_action
+                self.seed = random.seed(10)
+                self.buffer_size = 2000
+                self.batch_size = 32
+                self.gamma = 0.99
+
+                self.model = DQN(n_state, n_action).to(device)
+                self.memory = ReplayMemory(self.buffer_size)
+
+                self.optimizer = optim.Adam(self.model.parameters(), lr=0.0025)
+                self.t_step = 0
+
+            def step(self, state, action, next_state, reward, done):
+                self.memory.push(state, action, next_state, reward, done)
+                self.t_step = (self.t_step + 1) % 4
+                if self.t_step == 0:
+                    if len(self.memory) > self.batch_size:
+                        samples = self.memory.sample_torch(self.batch_size)
+                        self.learn(samples)
+
+            def learn(self, samples):
+                states, actions, next_states, rewards, dones = samples
+                q_expected = self.model(states).gather(1, actions)
+                q_targets_max = self.model(next_states).detach().max(1)[0].unsqueeze(1)
+                q_targets = rewards + (self.gamma * q_targets_max * (1 - dones))
+                loss = F.mse_loss(q_expected, q_targets)
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
+
+            def act(self, state, eps=0.):
+                if random.random() > eps:
+                    state = torch.from_numpy(state).float() \
+                        .unsqueeze(0).to(device)
+                    self.model.eval()
+                    with torch.no_grad():
+                        action_values = self.model(state)
+                    self.model.train()
+                    return np.argmax(action_values.cpu().data.numpy())
+                else:
+                    return random.choice(np.arange(self.n_action))
+
+        agent = Agent(n_state, n_action)
+
+        scores = []  # list containing scores from each episode
+        scores_window = deque(maxlen=100)  # last 100 scores
+        epochs = 5000
+        max_t = 5000
+        eps_start = 1.0
+        eps_end = 0.001
+        eps_decay = 0.9995
+        eps = eps_start
+
+        for epoch in range(1, epochs + 1):
+            state = env.reset()
+            state_size = env.observation_space.shape[0]
+
+            score = 0
+            for i in range(max_t):
+                action = agent.act(state, eps)
+                next_state, reward, done, _ = env.step(action)
+
+                reward = reward if not done or score == 499 else -10
+                agent.step(state, action, next_state, reward, done)
+                state = next_state
+                score += reward
+                if done:
+                    break
+            scores_window.append(score)  # save most recent score
+            scores.append(score)  # save most recent score
+            eps = max(eps_end, eps_decay * eps)  # decrease epsilon
+            print('\rEpoch {:4}\t Reward {:8.2f}\t Average Score: {:8.2f}'.format(epoch, score, \
+                                                                                  np.mean(scores_window)), end="")
+            if epoch % 100 == 0:
+                print('\rEpoch {:4}\t Average Score: {:8.2f} \
+                   \tEpsilon: {:8.3f}'.format(epoch, \
+                                              np.mean(scores_window), eps))
+            if epoch > 10 and np.mean(scores[-10:]) > 450:
+                break
+
+        plt.plot(scores)
+        plt.title('Scores over increasing episodes')
+
+        def play_game():
+            done = False
+            state = env.reset()
+            epoch = 0
+            while (not done):
+                action = agent.act(state)
+                next_state, reward, done, _ = env.step(action)
+                env.render()
+                state = next_state
+                epoch += 1
+            print(f"done, epoch:{epoch}")
+            # env.close()
+
+        play_game()
+
+        return {}, {}
 
     @classmethod
     def M1_0_1(self, functionInfo):

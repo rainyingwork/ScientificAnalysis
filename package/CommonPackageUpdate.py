@@ -4,9 +4,7 @@ import sys
 pythonEXEPath = "bin" if os.name == "posix" else "Scripts"
 
 __pythonexePath = "{}/venv/{}/python".format(sys.path[1],pythonEXEPath)
-os.system("{} -m pip install scikit-learn==1.1.2".format(__pythonexePath))
-
-
+# os.system("{} -m pip install scikit-learn==1.1.2".format(__pythonexePath))
 # os.system("{} -m pip install --upgrade pip".format(__pythonexePath))
 # os.system("{} -m pip install gitpython".format(__pythonexePath))
 # os.system("{} -m pip install matplotlib".format(__pythonexePath))
@@ -38,7 +36,9 @@ os.system("{} -m pip install scikit-learn==1.1.2".format(__pythonexePath))
 # os.system("{} -m pip install torch==1.13.0".format(__pythonexePath))
 # os.system("{} -m pip install torchvision==1.14.0".format(__pythonexePath))
 # os.system("{} -m pip install torchaudio==1.13.0".format(__pythonexePath))
-os.system("{} -m pip install pillow==9.3.0".format(__pythonexePath))
+# os.system("{} -m pip install pillow==9.3.0".format(__pythonexePath))
+# os.system("{} -m pip install tqdm==4.64.1".format(__pythonexePath))
+# os.system("{} -m pip install gym==0.26.2".format(__pythonexePath))
 
 
 
