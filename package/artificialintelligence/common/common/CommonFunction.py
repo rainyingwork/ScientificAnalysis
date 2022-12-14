@@ -44,7 +44,7 @@ class CommonFunction(AnalysisFunction):
         if "DataTime" in functionVersionInfo.keys() :
             makeTime = datetime.datetime.strptime(functionVersionInfo["DataTime"], "%Y-%m-%d")
             sqlReplaceArr.append(["[:DateLine]", makeTime.strftime("%Y-%m-%d")])
-            sqlReplaceArr.append(["[:DateLine]", makeTime.strftime("%Y-%m-%d")])
+            sqlReplaceArr.append(["[:DateNoLine]", makeTime.strftime("%Y%m%d")])
         return sqlReplaceArr
 
     @classmethod
