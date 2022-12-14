@@ -11,7 +11,7 @@ if __name__ == "__main__":
         basicInfo = {
             "RunType": ["runops"]
             , "Product": ["Example"]
-            , "Project": ["P14RawData"]
+            , "Project": ["P29RawData"]
         }
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_1"]
@@ -21,7 +21,7 @@ if __name__ == "__main__":
                 , "Product" : "Example", "Project" : "P14RawData", "Version" : "R0_0_0"
                 , "DataTime" : dateInfo['DataTime']
                 , "FeatureType" : "General"
-                , "FilePath" : "Example/P14RawData/file/TagText/TagR0_0_0.json"
+                , "FilePath" : "Example/P29RawData/file/TagText/TagR0_0_0.json"
             }
             , "R0_0_1": {
                 "FunctionType": "ExeSQLStrs"
