@@ -84,38 +84,43 @@ class ModelUse():
     def M0_0_2(self, functionInfo):
         import torch
 
-        torch.manual_seed(0)
+        torch.manual_seed(0) # 設定隨機種子
 
-        w = torch.tensor([1, 3, 5]).float()
+        # ========== RX_X_X ==========
 
-        X = torch.cat([torch.ones(100, 1), torch.randn(100, 2)], dim=1)  # X=[1, x1, x2]
-        y = torch.mv(X, w) + torch.randn(100) * 0.3
-        print(X.shape, y.shape)
+        w = torch.tensor([1, 3, 5]).float() # 等同於 torch.Tensor([1, 3, 5])
+        x = torch.cat([torch.ones(100, 1), torch.randn(100, 2)], dim=1)  # torch.cat 連接張量(需確認一下相關方式) torch.ones 為全1的X維張量 , torch.randn 為浮點數的X維張量
+        # torch.mm() 是正常的矩陣相乘，(a,b) * (b,c) = (a,c)
+        # torch.mv() 是矩陣與向量相乘，類似torch.mm()是(a,b) * (b,1) = (a,1)
+        # torch.mul() 是矩陣的點乘，即對應的位相乘，會要求shape一樣,返回也是一樣大小的矩陣
+        # torch.dot() 類似torch.mul()，但是是向量的對應位相乘在求和，返回一個tensor值
+        y = torch.mv(x, w) + torch.randn(100) * 0.3
+        print(x.shape, y.shape) # torch.Size([100, 3]) torch.Size([100])
 
-        w_pred = torch.randn(3, requires_grad=True)
+        # ========== MX_X_X ==========
+
+        # 先隨機給三個數字，經由梯度下降算出正確的數字
+        # 為了能夠進行反向傳播計算，必須將該物件的 requires_grad 方法設置為 True
+        wPred = torch.randn(3, requires_grad=True)
+        # 損失函數值，該值越高學習越快，該值越低學習越慢，但該值越高會越容易跳過局部最優
         lr = 0.01
 
-        losses = []
-        epochs = 200
+        lossValueList = [] # 損失值紀錄
+        epochs = 200 # 重複計算次數
         for epoch in range(epochs + 1):
-            w_pred.grad = None  # 清除上一次計算的梯度值
-            y_pred = torch.mv(X, w_pred)
-            loss = torch.mean((y - y_pred) ** 2)  # 計算MSE
-            loss.backward()
-
-            w_pred.data = w_pred.data - lr * w_pred.grad.data  # 梯度更新
-            losses.append(loss.item())  # 記錄loss值
-
-            if (epoch) % 50 == 0:
+            yPred = torch.mv(x, wPred)
+            loss = torch.mean((y - yPred) ** 2)  # 計算MSE
+            wPred.grad = None  # 清除上一次計算的梯度值
+            loss.backward() # loss 向輸入側進行反向傳播，這時候 w_pred.grad 就會有值
+            wPred.data = wPred.data - lr * wPred.grad.data  # 梯度下降更新 原本資料 - 損失函數 * 差異梯度
+            lossValueList.append(loss.item())  # 記錄該次的loss值
+            if (epoch) % 50 == 0 : # 印出50倍數代的相關數據
                 print(f"epoch:{epoch}, Loss: {loss.item():.3f}")
 
-        # plt.plot(losses)
-        # plt.xlabel("epoch")
-        # plt.ylabel("losses")
-        # plt.show()
-
-        print(w_pred.data)
-
+        # 印出損失值過程
+        print(lossValueList)
+        # 印出最終預設的值
+        print(wPred.data)
         return {}, {}
 
     @classmethod
