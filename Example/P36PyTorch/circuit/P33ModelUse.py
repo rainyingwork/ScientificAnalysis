@@ -128,38 +128,44 @@ class ModelUse():
         import torch
         import torch.nn as nn
         import torch.optim as optim
+        import matplotlib.pyplot as plt
 
-        torch.manual_seed(0)
+        torch.manual_seed(0)  # 設定隨機種子
+
+        # ========== RX_X_X ========== 相關說明可以參考 M0_0_2
 
         w = torch.tensor([1, 3, 5]).float()
         x = torch.cat([torch.ones(100, 1), torch.randn(100, 2)], dim=1)
         y = torch.mv(x, w) + torch.randn(100) * 0.3
-        y = y.unsqueeze(1)
+        y = y.unsqueeze(1)  # 在軸1擴展維度
         print(x.shape, y.shape)
 
-        model = nn.Sequential(nn.Linear(3, 1, bias=False))
+        # ========== MX_X_X ==========
+        # 使用線性神經網路 輸入3 輸出1 偏置設置為False
+        # 何謂偏置 -> 基本來說設定 False，至於怎麼用可能要問一下數學家..XD
+        model = nn.Sequential(
+            nn.Linear(3, 1, bias=False)
+        )
 
-        myloss = nn.MSELoss()
-        myoptim = optim.Adam(model.parameters(), lr=0.1)
+        # 損失函數：使用MSELoss 與 學習函數：使用Adam
+        lossfunc = nn.MSELoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.1)
 
-        losses = []
+        lossList = []
         epochs = 101
         for epoch in range(epochs):
             y_pred = model(x)
-            loss = myloss(y_pred, y)
-            losses.append(loss.item())
-            myoptim.zero_grad()
-            loss.backward()
-            myoptim.step()
-
-            if epoch % 20 == 0:
+            loss = lossfunc(y_pred, y)
+            lossList.append(loss.item())
+            optimizer.zero_grad()  # 清除上一次計算的梯度值
+            loss.backward()  # loss 向輸入側進行反向傳播
+            optimizer.step()  # 做梯度下降更新
+            if epoch % 20 == 0:  # 印出20倍數代的相關數據
                 print(f"epoch={epoch}, loss={loss.item():.3f}")
 
-        # plt.plot(losses)
-        # plt.xlabel("epoch")
-        # plt.ylabel("losses")
-        # plt.show()
-
+        # 印出損失值過程
+        print(lossList)
+        # 印出最終預設的值
         print(list(model.parameters()))
 
         return {}, {}
