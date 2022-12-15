@@ -627,8 +627,7 @@ class ModelUse():
         import numpy as np
         import pandas as pd
 
-        img = Image.open("Example/P36PyTorch/file/data/dog.jpg")
-        img.show()
+        imgStep1 = Image.open("Example/P36PyTorch/file/data/dog.jpg")
 
         preprocess = transforms.Compose([
             transforms.Resize(256),
@@ -636,31 +635,19 @@ class ModelUse():
             transforms.ToTensor()
         ])
 
-        img2 = preprocess(img)
-        print(img2.shape)
+        imgStep2 = preprocess(imgStep1)
+        imgStep3 = torch.unsqueeze(imgStep2, 0)
+        resnetModel = models.resnet18(weights='ResNet18_Weights.DEFAULT')
+        resnetModel.eval() # 將resnetModel設為驗證
+        predictList = resnetModel(imgStep3)  # 將圖片輸入
 
-        img3 = torch.unsqueeze(img2, 0)
-        print(img3.shape)
-
-        resnet = models.resnet18(weights='ResNet18_Weights.DEFAULT')
-
-        resnet.eval()
-        out = resnet(img3)
-
-        out_numpy = out.detach().numpy()  # 轉為NumPy
-        out_class = np.argmax(out_numpy, axis=1)  # 找出最大值的索引
-        print(out_class)
-
-        df = pd.read_csv("Example/P36PyTorch/file/data/imagenet_classes.csv", header=None)
-        print(df.head())
-
-        label = df.iloc[out_class].values
+        predictNumpys = predictList.detach().numpy()  # 轉為NumPy
+        outClass = np.argmax(predictNumpys, axis=1)  # 找出最大值的索引
+        imageNetClassesDF = pd.read_csv("Example/P36PyTorch/file/data/imagenet_classes.csv", header=None)
+        label = imageNetClassesDF.iloc[outClass].values
         print(label)
-
-        score = torch.nn.functional.softmax(out, dim=1)[0] * 100
-        print(score.shape)
-
-        print(f"score:{score[out_class].item():.2f}")
+        score = torch.nn.functional.softmax(predictList, dim=1)[0] * 100 # 列出所有對應標籤的百分比
+        print(f"score:{score[outClass].item():.2f}") # 找出對應標籤的百分比
 
         return {}, {}
 
