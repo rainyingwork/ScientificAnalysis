@@ -430,55 +430,54 @@ class ModelUse():
         from sklearn.model_selection import train_test_split
         import pandas as pd
 
-        torch.manual_seed(10)
+        torch.manual_seed(10)  # 設定隨機種子
 
-        iris_data = pd.read_csv('Example/P36PyTorch/file/data/iris.csv')
-        print(iris_data.head())
+        # ========== RX_X_X ==========
 
-        print(iris_data['Species'].unique())
+        irisDF = pd.read_csv('Example/P36PyTorch/file/data/iris.csv')
 
-        labelencoder = LabelEncoder()
-        iris_data['Species'] = labelencoder.fit_transform(iris_data['Species'])
-        print(iris_data['Species'].unique())
+        # ========== PX_X_X ==========
 
-        iris_x = iris_data[['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm']]
-        iris_y = iris_data['Species']
-        print(iris_x.shape, iris_y.shape)
+        labelencoder = LabelEncoder()  # 進行類別編碼
+        irisDF['Species'] = labelencoder.fit_transform(irisDF['Species'])
 
-        iris_x = (iris_x - iris_x.min()) / (iris_x.max() - iris_x.min())
-        print(iris_x.head())
+        x = irisDF[['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm']]
+        x = (x - x.min()) / (x.max() - x.min())
 
-        train_x, test_x, train_y, test_y = train_test_split(iris_x, iris_y, test_size=0.15, random_state=10)
-        print(train_x.shape, test_x.shape)
+        y = irisDF['Species']
 
-        train_x_t = torch.tensor(train_x.values).float()
-        train_y_t = torch.tensor(train_y.values).long().unsqueeze(1)
-        test_x_t = torch.tensor(test_x.values).float()
-        test_y_t = torch.tensor(test_y.values).long().unsqueeze(1)
+        xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.15, random_state=10)
 
-        print(train_x_t.shape, train_y_t.shape)
+        xTrainTensor = torch.tensor(xTrain.values).float()
+        yTrainTensor = torch.tensor(yTrain.values).long().unsqueeze(1)
+        xTestTensor = torch.tensor(xTest.values).float()
+        yTestTensor = torch.tensor(yTest.values).long().unsqueeze(1)
 
-        class dataset(Dataset):
+        class DataSet(Dataset):
             def __init__(self, x, y):
                 self.x = x
                 self.y = y
-                self.n_sample = len(x)
+                self.nSample = len(x)
 
             def __getitem__(self, index):
                 return self.x[index], self.y[index]
 
             def __len__(self):
-                return self.n_sample
+                return self.nSample
 
-        train_ds = dataset(train_x_t, train_y_t)
+        trainDataset = DataSet(xTrainTensor, yTrainTensor)
+        testDataset = DataSet(xTestTensor, yTestTensor)
 
-        train_loader = DataLoader(dataset=train_ds, batch_size=20, shuffle=True)
+        trainLoader = DataLoader(dataset=trainDataset, batch_size=20, shuffle=True)
+        testLoader = DataLoader(dataset=testDataset, batch_size=20, shuffle=True)
 
-        class Iris_Model(nn.Module):
-            def __init__(self):
-                super(Iris_Model, self).__init__()
+        # ========== MX_X_X ==========
+
+        class NeuralNetwork(nn.Module):
+            def __init__(self, inputSize):
+                super(NeuralNetwork, self).__init__()
                 self.net = nn.Sequential(
-                    nn.Linear(train_x.shape[1], 100),
+                    nn.Linear(inputSize, 100),
                     nn.ReLU(),
                     nn.Linear(100, 100),
                     nn.ReLU(),
@@ -490,33 +489,35 @@ class ModelUse():
             def forward(self, x):
                 return self.net(x)
 
-        model = Iris_Model()
+        model = NeuralNetwork(xTrainTensor.shape[1])
 
-        criterion = nn.CrossEntropyLoss()
+        lossfunc = nn.CrossEntropyLoss()
         optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 
         epochs = 200
         for i in range(epochs + 1):
-            # model.train()
-            for samples, labels in train_loader:
-                pre = model(samples)
-                labels = labels.view(-1)
-                loss = criterion(pre, labels)
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
+            model.train()
+            for xBatch, yBatch in trainLoader:
+                pre = model(xBatch)
+                labels = yBatch.view(-1)
+                loss = lossfunc(pre, labels)
+                optimizer.zero_grad();loss.backward();optimizer.step()
             if i % 50 == 0:
                 print(f"epch={i:3d}, loss={loss:.3f}")
 
-        torch.save(model.state_dict(), "iris_model.pt")
+        torch.save(model.state_dict(), "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_6/iris_model.pt")
 
-        model2 = Iris_Model()
+        # ========== UPX_X_X ==========
+
+        # ---------- 模型使用 ----------
+
+        model2 = NeuralNetwork(xTestTensor.shape[1])
         model2.load_state_dict(torch.load("Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_6/iris_model.pt"))
 
-        pred = model2(test_x_t)
-        _, pred_class = torch.max(pred, dim=1)
-        n_correct = (test_y_t.view(-1) == pred_class).sum()
-        print(f"valid_acc={n_correct / len(test_x_t):.4f}")
+        pred = model2(xTestTensor)
+        _, topClassTest = torch.max(pred, dim=1)
+        n_correct = (yTestTensor.view(-1) == topClassTest).sum() # 比對 yTestTensor.view(-1) 與 topClassTest 是否一致再加總
+        print(f"valid_acc={n_correct / len(xTestTensor):.4f}") # 計算準確率
 
         return {}, {}
 
