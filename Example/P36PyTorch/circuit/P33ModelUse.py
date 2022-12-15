@@ -531,128 +531,90 @@ class ModelUse():
         from torchvision import datasets, transforms
         import matplotlib.pyplot as plt
 
-        torch.manual_seed(0)
+        torch.manual_seed(0)  # 設定隨機種子
 
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-        ])
+        transform = transforms.Compose([transforms.ToTensor(), ])
+        trainDataSet = datasets.MNIST('Example/P36PyTorch/file/data/', train=True, download=True, transform=transform)
+        testDataSet = datasets.MNIST('Example/P36PyTorch/file/data/', train=False, transform=transform)
 
-        train_data = datasets.MNIST('Example/P36PyTorch/file/data/', train=True, download=True, transform=transform)
-        test_data = datasets.MNIST('Example/P36PyTorch/file/data/', train=False, transform=transform)
+        trainDataLoader = DataLoader(trainDataSet, batch_size=32, shuffle=True)
+        testDataLoader = DataLoader(testDataSet, batch_size=500, shuffle=False)
 
-        train_x = train_data.data
-        train_y = train_data.targets
-        test_x = test_data.data
-        test_y = test_data.targets
-        print(train_x.shape, train_y.shape, test_x.shape, test_y.shape)
-
-        img, label = train_data[0]
-        print(img.shape)  # shape:(C,H,W)
-
-        print(img.min(), img.max())
-
-        img2 = img.permute(1, 2, 0)  # shape:(H,W,C)
-        plt.imshow(img2, cmap='gray')
-
-        print(label)
-
-        train_dataloader = DataLoader(train_data, batch_size=32, shuffle=True)
-        test_dataloader = DataLoader(test_data, batch_size=500, shuffle=False)
-
-        class ConvNet(nn.Module):
+        class NeuralNetwork(nn.Module):
             def __init__(self):
-                super(ConvNet, self).__init__()
-                self.cn1 = nn.Conv2d(1, 16, 3, 1)
-                self.cn2 = nn.Conv2d(16, 32, 3, 1)
-                self.dp1 = nn.Dropout(0.10)
-                self.dp2 = nn.Dropout(0.25)
-                self.fc1 = nn.Linear(12 * 12 * 32, 64)
-                self.fc2 = nn.Linear(64, 10)
+                super(NeuralNetwork, self).__init__()
+                self.model = nn.Sequential(
+                    nn.Conv2d(1, 16, 3, 1),
+                    nn.ReLU(),
+                    nn.Conv2d(16, 32, 3, 1),
+                    nn.ReLU(),
+                    nn.MaxPool2d(2),
+                    nn.Flatten(1),
+                    nn.Linear(12 * 12 * 32, 64),
+                    nn.Dropout(0.10),
+                    nn.ReLU(),
+                    nn.Linear(64, 10),
+                    nn.Dropout(0.25)
+                )
 
             def forward(self, x):
-                x = self.cn1(x)
-                x = F.relu(x)
-                x = self.cn2(x)
-                x = F.relu(x)
-                x = F.max_pool2d(x, 2)
-                x = torch.flatten(x, 1)
-                x = self.fc1(x)
-                x = self.dp1(x)
-                x = F.relu(x)
-                x = self.fc2(x)
-                x = self.dp2(x)
-                op = F.log_softmax(x, dim=1)
+                w = self.model(x)
+                op = F.log_softmax(w, dim=1)
                 return op
 
         device = torch.device('cpu')
-        model = ConvNet().to(device)
+        model = NeuralNetwork().to(device)
 
-        myloss = nn.NLLLoss()
-        myoptim = optim.Adadelta(model.parameters(), lr=0.5)
+        lossfunc = nn.NLLLoss()
+        optimizer = optim.Adadelta(model.parameters(), lr=0.5)
 
-        def train(model, device, train_dataloader, myloss, myoptim, epoch):
+        def train(model, device, trainDataLoader, lossfunc, optimizer, epoch):
             model.train()
-
-            for b_i, (X, y) in enumerate(train_dataloader):
-                X, y = X.to(device), y.to(device)
-                pred_prob = model(X)
-                loss = myloss(pred_prob, y)
-
-                myoptim.zero_grad()
-                loss.backward()
-                myoptim.step()
+            for b_i, (x, y) in enumerate(trainDataLoader):
+                x, y = x.to(device), y.to(device)
+                predProb = model(x)
+                loss = lossfunc(predProb, y)
+                optimizer.zero_grad();loss.backward();optimizer.step()
 
                 if b_i % 200 == 0:
-                    num1 = b_i * len(X)
-                    num2 = len(train_dataloader.dataset)
-                    num3 = 100 * b_i / len(train_dataloader)
-                    print('epoch:{} [{}/{} ({:.0f}%)]\t training loss: {:.6f}'.format(
-                        epoch, num1, num2, num3, loss.item()))
+                    num1 = b_i * len(x)
+                    num2 = len(trainDataLoader.dataset)
+                    num3 = 100 * b_i / len(trainDataLoader)
+                    print('epoch:{} [{}/{} ({:.0f}%)]\t training loss: {:.6f}'.format(epoch, num1, num2, num3,loss.item()))
 
-        epochs = 3
+        epochs = 1
         for epoch in range(epochs):
-            train(model, device, train_dataloader, myloss, myoptim, epoch)
-
-        def test(model, device, test_dataloader, myloss):
-            model.eval()
-            loss = 0
-            success = 0
-            with torch.no_grad():
-                for X, y in test_dataloader:
-                    X, y = X.to(device), y.to(device)
-                    pred_prob = model(X)
-                    loss += myloss(pred_prob, y).item()
-
-                    pred = pred_prob.argmax(dim=1, keepdim=True)
-                    success += pred.eq(y.view_as(pred)).sum().item()
-
-                    num1 = loss / len(test_dataloader)
-                    num2 = len(test_dataloader.dataset)
-                    num3 = 100 * success / len(test_dataloader.dataset)
-                    print('Overall Loss: {:.4f}, Overall Accuracy: {}/{} ({:.2f}%)'.format(
-                        num1, success, num2, num3))
+            train(model, device, trainDataLoader, lossfunc, optimizer, epoch)
 
         torch.save(model.state_dict(), "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_7/mnist_model.pt")
 
-        model2 = ConvNet()
+        # ========== UPX_X_X ==========
+
+        # ---------- 模型使用 ----------
+
+        def test(model, device, testDataLoader, lossfunc):
+            model.eval()
+            loss, success = 0, 0
+            with torch.no_grad():
+                for x, y in testDataLoader:
+                    x, y = x.to(device), y.to(device)
+                    predProb = model(x)
+                    loss += lossfunc(predProb, y).item()
+                    pred = predProb.argmax(dim=1, keepdim=True)
+                    success += pred.eq(y.view_as(pred)).sum().item()
+                    num1 = loss / len(testDataLoader)
+                    num2 = len(testDataLoader.dataset)
+                    num3 = 100 * success / len(testDataLoader.dataset)
+                    print('Overall Loss: {:.4f}, Overall Accuracy: {}/{} ({:.2f}%)'.format(num1, success, num2, num3))
+
+        device2 = torch.device('cpu')
+        model2 = NeuralNetwork().to(device2)
         model2.load_state_dict(torch.load("Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_7/mnist_model.pt"))
-        model2 = model2.to(device)
-
-        test(model2, device, test_dataloader, myloss)
-
-        model2 = model2.to("cpu")
-        sample_data, sample_targets = next(iter(test_dataloader))
-        print(sample_data.shape)
-
-        print(sample_data[10].shape)
-
-        plt.imshow(sample_data[10][0], cmap='gray')
-
-        pred_label = model2(sample_data).max(dim=1)[1][10]
-        print(pred_label)
-
-        print(f"Model prediction is : {pred_label}")
-        print(f"Ground truth is : {sample_targets[10]}")
+        test(model2, device2, testDataLoader, lossfunc)
+        sampleData, sampleTargets = next(iter(testDataLoader))
+        predLabel = model2(sampleData).max(dim=1)[1][10]
+        print(f"Model prediction is : {predLabel}")
+        print(f"Ground truth is : {sampleTargets[10]}")
 
         return {}, {}
 
