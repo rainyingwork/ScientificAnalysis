@@ -14,7 +14,7 @@ if __name__ == "__main__":
     basicInfo = {
         "RunType": ["decops"]
         , "Product": ["Example"]
-        , "Project": ["P02Reduction"]
+        , "Project": ["P02DECOPS"]
     }
     for opsRecordId in opsRecordIdArr:
         opsInfo = copy.deepcopy(basicInfo)
