@@ -61,12 +61,12 @@ class ModelUse():
         print(example10.resize_(3,6)) # tensor([[0,1,2,3,4,5],[6,7,8,9,10,11],[4322,4550,43228,4322,432,432]]) 多出來的張量會給數字
 
         # 讀取單一圖檔
-        pandaNP = np.array(Image.open('Example/P36PyTorch/file/data/imgs/panda1.jpg'))
+        pandaNP = np.array(Image.open('Example/P34PyTorch/file/data/imgs/panda1.jpg'))
         pandaTensor = torch.from_numpy(pandaNP)
         print(pandaTensor.shape) # torch.Size([426, 640, 3])
 
         # 讀取多個圖檔
-        pandaList = glob.glob("Example/P36PyTorch/file/data/imgs/*.jpg")
+        pandaList = glob.glob("Example/P34PyTorch/file/data/imgs/*.jpg")
         print(pandaList)
         pandaNPList = []
         for panda in pandaList:
@@ -183,7 +183,7 @@ class ModelUse():
         # ========== RX_X_X ==========
 
         # 讀取資料 YearPredictionMSD
-        msdDF = pandas.read_csv('Example/P36PyTorch/file/data/YearPredictionMSD.csv', nrows=50000, header=None)
+        msdDF = pandas.read_csv('Example/P34PyTorch/file/data/YearPredictionMSD.csv', nrows=50000, header=None)
         print(msdDF.shape)  # (50000, 91)
 
         # 數據所有資料欄位
@@ -302,7 +302,7 @@ class ModelUse():
         # ========== RX_X_X ==========
 
         # 讀取資料
-        creditCardDF = pd.read_csv("Example/P36PyTorch/file/data/UCI_Credit_Card.csv")
+        creditCardDF = pd.read_csv("Example/P34PyTorch/file/data/UCI_Credit_Card.csv")
         print(creditCardDF.shape)  # (30000, 25)
 
         creditCardDF = creditCardDF.drop(columns=["ID"])
@@ -404,14 +404,14 @@ class ModelUse():
                 print(f"Epoch:{epoch}, trainLoss:{trainLossValue:.3f}, valLoss:{devLossValue:.3f}" \
                       f" trainAcc:{trainAccValue:.2f}%, valAcc:{devAccValue:.2f}%")
 
-        torch.save(model.state_dict(), "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_5/credit_model.pt")
+        torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_5/credit_model.pt")
 
         # ========== UPX_X_X ==========
 
         # ---------- 模型使用 ----------
 
         model2 = NeuralNetwork(xTest.shape[1])
-        model2.load_state_dict(torch.load("Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_5/credit_model.pt"))
+        model2.load_state_dict(torch.load("Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_5/credit_model.pt"))
         model2.eval()
         testPred = model2(xTestTensor)
         realTestPred = torch.exp(testPred)  # 將log_softmax輸出轉為softmax輸出
@@ -434,7 +434,7 @@ class ModelUse():
 
         # ========== RX_X_X ==========
 
-        irisDF = pd.read_csv('Example/P36PyTorch/file/data/iris.csv')
+        irisDF = pd.read_csv('Example/P34PyTorch/file/data/iris.csv')
 
         # ========== PX_X_X ==========
 
@@ -505,14 +505,14 @@ class ModelUse():
             if i % 50 == 0:
                 print(f"epch={i:3d}, loss={loss:.3f}")
 
-        torch.save(model.state_dict(), "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_6/iris_model.pt")
+        torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_6/iris_model.pt")
 
         # ========== UPX_X_X ==========
 
         # ---------- 模型使用 ----------
 
         model2 = NeuralNetwork(xTestTensor.shape[1])
-        model2.load_state_dict(torch.load("Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_6/iris_model.pt"))
+        model2.load_state_dict(torch.load("Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_6/iris_model.pt"))
 
         pred = model2(xTestTensor)
         _, topClassTest = torch.max(pred, dim=1)
@@ -534,8 +534,8 @@ class ModelUse():
         torch.manual_seed(0)  # 設定隨機種子
 
         transform = transforms.Compose([transforms.ToTensor(), ])
-        trainDataSet = datasets.MNIST('Example/P36PyTorch/file/data/', train=True, download=True, transform=transform)
-        testDataSet = datasets.MNIST('Example/P36PyTorch/file/data/', train=False, transform=transform)
+        trainDataSet = datasets.MNIST('Example/P34PyTorch/file/data/', train=True, download=True, transform=transform)
+        testDataSet = datasets.MNIST('Example/P34PyTorch/file/data/', train=False, transform=transform)
 
         trainDataLoader = DataLoader(trainDataSet, batch_size=32, shuffle=True)
         testDataLoader = DataLoader(testDataSet, batch_size=500, shuffle=False)
@@ -586,7 +586,7 @@ class ModelUse():
         for epoch in range(epochs):
             train(model, device, trainDataLoader, lossfunc, optimizer, epoch)
 
-        torch.save(model.state_dict(), "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_7/mnist_model.pt")
+        torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_7/mnist_model.pt")
 
         # ========== UPX_X_X ==========
 
@@ -609,7 +609,7 @@ class ModelUse():
 
         device2 = torch.device('cpu')
         model2 = NeuralNetwork().to(device2)
-        model2.load_state_dict(torch.load("Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_7/mnist_model.pt"))
+        model2.load_state_dict(torch.load("Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_7/mnist_model.pt"))
         test(model2, device2, testDataLoader, lossfunc)
         sampleData, sampleTargets = next(iter(testDataLoader))
         predLabel = model2(sampleData).max(dim=1)[1][10]
@@ -627,7 +627,7 @@ class ModelUse():
         import numpy as np
         import pandas as pd
 
-        imgStep1 = Image.open("Example/P36PyTorch/file/data/dog.jpg")
+        imgStep1 = Image.open("Example/P34PyTorch/file/data/dog.jpg")
 
         preprocess = transforms.Compose([
             transforms.Resize(256),
@@ -643,7 +643,7 @@ class ModelUse():
 
         predictNumpys = predictList.detach().numpy()  # 轉為NumPy
         outClass = np.argmax(predictNumpys, axis=1)  # 找出最大值的索引
-        imageNetClassesDF = pd.read_csv("Example/P36PyTorch/file/data/imagenet_classes.csv", header=None)
+        imageNetClassesDF = pd.read_csv("Example/P34PyTorch/file/data/imagenet_classes.csv", header=None)
         label = imageNetClassesDF.iloc[outClass].values
         print(label)
         score = torch.nn.functional.softmax(predictList, dim=1)[0] * 100 # 列出所有對應標籤的百分比
@@ -690,13 +690,13 @@ class ModelUse():
 
         trainDataSet = datasets.ImageFolder(
             # 使用 root 撈取圖片位置
-            root="Example/P36PyTorch/file/data/bees_ants/train",
+            root="Example/P34PyTorch/file/data/bees_ants/train",
             # 使用 transform 轉成模型可以吃的標準圖片
             transform=trainTransforms
         )
         verifyDataSet = datasets.ImageFolder(
             # 使用 root 撈取圖片位置
-            root="Example/P36PyTorch/file/data/bees_ants/val",
+            root="Example/P34PyTorch/file/data/bees_ants/val",
             # 使用 transform 轉成模型可以吃的標準圖片
             transform=verifyTransforms
         )
@@ -779,7 +779,7 @@ class ModelUse():
         out = std * out + mean
         out = numpy.clip(out, 0, 1)
 
-        torch.save(model.state_dict(), "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_9/bee.pt")
+        torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_9/bee.pt")
 
         return {}, {}
 
@@ -796,8 +796,8 @@ class ModelUse():
         import matplotlib.pyplot as plt
         from tqdm import tqdm  # pip install tqdm
 
-        import Example.P36PyTorch.package.cifar10_model as cifar10_model
-        model_file = "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
+        import Example.P34PyTorch.package.cifar10_model as cifar10_model
+        model_file = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
         epochs = 50
         end_loss = 0.65
 
@@ -812,7 +812,7 @@ class ModelUse():
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        train_data = datasets.CIFAR10('Example/P36PyTorch/file/data/cifar10/train', train=True, download=True, transform=transform)
+        train_data = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/train', train=True, download=True, transform=transform)
         print(train_data.data.shape)
 
         dev_size = 0.2
@@ -902,8 +902,8 @@ class ModelUse():
         import torchvision.transforms as transforms
         from torch.utils.data import DataLoader
 
-        import Example.P36PyTorch.package.cifar10_model as cifar10_model
-        model_file = "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
+        import Example.P34PyTorch.package.cifar10_model as cifar10_model
+        model_file = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
 
         transform = transforms.Compose([
             transforms.ToTensor(),
@@ -912,7 +912,7 @@ class ModelUse():
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        test_data = datasets.CIFAR10('Example/P36PyTorch/file/data/cifar10/test', train=False, download=True, transform=transform)
+        test_data = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/test', train=False, download=True, transform=transform)
 
         batch_size = 100
         test_loader = DataLoader(test_data, batch_size=batch_size)
@@ -962,8 +962,8 @@ class ModelUse():
         import matplotlib.pyplot as plt
         from tqdm import tqdm
 
-        import Example.P36PyTorch.package.cifar10_resnet as cifar10_model
-        model_file = "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_11/cifar10_resnet.pt"
+        import Example.P34PyTorch.package.cifar10_resnet as cifar10_model
+        model_file = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_11/cifar10_resnet.pt"
         epochs = 10
         end_loss = 0.45
 
@@ -978,7 +978,7 @@ class ModelUse():
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        train_data = datasets.CIFAR10('Example/P36PyTorch/file/data/cifar10/train', train=True, download=True, transform=transform)
+        train_data = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/train', train=True, download=True, transform=transform)
         print(train_data.data.shape)
 
         dev_size = 0.2
@@ -1068,8 +1068,8 @@ class ModelUse():
         import torchvision.transforms as transforms
         from torch.utils.data import DataLoader
 
-        import Example.P36PyTorch.package.cifar10_resnet as cifar10_model
-        model_file = "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_11/cifar10_resnet.pt"
+        import Example.P34PyTorch.package.cifar10_resnet as cifar10_model
+        model_file = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_11/cifar10_resnet.pt"
 
         transform = transforms.Compose([
             transforms.ToTensor(),
@@ -1078,7 +1078,7 @@ class ModelUse():
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        test_data = datasets.CIFAR10('Example/P36PyTorch/file/data/cifar10/test', train=False, download=True, transform=transform)
+        test_data = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/test', train=False, download=True, transform=transform)
 
         batch_size = 100
         test_loader = DataLoader(test_data, batch_size=batch_size)
@@ -1125,7 +1125,7 @@ class ModelUse():
 
         torch.manual_seed(10)
 
-        df = pd.read_csv('Example/P36PyTorch/file/data/Sales_Transactions_dataset_weekly.csv')
+        df = pd.read_csv('Example/P34PyTorch/file/data/Sales_Transactions_dataset_weekly.csv')
         df.head()
 
         df = df.iloc[:, 1:53]
@@ -1225,19 +1225,19 @@ class ModelUse():
             review_list = []
             label_list = []
             for label in ['pos', 'neg']:
-                for fname in tqdm(os.listdir(f"Example/P36PyTorch/file/data/aclImdb/train/{label}/")):
+                for fname in tqdm(os.listdir(f"Example/P34PyTorch/file/data/aclImdb/train/{label}/")):
                     if 'txt' not in fname:
                         continue
-                    with open(os.path.join(f"Example/P36PyTorch/file/data/aclImdb/train/{label}/", fname), encoding="utf-8") as f:
+                    with open(os.path.join(f"Example/P34PyTorch/file/data/aclImdb/train/{label}/", fname), encoding="utf-8") as f:
                         review_list += [f.read()]
                         label_list += [label]
 
             # 使用 pickle 儲存
             mydict = {'review': review_list, 'label': label_list}
-            with open('Example/P36PyTorch/file/data/imdb.pt', 'wb') as f:
+            with open('Example/P34PyTorch/file/data/imdb.pt', 'wb') as f:
                 pickle.dump(mydict, f)
 
-        with open('Example/P36PyTorch/file/data/imdb.pt', 'rb') as f:
+        with open('Example/P34PyTorch/file/data/imdb.pt', 'rb') as f:
             new_dict = pickle.load(f)
         review_list = new_dict["review"]
         label_list = new_dict["label"]
@@ -2180,7 +2180,7 @@ class ModelUse():
         print("模型訓練完成！")
 
         # 模型儲存位置
-        pytorchModelFilePath = "Example/P36PyTorch/file/result/V1_0_1/9999/M1_0_1/Model.pth"
+        pytorchModelFilePath = "Example/P34PyTorch/file/result/V1_0_1/9999/M1_0_1/Model.pth"
 
         # 儲存模型參數
         torch.save(model.state_dict(), pytorchModelFilePath)

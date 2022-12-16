@@ -6,7 +6,7 @@ if __name__ == "__main__":
     basicInfo = {
         "RunType": ["runops"]
         , "Product": ["Example"]
-        , "Project": ["P36PyTorch"]
+        , "Project": ["P34PyTorch"]
     }
     opsInfo = copy.deepcopy(basicInfo)
     opsInfo["OPSVersion"] = ["V0_0_1"]
