@@ -653,21 +653,22 @@ class ModelUse():
 
     @classmethod
     def M0_0_9(self, functionInfo):
-
+        import numpy
+        import random
         import torch
         import torch.nn as nn
         import torch.optim as optim
-        import numpy as np
-        import random
         import torchvision
         from torchvision import datasets, models
         from torchvision import transforms
+        from torch.optim.lr_scheduler import StepLR
 
-        torch.manual_seed(1234)
-        np.random.seed(1234)
+        # 隨機種子
+        numpy.random.seed(1234)
         random.seed(1234)
+        torch.manual_seed(1234)
 
-        train_transforms = transforms.Compose([
+        trainTransforms = transforms.Compose([
             transforms.RandomResizedCrop(224),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
@@ -677,7 +678,7 @@ class ModelUse():
             )
         ])
 
-        val_transforms = transforms.Compose([
+        verifyTransforms = transforms.Compose([
             transforms.Resize(256),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
@@ -687,101 +688,96 @@ class ModelUse():
             )
         ])
 
-        train_dataset = datasets.ImageFolder(
+        trainDataSet = datasets.ImageFolder(
+            # 使用 root 撈取圖片位置
             root="Example/P36PyTorch/file/data/bees_ants/train",
-            transform=train_transforms
+            # 使用 transform 轉成模型可以吃的標準圖片
+            transform=trainTransforms
         )
-        val_dataset = datasets.ImageFolder(
+        verifyDataSet = datasets.ImageFolder(
+            # 使用 root 撈取圖片位置
             root="Example/P36PyTorch/file/data/bees_ants/val",
-            transform=val_transforms
+            # 使用 transform 轉成模型可以吃的標準圖片
+            transform=verifyTransforms
         )
-        train_loader = torch.utils.data.DataLoader(
-            train_dataset,
+
+        trainDataLoader = torch.utils.data.DataLoader(
+            trainDataSet,
             batch_size=4,
             shuffle=True,
             num_workers=4
         )
-        val_loader = torch.utils.data.DataLoader(
-            val_dataset,
+        verifyDataLoader = torch.utils.data.DataLoader(
+            verifyDataSet,
             batch_size=4,
             shuffle=True,
             num_workers=4
         )
+
         model = models.resnet18(weights='ResNet18_Weights.DEFAULT')
-        print(model.fc)
+        # 保留 model 的輸入數，輸出改為2
         model.fc = nn.Linear(model.fc.in_features, 2)
-        print(model.fc)
+
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
         model = model.to(device)
-        print(device)
-        criterion = nn.CrossEntropyLoss()
+
+        # 損失函數
+        lossfunc = nn.CrossEntropyLoss()
+        # 學習器
         optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-        from torch.optim.lr_scheduler import StepLR
-        exp_lr_scheduler = StepLR(optimizer, step_size=7, gamma=0.1)
+        # 學習調度器 代表每step_size的步數學習率下降gamma optimizerScheduler.step() 為一步
+        optimizerScheduler = StepLR(optimizer, step_size=7, gamma=0.1)
 
         epochs = 21
         for epoch in range(epochs):
-            model.train()
+            model.train() # 模型訓練
             losses = 0.0
             corrects = 0
-            for inputs, labels in train_loader:
-                inputs = inputs.to(device)
-                labels = labels.to(device)
-                optimizer.zero_grad()
-                outputs = model(inputs)
-                loss = criterion(outputs, labels)
-                loss.backward()
-                optimizer.step()
+            for x , y in trainDataLoader:
+                x , y = x.to(device) , y.to(device)
+                outputs = model(x)
+                loss = lossfunc(outputs, y)
+                optimizer.zero_grad() ; loss.backward() ; optimizer.step()
 
-                _, preds = torch.max(outputs, 1)
-                losses += loss.item() / inputs.size(0)
-                corrects += torch.sum(preds == labels.data) / inputs.size(0)
+                _ , preds = torch.max(outputs, 1) # 將輸出結果變成預測
+                losses += loss.item() / x.size(0) # 加總損失函數
+                corrects += torch.sum(preds == y.data) / x.size(0) # 正確的數量
 
-            exp_lr_scheduler.step()
-            train_loss = losses / len(train_loader)
-            train_acc = corrects / len(train_loader)
+            optimizerScheduler.step() # 一代執行一次學習調度器 下降學習函數
+            trainLoss = losses / len(trainDataLoader) # 訓練損失函數加總
+            trainAcc = corrects / len(trainDataLoader) # 訓練準確率加總
 
-            model.eval()
+            model.eval() # 模型驗證
             losses = 0.0
             corrects = 0
-            for inputs, labels in val_loader:
-                inputs = inputs.to(device)
-                labels = labels.to(device)
-                outputs = model(inputs)
-                loss = criterion(outputs, labels)
-                _, preds = torch.max(outputs, 1)
-                losses += loss.item() / inputs.size(0)
-                corrects += torch.sum(preds == labels.data) / inputs.size(0)
+            for x , y in verifyDataLoader:
+                x , y = x.to(device) , y.to(device)
+                outputs = model(x)
+                loss = lossfunc(outputs, y)
 
-            val_loss = losses / len(val_loader)
-            val_acc = corrects.double() / len(val_loader)
+                _, preds = torch.max(outputs, 1) # 將輸出結果變成預測
+                losses += loss.item() / x.size(0) # 加總損失函數
+                corrects += torch.sum(preds == y.data) / x.size(0)
 
-            print(f"epoch: {epoch}, Train loss: {train_loss:.4f}, acc:{train_acc:.4f}, \
-            Val loss: {val_loss:.4f}, acc:{val_acc:.4f}")
+            verifyLoss = losses / len(verifyDataLoader) # 驗證損失函數加總
+            verifyAcc = corrects / len(verifyDataLoader) # 驗證準確率加總
 
-        inputs, classes = next(iter(val_loader))  # 取得一批圖像
-        class_name = val_dataset.classes
+            print(f"epoch: {epoch}, Train loss: {trainLoss:.4f}, acc:{trainAcc:.4f}, Val loss: {verifyLoss:.4f}, acc:{verifyAcc:.4f}")
 
-        outputs = model(inputs.to(device))  # 預測輸出
-        _, preds = torch.max(outputs, 1)
-        title = [class_name[x] for x in preds]
-        print(inputs.shape)
-        print(title)
+        inputs , classes = next(iter(verifyDataLoader))  # 取得一批圖像
+        className = verifyDataSet.classes # 建立類別名稱列表
 
-        import matplotlib.pyplot as plt
+        inputs = inputs.to(device)
+        outputs = model(inputs)  # 預測輸出
+        _ , preds = torch.max(outputs, 1)
+        title = [className[x] for x in preds]
 
         out = torchvision.utils.make_grid(inputs)  # 顯示圖像
         out = out.numpy().transpose((1, 2, 0))
-        mean = np.array([0.485, 0.456, 0.406])
-        std = np.array([0.229, 0.224, 0.225])
+        mean = numpy.array([0.485, 0.456, 0.406])
+        std = numpy.array([0.229, 0.224, 0.225])
         out = std * out + mean
-        out = np.clip(out, 0, 1)
-
-        plt.imshow(out)
-        if title is not None:
-            plt.title(title)
-
-        plt.show()
+        out = numpy.clip(out, 0, 1)
 
         torch.save(model.state_dict(), "Example/P36PyTorch/file/result/V0_0_1/9999/M0_0_9/bee.pt")
 
