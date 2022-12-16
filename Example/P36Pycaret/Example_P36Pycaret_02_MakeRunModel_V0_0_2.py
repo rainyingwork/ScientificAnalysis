@@ -10,7 +10,7 @@ if __name__ == "__main__":
         basicInfo = {
             "RunType": ["runops"]
             , "Product": ["Example"]
-            , "Project": ["P33PycaretUse"]
+            , "Project": ["P36Pycaret"]
         }
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_2"]
@@ -19,7 +19,7 @@ if __name__ == "__main__":
                 "FunctionType": "GetXYDataByDatabaseRusult"
                 , "DataTime" : dateInfo['DataTime']
                 , "DatabaseProduct": "Example"
-                , "DatabaseProject": "P33PycaretUse"
+                , "DatabaseProject": "P36Pycaret"
                 , "DatabaseOPSVersion": "V0_0_1"
                 , "DatabaseOPSRecord": 640
                 , "DatabaseFunction": "M0_0_1"
