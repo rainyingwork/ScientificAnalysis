@@ -40,7 +40,15 @@ __pythonexePath = "{}/venv/{}/python".format(sys.path[1],pythonEXEPath)
 # os.system("{} -m pip install gym==0.26.2".format(__pythonexePath))
 
 
-os.system("{} -m pip install --upgrade pycaret".format(__pythonexePath))
+# os.system("{} -m pip install --upgrade pycaret".format(__pythonexePath))
+
+# os.system("{} -m pip install google-auth==2.3.3".format(__pythonexePath))
+# os.system("{} -m pip install oauth2client==4.1.3".format(__pythonexePath))
+# os.system("{} -m pip install google-api-python-client==2.31.0".format(__pythonexePath))
+#
+# os.system("{} -m pip install google-api-python-client==1.7.9".format(__pythonexePath))
+# os.system("{} -m pip install google-auth-httplib2==0.0.3".format(__pythonexePath))
+# os.system("{} -m pip install google-auth-oauthlib==0.4.0".format(__pythonexePath))
 
 # import git
 # import errno
