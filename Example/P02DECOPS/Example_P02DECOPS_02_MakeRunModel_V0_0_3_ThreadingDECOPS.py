@@ -1,4 +1,4 @@
-import os , copy; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
+import os , copy
 import Config
 import OPSCommon as executeOPSCommon
 import datetime

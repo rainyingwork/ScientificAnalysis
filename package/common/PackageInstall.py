@@ -36,4 +36,7 @@ __pythonexePath = "{}/venv/{}/python".format(sys.path[1],pythonEXEPath)
 # os.system("{} -m pip install tqdm==4.64.1".format(__pythonexePath)) # 進度條套件
 # os.system("{} -m pip install openpyxl==3.0.10".format(__pythonexePath)) # Excel套件
 
+if os.name == "posix" :
+    os.system("{} -m pip install certifi==2022.12.7".format(__pythonexePath)) # 修正SSL錯誤
+
 

@@ -1,9 +1,8 @@
-from pycaret.datasets import get_data
-
 class Standard () :
 
     @classmethod
     def S0_0_1(self, functionInfo):
+        from pycaret.datasets import get_data
         from package.dataengineer.common.standard.StandardFunction import StandardFunction
         insertDataDF = get_data('juice')
         insertDataDF.columns = [
