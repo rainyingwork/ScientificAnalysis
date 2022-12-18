@@ -10,6 +10,7 @@ if __name__ == "__main__":
     }
     opsInfo = copy.deepcopy(basicInfo)
     opsInfo["OPSVersion"] = ["V0_0_1"]
+    # opsInfo["OPSRecordId"] = []
     opsInfo["OPSOrderJson"] = {
         "ExeFunctionArr": ["C0_0_1", "O0_0_1", "S0_0_1", "R0_0_1", "P0_0_1", "M0_0_1"]
         # , "RepOPSRecordId": 0
