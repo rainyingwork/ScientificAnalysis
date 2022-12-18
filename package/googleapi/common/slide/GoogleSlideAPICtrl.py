@@ -166,6 +166,28 @@ class GoogleSlideAPICtrl ():
                     , 'fields': 'foregroundColor,fontFamily,fontSize'
                 }
             }
+            , {
+                'createSheetsChart': {
+                    'objectId': str(round(time.time() * 1000)),
+                    'spreadsheetId': str(round(time.time() * 1000)+1),
+                    'chartId': str(round(time.time() * 1000)+2),
+                    'linkingMode': 'LINKED',
+                    'elementProperties': {
+                        'pageObjectId': pageObjectId,
+                        'size': {
+                            'height': {'magnitude': 4000000,'unit': 'EMU'},
+                            'width': {'magnitude': 4000000,'unit': 'EMU'}
+                        },
+                        'transform': {
+                            'scaleX': 1,
+                            'scaleY': 1,
+                            'translateX': 100000,
+                            'translateY': 100000,
+                            'unit': 'EMU'
+                        }
+                    }
+                }
+            }
         ]
         return slideRequests
 
