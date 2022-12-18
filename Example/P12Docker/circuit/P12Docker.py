@@ -2,13 +2,24 @@
 class Docker():
 
     @classmethod
-    def D0_0_1(self, functionInfo):
+    def D0_1_0(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D0_1_0")
+
+    @classmethod
+    def D0_1_1(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D0_1_1")
+
+    @classmethod
+    def D0_1_2(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D0_1_2")
+
+    @classmethod
+    def __DX_X_X(self, functionInfo, functionVersion):
         import copy
         from package.systemengineer.common.docker.DockerFunction import DockerFunction
         dockerFunction = DockerFunction()
-        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["D0_0_1"])
-        functionVersionInfo["Version"] = "D0_0_1"
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"][functionVersion])
+        functionVersionInfo["Version"] = functionVersion
         resultObject, globalObjectDict = dockerFunction.executionFunctionByFunctionType(functionVersionInfo)
         return resultObject, globalObjectDict
-
 
