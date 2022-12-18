@@ -1,4 +1,4 @@
-import os ,sys ; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
+import os ,sys
 from package.common.database.tool.SqlTool import SqlTool
 from package.common.database.PostgresCtrl import PostgresCtrl
 from dotenv import load_dotenv
@@ -18,9 +18,9 @@ postgresCtrl = PostgresCtrl(
 
 sqlFilePathArr = [
     ""
-    #, "common/common/file/init/P21_00_PG_CreateSchema_ObservationData.sql"
+    , "common/common/file/init/P21_00_PG_CreateSchema_ObservationData.sql"
     , "common/common/file/init/P21_01_PG_CreateTable_ObservationData_StandardData.sql"
-    #, "common/common/file/init/P21_02_PG_CreateTable_ObservationData_AnalysisData.sql"
+    , "common/common/file/init/P21_02_PG_CreateTable_ObservationData_AnalysisData.sql"
 ]
 
 for sqlFilePath in sqlFilePathArr :
