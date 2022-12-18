@@ -18,8 +18,8 @@ if __name__ == "__main__":
     opsInfo["OPSOrderJson"] = {
         "ExeFunctionArr": ["D1_1_0","D1_2_0","D1_2_1","D1_2_2","D1_3_0"]
         , "RepOPSRecordId": 9999
-        , "RepFunctionArr": ["D1_1_0","D1_2_0","D1_2_1","D1_2_2"]
-        , "RunFunctionArr": ["D1_3_0"]
+        , "RepFunctionArr": ["D1_1_0","D1_3_0"]
+        , "RunFunctionArr": ["D1_2_0","D1_2_1","D1_2_2"]
         , "OrdFunctionArr": [
             {"Parent": "D1_2_0", "Child": "D1_2_1"}
             , {"Parent": "D1_2_1", "Child": "D1_2_2"}
@@ -64,7 +64,7 @@ if __name__ == "__main__":
                 "version": "3.7"
                 , "services": {
                     "python39": {
-                        "image": "python:3.9.16-slim-bullseye"
+                        "image": "python:3.9.13-slim-bullseye"
                         , "restart": "always"
                         , "environment": {
                             "ACCEPT_EULA": "Y"
