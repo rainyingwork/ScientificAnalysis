@@ -1,7 +1,7 @@
-import os , copy; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
+import os , copy
 import Config
 from dotenv import load_dotenv
-import OPSCommon_local as executeOPSCommon
+import OPSCommon as executeOPSCommon
 
 load_dotenv(dotenv_path="env/postgresql.env")
 load_dotenv(dotenv_path="env/mongodb.env")

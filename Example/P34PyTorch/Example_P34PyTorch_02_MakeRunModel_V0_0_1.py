@@ -21,7 +21,7 @@ if __name__ == "__main__":
             'M0_0_16','M0_0_17','M0_0_18']
         , "RepOPSRecordId": 9999
         # , "RepFunctionArr": ["R1_0_1","P1_0_1","M1_0_1"]
-        , "RunFunctionArr": ["M0_0_9Test"]
+        , "RunFunctionArr": ["M0_0_9"]
         , "OrdFunctionArr": [
             {"Parent": "M0_0_10Train", "Child": "M0_0_10Test"}
             , {"Parent": "M0_0_11Train", "Child": "M0_0_11Test"}
