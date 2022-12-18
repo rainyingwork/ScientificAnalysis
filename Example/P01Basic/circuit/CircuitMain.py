@@ -1,3 +1,4 @@
+from Example.P01Basic.circuit.P11SYS import SYS
 from Example.P01Basic.circuit.P12Docker import Docker
 from Example.P01Basic.circuit.P21Crawler import Crawler
 from Example.P01Basic.circuit.P22Original import Original
@@ -7,7 +8,7 @@ from Example.P01Basic.circuit.P32PreProcess import PreProcess
 from Example.P01Basic.circuit.P33ModelUse import ModelUse
 
 class CircuitMain(
-    Docker
+    SYS , Docker
     , Crawler, Original, Standard
     , RawData, PreProcess, ModelUse
     ) :

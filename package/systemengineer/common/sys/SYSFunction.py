@@ -1,4 +1,4 @@
-class SSHCmdFunction():
+class SYSFunction():
 
     def __init__(self):
         pass
