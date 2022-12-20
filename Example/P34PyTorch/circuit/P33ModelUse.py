@@ -652,14 +652,14 @@ class ModelUse():
         imgStep1 = Image.open("Example/P34PyTorch/file/data/dog.jpg")
 
         preprocess = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(244),
-            transforms.ToTensor()
+            transforms.Resize(256), # 縮放圖片長邊變成256
+            transforms.CenterCrop(244), # 從中心裁切出244x244的圖片
+            transforms.ToTensor() # 將圖片轉成Tensor，並把數值normalize到[0,1]
         ])
 
         imgStep2 = preprocess(imgStep1)
         imgStep3 = torch.unsqueeze(imgStep2, 0)
-        resnetModel = models.resnet18(weights='ResNet18_Weights.DEFAULT')
+        resnetModel = models.resnet18(weights='ResNet18_Weights.DEFAULT') # 載入torchvision的預訓練模型
         resnetModel.eval() # 將resnetModel設為驗證
         predictList = resnetModel(imgStep3)  # 將圖片輸入
 
