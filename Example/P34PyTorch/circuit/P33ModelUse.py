@@ -115,7 +115,7 @@ class ModelUse():
             wPred.data = wPred.data - lr * wPred.grad.data  # 梯度下降更新 原本資料 - 損失函數 * 差異梯度
             lossValueList.append(loss.item())  # 記錄該次的loss值
             if (epoch) % 50 == 0 : # 印出50倍數代的相關數據
-                print(f"epoch:{epoch}, Loss: {loss.item():.3f}")
+                print(f"Epoch:{epoch}, Loss: {loss.item():.3f}")
 
         # 印出損失值過程
         print(lossValueList)
@@ -161,7 +161,7 @@ class ModelUse():
             loss.backward()  # loss 向輸入側進行反向傳播
             optimizer.step()  # 做梯度下降更新
             if epoch % 20 == 0:  # 印出20倍數代的相關數據
-                print(f"epoch={epoch}, loss={loss.item():.3f}")
+                print(f"Epoch:{epoch}, Loss:{loss.item():.3f}")
 
         # 印出損失值過程
         print(lossList)
@@ -263,7 +263,7 @@ class ModelUse():
                     yPred2 = model(xDevTensor)  # 使用為訓練的資料進行損失函數驗證
                     validLoss = lossfunc(yPred2, yDevTensor)
                 # 可以注意到損失會不斷的下降
-                print(f"epoch={epoch},  trainLoss:{trainLoss.item():.3f},validLoss:{validLoss.item():.3f}")
+                print(f"Epoch:{epoch},Train Loss:{trainLoss.item():.3f},Valid Loss:{validLoss.item():.3f}")
                 # 損失值小於81 會提前結束訓練
                 if trainLoss.item() < 81:
                     break
@@ -275,11 +275,11 @@ class ModelUse():
         model = model.to("cpu")
         pred = model(xTestTensor)
         testLoss = lossfunc(pred, yTestTensor)
-        print(f"testLoss: {testLoss.item():.3f}")
+        print(f"TestLoss:{testLoss.item():.3f}")
 
         # ---------- 模型使用 ----------
         for i in range(100, 110):
-            print(f"truth:{yTestTensor[i].item():.0f}, pred:{pred[i].item():.0f}")
+            print(f"Truth:{yTestTensor[i].item():.0f},Pred:{pred[i].item():.0f}")
 
         return {}, {}
 
@@ -401,8 +401,8 @@ class ModelUse():
 
             model.eval()
             if epoch % 1 == 0:
-                print(f"Epoch:{epoch}, trainLoss:{trainLossValue:.3f}, valLoss:{devLossValue:.3f}" \
-                      f" trainAcc:{trainAccValue:.2f}%, valAcc:{devAccValue:.2f}%")
+                print(f"Epoch:{epoch},TrainLoss:{trainLossValue:.3f},ValLoss:{devLossValue:.3f}" \
+                      f"TrainAcc:{trainAccValue:.2f}%,ValAcc:{devAccValue:.2f}%")
 
         torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_5/credit_model.pt")
 
@@ -580,7 +580,7 @@ class ModelUse():
                     num1 = b_i * len(x)
                     num2 = len(trainDataLoader.dataset)
                     num3 = 100 * b_i / len(trainDataLoader)
-                    print('epoch:{} [{}/{} ({:.0f}%)]\t training loss: {:.6f}'.format(epoch, num1, num2, num3,loss.item()))
+                    print('Epoch:{} [{}/{} ({:.0f}%)]\t Training Loss: {:.6f}'.format(epoch, num1, num2, num3,loss.item()))
 
         epochs = 1
         for epoch in range(epochs):
@@ -647,7 +647,7 @@ class ModelUse():
         label = imageNetClassesDF.iloc[outClass].values
         print(label)
         score = torch.nn.functional.softmax(predictList, dim=1)[0] * 100 # 列出所有對應標籤的百分比
-        print(f"score:{score[outClass].item():.2f}") # 找出對應標籤的百分比
+        print(f"Score:{score[outClass].item():.2f}") # 找出對應標籤的百分比
 
         return {}, {}
 
@@ -762,7 +762,7 @@ class ModelUse():
             verifyLoss = losses / len(verifyDataLoader) # 驗證損失函數加總
             verifyAcc = corrects / len(verifyDataLoader) # 驗證準確率加總
 
-            print(f"epoch: {epoch}, Train loss: {trainLoss:.4f}, acc:{trainAcc:.4f}, Val loss: {verifyLoss:.4f}, acc:{verifyAcc:.4f}")
+            print(f"Epoch: {epoch}, Train Loss: {trainLoss:.4f}, Acc:{trainAcc:.4f}, Val Loss: {verifyLoss:.4f}, Acc:{verifyAcc:.4f}")
 
         inputs , classes = next(iter(verifyDataLoader))  # 取得一批圖像
         className = verifyDataSet.classes # 建立類別名稱列表
@@ -868,7 +868,7 @@ class ModelUse():
                 devLoss = devLoss / len(devDataLoader)
             trainLossValueList.append(trainLoss)
             devLossValueList.append(devLoss)
-            print(f"epoch: {epoch}, Train_loss: {trainLoss:.3f}, Valid_loss: {devLoss:.3f}")
+            print(f"Epoch: {epoch}, TrainLoss: {trainLoss:.3f}, ValidLoss: {devLoss:.3f}")
             if trainLoss < endLoss:
                 break
 
@@ -907,7 +907,7 @@ class ModelUse():
         print(len(testDataLoader))
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"deivce:{device}")
+        print(f"Deivce:{device}")
 
         import Example.P34PyTorch.package.cifar10_model as cifar10Model
         modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
@@ -932,7 +932,7 @@ class ModelUse():
 
         testLoss = testLoss / len(testDataLoader)
         numCorrect = numCorrect / (len(testDataLoader) * batchSize)
-        print(f"test_loss: {testLoss:.3f}, correct: {numCorrect:.3f}")
+        print(f"TestLoss: {testLoss:.3f}, Correct: {numCorrect:.3f}")
 
         return {}, {}
 
