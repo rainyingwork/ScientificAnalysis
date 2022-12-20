@@ -691,20 +691,20 @@ class ModelUse():
         torch.manual_seed(1234)
 
         trainTransforms = transforms.Compose([
-            transforms.RandomResizedCrop(224),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize(
+            transforms.RandomResizedCrop(224),      # 隨機裁切圖片224x224
+            transforms.RandomHorizontalFlip(),      # 隨機水平翻轉圖片，機率為0.5
+            transforms.ToTensor(),                  # 將圖片轉成Tensor，並把數值normalize到[0,1]
+            transforms.Normalize(                   # 標準化
                 [0.485, 0.456, 0.406],
                 [0.229, 0.224, 0.225]
             )
         ])
 
         verifyTransforms = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(
+            transforms.Resize(256),                 # 縮放圖片長邊變成256
+            transforms.CenterCrop(224),             # 從中心裁切出224x224的圖片
+            transforms.ToTensor(),                  # 將圖片轉成Tensor，並把數值normalize到[0,1]
+            transforms.Normalize(                   # 標準化
                 [0.485, 0.456, 0.406],
                 [0.229, 0.224, 0.225]
             )
@@ -724,18 +724,19 @@ class ModelUse():
         )
 
         trainDataLoader = torch.utils.data.DataLoader(
-            trainDataSet,
-            batch_size=4,
-            shuffle=True,
-            num_workers=4
+            trainDataSet,   # 輸入資料集
+            batch_size=4,   # 每次撈取4張圖片
+            shuffle=True,   # 每次撈取前都先洗牌
+            num_workers=4   # 使用4個子執行緒
         )
         verifyDataLoader = torch.utils.data.DataLoader(
-            verifyDataSet,
-            batch_size=4,
-            shuffle=True,
-            num_workers=4
+            verifyDataSet,  # 輸入資料集
+            batch_size=4,   # 每次撈取4張圖片
+            shuffle=True,   # 每次撈取前都先洗牌
+            num_workers=4   # 使用4個子執行緒
         )
 
+        # 載入預訓練模型
         model = models.resnet18(weights='ResNet18_Weights.DEFAULT')
         # 保留 model 的輸入數，輸出改為2
         model.fc = nn.Linear(model.fc.in_features, 2)
@@ -794,12 +795,12 @@ class ModelUse():
         _ , preds = torch.max(outputs, 1)
         title = [className[x] for x in preds]
 
-        out = torchvision.utils.make_grid(inputs)  # 顯示圖像
-        out = out.numpy().transpose((1, 2, 0))
-        mean = numpy.array([0.485, 0.456, 0.406])
-        std = numpy.array([0.229, 0.224, 0.225])
-        out = std * out + mean
-        out = numpy.clip(out, 0, 1)
+        out = torchvision.utils.make_grid(inputs) # 顯示圖像
+        out = out.numpy().transpose((1, 2, 0)) # 轉換成numpy
+        mean = numpy.array([0.485, 0.456, 0.406])  # 轉換成標準圖像
+        std = numpy.array([0.229, 0.224, 0.225]) # 轉換成標準圖像
+        out = std * out + mean # 取消在transforms.Normalize()中的標準化
+        out = numpy.clip(out, 0, 1) # 將圖像限制在0~1之間
 
         torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_9/bee.pt")
 
@@ -825,8 +826,8 @@ class ModelUse():
 
         # 轉為張量與作正規化
         transform = transforms.Compose([
-            transforms.ToTensor() ,
-            transforms.Normalize(
+            transforms.ToTensor() ,                 # 轉為張量
+            transforms.Normalize(                   # 正規化
                 mean=(0.4914, 0.4822, 0.4465) ,
                 std=(0.2470, 0.2435, 0.2616) ,
             )
@@ -915,9 +916,9 @@ class ModelUse():
         from torch.utils.data import DataLoader
 
         # 轉為張量與作正規化
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize(
+        transform = transforms.Compose([            # 轉為張量與作正規化
+            transforms.ToTensor(),                  # 轉為張量
+            transforms.Normalize(                   # 正規化
                 mean=(0.4914, 0.4822, 0.4465),
                 std=(0.2470, 0.2435, 0.2616))
         ])
