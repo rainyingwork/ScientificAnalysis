@@ -7,13 +7,13 @@ infoMain = InfoMain()
 
 if __name__ == "__main__":
     dataMap = {
-        "AllData" : [] ,
-        "Crawler" : [] ,
-        "Original" : [] ,
-        "Standard" : [] ,
-        "RawData": [] ,
-        "PreProcess": [] ,
-        "ModelUse": [] ,
+        "AllData" : [],
+        "Crawler" : [],
+        "Original" : [],
+        "Standard" : [],
+        "RawData": [],
+        "PreProcess": [],
+        "ModelUse": [],
     }
     fileName = "Example_P01Basic_StandardDoc.xlsx"
     initFilePath = 'common/common/file/doc/StandardDataDocInit.xlsx'
