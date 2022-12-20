@@ -785,112 +785,102 @@ class ModelUse():
 
     @classmethod
     def M0_0_10Train(self, functionInfo):
-        import numpy as np
+        import numpy
         import random
         import torch
         from torch import nn, optim
         from torchvision import datasets
+        from torch.utils.data import DataLoader
         import torchvision.transforms as transforms
         from torch.utils.data.sampler import SubsetRandomSampler
-        from torch.utils.data import DataLoader
         import matplotlib.pyplot as plt
-        from tqdm import tqdm  # pip install tqdm
+        from tqdm import tqdm
 
-        import Example.P34PyTorch.package.cifar10_model as cifar10_model
-        model_file = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
-        epochs = 50
-        end_loss = 0.65
-
+        # 設定隨機種子
         torch.manual_seed(10)
-        np.random.seed(10)
+        numpy.random.seed(10)
         random.seed(10)
 
+        # 轉為張量與作正規化
         transform = transforms.Compose([
-            transforms.ToTensor(),
+            transforms.ToTensor() ,
             transforms.Normalize(
-                mean=(0.4914, 0.4822, 0.4465),
-                std=(0.2470, 0.2435, 0.2616))
+                mean=(0.4914, 0.4822, 0.4465) ,
+                std=(0.2470, 0.2435, 0.2616) ,
+            )
         ])
 
-        train_data = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/train', train=True, download=True, transform=transform)
-        print(train_data.data.shape)
+        trainData = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/train',
+                                    train=True, download=True, transform=transform)
+        print(trainData.data.shape)
 
-        dev_size = 0.2
-        idx = list(range(len(train_data)))
-        np.random.shuffle(idx)
-        split_size = int(np.floor(dev_size * len(train_data)))
-        train_idx, dev_idx = idx[split_size:], idx[:split_size]
-        train_sampler = SubsetRandomSampler(train_idx)
-        dev_sampler = SubsetRandomSampler(dev_idx)
+        devSize = 0.2
+        idList = list(range(len(trainData)))
+        numpy.random.shuffle(idList) # 隨機切分驗證集
+        splitSize = int(numpy.floor(devSize * len(trainData))) # 切分數量
+        trainIDList, devIDList = idList[splitSize:], idList[:splitSize]
+        trainSampler = SubsetRandomSampler(trainIDList) # 訓練集
+        devSampler = SubsetRandomSampler(devIDList) # 驗證集
 
-        batch_size = 100
-        train_loader = DataLoader(train_data, batch_size=batch_size, sampler=train_sampler)
-        dev_loader = DataLoader(train_data, batch_size=batch_size, sampler=dev_sampler)
-        print(len(train_loader), len(dev_loader))
+        batchSize = 100
+        trainDataLoader = DataLoader(trainData, batch_size=batchSize, sampler=trainSampler)
+        devDataLoader = DataLoader(trainData, batch_size=batchSize, sampler=devSampler)
+        print(len(trainDataLoader), len(devDataLoader))
 
-        data_batch, label_batch = next(iter(train_loader))
-        print(data_batch.size(), label_batch.size())
+        dataBatch, labelBatch = next(iter(trainDataLoader)) # 取得一批圖像 並分資料與標籤
+        print(dataBatch.size(), labelBatch.size())
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"deivce:{device}")
 
-        model = cifar10_model.CNN().to(device)
+        import Example.P34PyTorch.package.cifar10_model as cifar10Model  # 匯入自訂模型
+        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"  # 模型儲存位置
+        epochs = 50  # 訓練代數
+        endLoss = 0.65  # 結束時損失函數 可以提早結束
+        model = cifar10Model.CNN().to(device)
 
-        loss_function = nn.NLLLoss()
+        lossfunc = nn.NLLLoss()
         optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-        train_losses = []
-        dev_losses = []
+        trainLossValueList = []
+        devLossValueList = []
         x_axis = []
         for epoch in range(epochs + 1):
-            train_loss = 0
-            # 訓練資料
-            model.train()
-            for data, target in tqdm(train_loader):
-                data = data.to(device)
-                target = target.to(device)
-
-                pred = model(data)
-                loss = loss_function(pred, target)
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-                train_loss += loss.item()
-
-            train_loss = train_loss / len(train_loader)
-
+            trainLoss = 0
+            model.train() # 訓練資料
+            for x , y in tqdm(trainDataLoader): # 根據撈取來做進度條
+                x , y = x.to(device) , y.to(device)
+                pred = model(x)
+                loss = lossfunc(pred, y) # 計算損失函數
+                optimizer.zero_grad() ; loss.backward() ; optimizer.step()
+                trainLoss += loss.item()
+            trainLoss = trainLoss / len(trainDataLoader)
             x_axis.append(epoch)
             with torch.no_grad():
-                dev_loss = 0
+                devLoss = 0
                 # 驗證資料
                 model.eval()
-                for data_dev, target_dev in tqdm(dev_loader):
-                    data_dev = data_dev.to(device)
-                    target_dev = target_dev.to(device)
-
-                    dev_pred = model(data_dev)
-                    loss2 = loss_function(dev_pred, target_dev)
-                    dev_loss += loss2.item()
-
-                dev_loss = dev_loss / len(dev_loader)
-
-            train_losses.append(train_loss)
-            dev_losses.append(dev_loss)
-
-            print(f"epoch: {epoch}, Train_loss: {train_loss:.3f}, Valid_loss: {dev_loss:.3f}")
-
-            if train_loss < end_loss:
+                for x, y in tqdm(devDataLoader):
+                    x, y = x.to(device), y.to(device)
+                    pred = model(x)
+                    loss = lossfunc(pred, y)  # 計算損失函數
+                    devLoss += loss.item()
+                devLoss = devLoss / len(devDataLoader)
+            trainLossValueList.append(trainLoss)
+            devLossValueList.append(devLoss)
+            print(f"epoch: {epoch}, Train_loss: {trainLoss:.3f}, Valid_loss: {devLoss:.3f}")
+            if trainLoss < endLoss:
                 break
 
-        plt.plot(x_axis, train_losses, label="training loss")
-        plt.plot(x_axis, dev_losses, label="validation loss")
+        plt.plot(x_axis, trainLoss, label="training loss")
+        plt.plot(x_axis, devLoss, label="validation loss")
         plt.legend(frameon=False)
         plt.xlabel('epoch')
         plt.ylabel('losses')
         plt.show()
 
         model = model.to("cpu")
-        torch.save(model.state_dict(), model_file)
+        torch.save(model.state_dict(), modelFile)
 
         return {}, {}
 
@@ -902,9 +892,7 @@ class ModelUse():
         import torchvision.transforms as transforms
         from torch.utils.data import DataLoader
 
-        import Example.P34PyTorch.package.cifar10_model as cifar10_model
-        model_file = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
-
+        # 轉為張量與作正規化
         transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize(
@@ -912,40 +900,39 @@ class ModelUse():
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        test_data = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/test', train=False, download=True, transform=transform)
+        testData = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/test', train=False, download=True, transform=transform)
 
-        batch_size = 100
-        test_loader = DataLoader(test_data, batch_size=batch_size)
-        print(len(test_loader))
+        batchSize = 100
+        testDataLoader = DataLoader(testData, batch_size=batchSize)
+        print(len(testDataLoader))
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"deivce:{device}")
 
-        model = cifar10_model.CNN()
-        model.load_state_dict(torch.load(model_file))
-        # print(model)
+        import Example.P34PyTorch.package.cifar10_model as cifar10Model
+        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
+
+        model = cifar10Model.CNN()
+        model.load_state_dict(torch.load(modelFile))
 
         model = model.to(device)
 
-        loss_function = nn.NLLLoss()
+        lossfunc = nn.NLLLoss()
 
-        num_correct = 0.0
-        test_loss = 0
-        # 測試資料
-        model.eval()
-        for data_test, target_test in test_loader:
-            data_test = data_test.to(device)
-            target_test = target_test.to(device)
+        numCorrect = 0.0 # 正確數量
+        testLoss = 0
+        model.eval() # 模型驗證
+        for x , y in testDataLoader:
+            x, y = x.to(device), y.to(device)
+            pred = model(x)
+            loss = lossfunc(pred, y)  # 計算損失函數
+            testLoss += loss.item()
+            _, predicted = torch.max(pred, 1)
+            numCorrect += (predicted == y).float().sum()
 
-            test_pred = model(data_test)
-            loss3 = loss_function(test_pred, target_test)
-            test_loss += loss3.item()
-            _, predicted = torch.max(test_pred, 1)
-            num_correct += (predicted == target_test).float().sum()
-
-        test_loss = test_loss / len(test_loader)
-        num_correct = num_correct / (len(test_loader) * batch_size)
-        print(f"test_loss: {test_loss:.3f}, correct: {num_correct:.3f}")
+        testLoss = testLoss / len(testDataLoader)
+        numCorrect = numCorrect / (len(testDataLoader) * batchSize)
+        print(f"test_loss: {testLoss:.3f}, correct: {numCorrect:.3f}")
 
         return {}, {}
 
