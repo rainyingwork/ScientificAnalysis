@@ -12,9 +12,9 @@ if __name__ == "__main__":
     opsRecordIdArr = [ 1011, 1012, 1013]
     threadList = []
     basicInfo = {
-        "RunType": ["decops"]
-        , "Product": ["Example"]
-        , "Project": ["P02DECOPS"]
+        "RunType": ["decops"],
+        "Product": ["Example"],
+        "Project": ["P02DECOPS"],
     }
     for opsRecordId in opsRecordIdArr:
         opsInfo = copy.deepcopy(basicInfo)
