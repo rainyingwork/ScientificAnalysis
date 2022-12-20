@@ -562,6 +562,7 @@ class ModelUse():
                     nn.ReLU(),                      # 64 -> 64                  激活函數
                     nn.Linear(64, 10),              # 64 -> 10                  全連接層
                     nn.Dropout(0.25),               # 10 -> 10                  Dropout
+                    nn.LogSoftmax(dim=1)            # 10 -> 10                  Softmax
                 )
                 # Conv2d：卷積層
                 # Conv2d(in_channels,out_channels,kernel_size,stride,padding )
@@ -580,8 +581,7 @@ class ModelUse():
                 # Dropout(丟棄率) ; BatchNorm2d(特徵數)
 
             def forward(self, x):
-                w = self.model(x)
-                op = F.log_softmax(w, dim=1) # dim=1 表示對每一行進行softmax
+                op = self.model(x)
                 return op
 
         device = torch.device('cpu')
