@@ -1,24 +1,35 @@
 from torch import nn
 import torch.nn.functional as F
+class Reshape(nn.Module):
+    def __init__(self, *args):
+        super(Reshape, self).__init__()
+        self.shape = args
+
+    def forward(self, x):
+        return x.view(self.shape)
 
 class CNN(nn.Module):
     def __init__(self):
-        super().__init__()        
-        self.conv1=nn.Conv2d(3,10,3,1,1)
-        self.conv2=nn.Conv2d(10,20,3,1,1)
-        self.conv3=nn.Conv2d(20,40,3,1,1)
-        self.pool=nn.MaxPool2d(2,2)
-        self.linear1=nn.Linear(40*4*4,100)
-        self.linear2=nn.Linear(100,10)
-        self.dropout=nn.Dropout(0.2)
-    
-    def forward(self,x):
-        x=self.pool(F.relu(self.conv1(x))) # 10*16*16
-        x=self.pool(F.relu(self.conv2(x))) # 20*8*8
-        x=self.pool(F.relu(self.conv3(x))) # 40*4*4
-        x=x.view(-1,40*4*4)
-        x=self.dropout(x)
-        x=F.relu(self.linear1(x))
-        x=self.dropout(x)
-        x=F.log_softmax(self.linear2(x),dim=1)
-        return x
+        super(CNN, self).__init__()
+        self.model = nn.Sequential(
+            nn.Conv2d(3 ,10 ,3 ,1 ,1),  # 10*16*16
+            nn.ReLU(),                  # 10*16*16
+            nn.MaxPool2d(2 ,2),         # 10*8*8
+            nn.Conv2d(10 ,20 ,3 ,1 ,1), # 20*8*8
+            nn.ReLU(),                  # 20*8*8
+            nn.MaxPool2d(2 ,2),         # 20*4*4
+            nn.Conv2d(20 ,40 ,3 ,1 ,1), # 40*4*4
+            nn.ReLU(),                  # 40*4*4
+            nn.MaxPool2d(2, 2),         # 40*2*2
+            Reshape(-1 ,40 *4 *4),      # 40*4*4
+            nn.Dropout(0.2),            # 40*4*4
+            nn.Linear(40*4*4,100) ,     # 100
+            nn.ReLU(),                  # 100
+            nn.Dropout(0.2),            # 100
+            nn.Linear(100, 10),         # 10
+        )
+
+    def forward(self, x):
+        w = self.model(x)
+        op = F.log_softmax(w, dim=1)
+        return op
