@@ -8,16 +8,16 @@ infoMain = InfoMain()
 if __name__ == "__main__":
     dataMap = {
         "AllData" : [
-            infoMain.getInfo_S0_0_1()
-        ]
-        , "Crawler" : []
-        , "Original" : []
-        , "Standard" : [
-            infoMain.getInfo_S0_0_1()
-        ]
-        , "RawData": []
-        , "PreProcess": []
-        , "ModelUse": []
+            infoMain.getInfo_S0_0_1(),
+        ],
+        "Crawler" : [],
+        "Original" : [],
+        "Standard" : [
+            infoMain.getInfo_S0_0_1(),
+        ],
+        "RawData": [],
+        "PreProcess": [],
+        "ModelUse": [],
     }
 
     fileName = "Example_P23Standard_StandardDoc.xlsx"
@@ -25,6 +25,8 @@ if __name__ == "__main__":
     outFilePath = 'Example/P23Standard/file/doc/'
     os.makedirs(outFilePath) if not os.path.isdir(outFilePath) else None
     standardDocumentCtrl.MakeStandardDoc(dataMap, initFilePath, '{}/{}'.format(outFilePath, fileName))
+
+
 
 
 
