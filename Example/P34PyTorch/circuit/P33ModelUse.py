@@ -537,6 +537,12 @@ class ModelUse():
         trainDataSet = datasets.MNIST('Example/P34PyTorch/file/data/', train=True, download=True, transform=transform)
         testDataSet = datasets.MNIST('Example/P34PyTorch/file/data/', train=False, transform=transform)
 
+        train_x = trainDataSet.data
+        train_y = trainDataSet.targets
+        test_x = testDataSet.data
+        test_y = testDataSet.targets
+        print(train_x.shape, train_y.shape, test_x.shape, test_y.shape)
+
         trainDataLoader = DataLoader(trainDataSet, batch_size=32, shuffle=True)
         testDataLoader = DataLoader(testDataSet, batch_size=500, shuffle=False)
 
@@ -544,22 +550,38 @@ class ModelUse():
             def __init__(self):
                 super(NeuralNetwork, self).__init__()
                 self.model = nn.Sequential(
-                    nn.Conv2d(1, 16, 3, 1),
-                    nn.ReLU(),
-                    nn.Conv2d(16, 32, 3, 1),
-                    nn.ReLU(),
-                    nn.MaxPool2d(2),
-                    nn.Flatten(1),
-                    nn.Linear(12 * 12 * 32, 64),
-                    nn.Dropout(0.10),
-                    nn.ReLU(),
-                    nn.Linear(64, 10),
-                    nn.Dropout(0.25)
+                    # 圖片大小 28x28
+                    nn.Conv2d(1, 16, 3, 1),         # 28x28x1 -> 26x26x16       16個3x3的卷積核
+                    nn.ReLU(),                      # 26x26x16                  激活函數
+                    nn.Conv2d(16, 32, 3, 1),        # 26x26x16 -> 24x24x32      32個3x3的卷積核
+                    nn.ReLU(),                      # 24x24x32                  激活函數
+                    nn.MaxPool2d(2),                # 24x24x32 -> 12x12x32      池化層
+                    nn.Flatten(1),                  # 12x12x32 -> 4608          展平
+                    nn.Linear(4608, 64),            # 12x12x32 -> 64            全連接層
+                    nn.Dropout(0.10),               # 64 -> 64                  Dropout
+                    nn.ReLU(),                      # 64 -> 64                  激活函數
+                    nn.Linear(64, 10),              # 64 -> 10                  全連接層
+                    nn.Dropout(0.25),               # 10 -> 10                  Dropout
                 )
+                # Conv2d：卷積層
+                # Conv2d(in_channels,out_channels,kernel_size,stride,padding )
+                # Conv2d(輸入通道數,輸出通道數,卷積核大小,步長,填充)
+                # MaxPool2d：池化層 也可以使用 AvgPool2d
+                # MaxPool2d(kernel_size,stride,padding)
+                # MaxPool2d(池化核大小,步長,填充)
+                # Flatten：展平層
+                # Flatten(start_dim,end_dim)
+                # Flatten(起始維度,結束維度)
+                # Linear：全連接層
+                # Linear(in_features,out_features)
+                # Linear(輸入特徵數,輸出特徵數)
+                # Dropout：Dropout層 也可以使用 BatchNorm2d
+                # Dropout(p) ; BatchNorm2d(num_features)
+                # Dropout(丟棄率) ; BatchNorm2d(特徵數)
 
             def forward(self, x):
                 w = self.model(x)
-                op = F.log_softmax(w, dim=1)
+                op = F.log_softmax(w, dim=1) # dim=1 表示對每一行進行softmax
                 return op
 
         device = torch.device('cpu')
@@ -986,7 +1008,7 @@ class ModelUse():
 
         import Example.P34PyTorch.package.cifar10_resnet as cifar10Model
         modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_11/cifar10_resnet.pt"
-        epochs = 10
+        epochs = 1
         endLoss = 0.45
 
         model = cifar10Model.CNN().to(device)
@@ -1001,7 +1023,7 @@ class ModelUse():
             trainLoss = 0
             # 訓練資料
             model.train()
-            for x, tayrget in tqdm(trainDataLoader):
+            for x, y in tqdm(trainDataLoader):
                 x, y = x.to(device), y.to(device)
                 pred = model(x)
                 loss = lossfunc(pred, y)  # 計算損失函數
@@ -1067,7 +1089,6 @@ class ModelUse():
 
         model = cifar10_model.CNN()
         model.load_state_dict(torch.load(model_file))
-        # print(model)
 
         model = model.to(device)
 
@@ -1089,7 +1110,7 @@ class ModelUse():
 
         test_loss = test_loss / len(test_loader)
         num_correct = num_correct / (len(test_loader) * batch_size)
-        print(f"test_loss: {test_loss:.3f}, correct: {num_correct:.3f}")
+        print(f"Test Loss: {test_loss:.3f}, Correct: {num_correct:.3f}")
 
         return {}, {}
 

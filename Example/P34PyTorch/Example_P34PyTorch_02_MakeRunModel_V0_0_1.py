@@ -21,7 +21,7 @@ if __name__ == "__main__":
             'M0_0_16','M0_0_17','M0_0_18'],
         "RepOPSRecordId": 9999,
         # , "RepFunctionArr": ["R1_0_1","P1_0_1","M1_0_1"]
-        "RunFunctionArr": ["M0_0_10Train"],
+        "RunFunctionArr": ["M0_0_7"],
         "OrdFunctionArr": [
             {"Parent": "M0_0_10Train", "Child": "M0_0_10Test"},
             {"Parent": "M0_0_11Train", "Child": "M0_0_11Test"},
@@ -33,7 +33,7 @@ if __name__ == "__main__":
             "M0_0_4":"預測歌曲發行年份",
             "M0_0_5":"信用卡範例",
             "M0_0_6":"花的多元分類",
-            "M0_0_7":"手寫數字辨識",
+            "M0_0_7":"手寫數字辨識 使用CNN 卷積 池化 全連接 Dropout",
             "M0_0_8":"訓練好的圖片分類",
             "M0_0_9":"熟悉Pytorch的張量操作",
             "M0_0_10Train":"熟悉Pytorch的張量操作",
