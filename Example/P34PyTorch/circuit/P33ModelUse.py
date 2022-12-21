@@ -1185,10 +1185,8 @@ class ModelUse():
 
     @classmethod
     def M0_0_13(self, functionInfo):
-        import os
         import numpy
         import pickle
-        from tqdm import tqdm
         import torch
         import torch.nn as nn
         import torch.optim as optim
@@ -1282,8 +1280,6 @@ class ModelUse():
             accuracy = success.sum() / len(success)
             return accuracy
 
-        # import time
-        # 訓練
         epochs = 10
         for epoch in range(epochs):
             model.train()
