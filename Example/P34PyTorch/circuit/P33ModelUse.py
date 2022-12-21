@@ -1257,8 +1257,6 @@ class ModelUse():
         trainDataLoader = DataLoader(trainDataset, batch_size=32, shuffle=True)
         testDataLoader = DataLoader(testDataset, batch_size=32, shuffle=True)
 
-        x_, y_ = next(iter(trainDataLoader))
-
         class LSTM(nn.Module):
             def __init__(self, nInput, nEmbed, nHidden, nOutput):
                 super().__init__()
