@@ -1009,7 +1009,7 @@ class ModelUse():
 
         import Example.P34PyTorch.package.cifar10_resnet as cifar10Model
         modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_11/cifar10_resnet.pt"
-        epochs = 1
+        epochs = 10
         endLoss = 0.45
 
         model = cifar10Model.CNN().to(device)
@@ -1123,88 +1123,64 @@ class ModelUse():
         from torch import nn, optim
         from sklearn.model_selection import train_test_split
 
-        torch.manual_seed(10)
+        torch.manual_seed(10) # 固定隨機種子
 
-        df = pd.read_csv('Example/P34PyTorch/file/data/Sales_Transactions_dataset_weekly.csv')
-        df.head()
+        # 讀取資料
+        mainDF = pd.read_csv('Example/P34PyTorch/file/data/Sales_Transactions_dataset_weekly.csv')
+        mainDF.head()
 
-        df = df.iloc[:, 1:53]
-        print(df.shape)
+        # 資料前處理
+        mainDF = mainDF.iloc[:, 1:53]
+        x = mainDF.iloc[:, :-1]     # w0 - w50
+        y = mainDF.iloc[:, -1]      # w51
 
-        plot_data = df.sample(5, random_state=0)
-        x = range(1, 53)
-        plt.figure(figsize=(10, 5))
-        for i, row in plot_data.iterrows():
-            plt.plot(x, row)
-        plt.legend(plot_data.index)
-        plt.xlabel("Weeks")
-        plt.ylabel("Sales")
-        plt.show()
+        # 資料切分 80%訓練, 20%測試
+        xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2, random_state=1)
 
-        x = df.iloc[:, :-1]  # w0 - w50
-        y = df.iloc[:, -1]  # w51
-
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=1)
-        print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)
-
-        x_train_t = torch.tensor(x_train.values).float().unsqueeze(1)  # (batch, seq, input)
-        y_train_t = torch.tensor(y_train.values).float().unsqueeze(1)
-        x_test_t = torch.tensor(x_test.values).float().unsqueeze(1)
-        y_test_t = torch.tensor(y_test.values).float().unsqueeze(1)
-        print(x_train_t.shape, y_train_t.shape)
-        print(x_test_t.shape, y_test_t.shape)
+        xTrainTensor = torch.tensor(xTrain.values).float().unsqueeze(1) # unsqueeze(1)增加維度
+        yTrainTensor = torch.tensor(yTrain.values).float().unsqueeze(1)
+        xTestTensor = torch.tensor(xTest.values).float().unsqueeze(1)
+        yTestTensor = torch.tensor(yTest.values).float().unsqueeze(1)
 
         class RNN(nn.Module):
-            def __init__(self, input_size, hidden_size, num_layers):
+            def __init__(self, inputSize, hiddenSize, numLayers):
                 super().__init__()
-                self.hidden_size = hidden_size
-                self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
-                self.fc1 = nn.Linear(hidden_size, 50)
+                self.hiddenSize = hiddenSize
+                self.rnn = nn.RNN(inputSize, hiddenSize, numLayers, batch_first=True)
+                self.fc1 = nn.Linear(hiddenSize, 50)
                 self.relu = nn.ReLU()
                 self.fc2 = nn.Linear(50, 1)
 
             def forward(self, x, hidden):
                 out, hidden = self.rnn(x, hidden)
-                out = out.view(-1, self.hidden_size)
+                out = out.view(-1, self.hiddenSize)
                 out = self.fc1(out)
                 out = self.relu(out)
                 out = self.fc2(out)
                 return out, hidden
 
         model = RNN(51, 100, 1)
-        print(model)
-
-        myloss = nn.MSELoss()
-        myoptim = optim.Adam(model.parameters(), lr=0.001)
+        lossfunc = nn.MSELoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.001)
 
         epochs = 10000
         losses = []
-        for i in range(epochs + 1):
-            pred, hidden = model(x_train_t, None)
-            loss = myloss(y_train_t, pred)
-
-            myoptim.zero_grad()
-            loss.backward()
-            myoptim.step()
+        for epoch in range(epochs + 1):
+            pred , hidden = model(xTrainTensor, None)
+            loss = lossfunc(pred , yTrainTensor)
+            optimizer.zero_grad() ; loss.backward() ; optimizer.step()
 
             losses.append(loss.item())
-            if i % 1000 == 0:
-                print(f"epoch:{i:5d}, loss:{loss.item():.3f}")
+            if epoch % 1000 == 0:
+                print(f"Epoch:{epoch:5d}, Loss:{loss.item():.3f}")
 
-        x_range = range(len(losses))
-        plt.xlabel('epochs')
-        plt.ylabel('loss function')
-        plt.plot(x_range, losses)
-        plt.show()
-
-        pred, hidden = model(x_test_t, None)
-        loss = myloss(y_test_t, pred)
+        pred , hidden = model(xTestTensor, None)
+        loss = lossfunc(pred , yTestTensor)
         print(f"loss:{loss.item():.3f}")
-
         for i in range(20):
-            truth = y_test_t[i].item()
-            pred2 = pred[i].item()
-            print(f"truth:{truth:3.0f}   pred:{pred2:5.2f}")
+            truth = yTestTensor[i].item()
+            predSample = pred[i].item()
+            print(f"Truth:{truth:3.0f} Pred:{predSample:5.2f}")
 
         return {}, {}
 
