@@ -128,7 +128,6 @@ class ModelUse():
         import torch
         import torch.nn as nn
         import torch.optim as optim
-        import matplotlib.pyplot as plt
 
         torch.manual_seed(0)  # 設定隨機種子
 
@@ -525,11 +524,9 @@ class ModelUse():
     def M0_0_7(self, functionInfo):
         import torch
         import torch.nn as nn
-        import torch.nn.functional as F
         import torch.optim as optim
         from torch.utils.data import DataLoader
         from torchvision import datasets, transforms
-        import matplotlib.pyplot as plt
 
         torch.manual_seed(0)  # 設定隨機種子
 
@@ -1335,17 +1332,16 @@ class ModelUse():
 
     @classmethod
     def M0_0_14(self, functionInfo):
-
         import numpy as np
         import matplotlib.pyplot as plt
 
         R = np.array([
-            [-1, -1, -1, -1, 0, -1],  # state 0
-            [-1, -1, -1, 0, -1, 100],  # state 1
-            [-1, -1, -1, 0, -1, -1],  # state 2
-            [-1, 0, 0, -1, 0, -1],  # state 3
-            [0, -1, -1, 0, -1, 100],  # state 4
-            [-1, 0, -1, -1, 0, 100]  # state 5
+            [-1, -1, -1, -1, 0, -1],        # state 0
+            [-1, -1, -1, 0, -1, 100],       # state 1
+            [-1, -1, -1, 0, -1, -1],        # state 2
+            [-1, 0, 0, -1, 0, -1],          # state 3
+            [0, -1, -1, 0, -1, 100],        # state 4
+            [-1, 0, -1, -1, 0, 100]         # state 5
         ], dtype='float')
         print(f"R:\n {R}")
 
