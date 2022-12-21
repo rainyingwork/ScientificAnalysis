@@ -1118,7 +1118,6 @@ class ModelUse():
     @classmethod
     def M0_0_12(self, functionInfo):
         import pandas as pd
-        import matplotlib.pyplot as plt
         import torch
         from torch import nn, optim
         from sklearn.model_selection import train_test_split
@@ -1186,154 +1185,102 @@ class ModelUse():
 
     @classmethod
     def M0_0_13(self, functionInfo):
+        import os
+        import numpy
+        import pickle
+        from tqdm import tqdm
         import torch
         import torch.nn as nn
         import torch.optim as optim
+        from string import punctuation
+        from collections import Counter
         from torch.utils.data import DataLoader, TensorDataset
-        torch.manual_seed(123)
+
+        torch.manual_seed(123) # 固定隨機種子
+
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        import os
-        from tqdm import tqdm
-        import pickle
-
-        def read_data():
-            review_list = []
-            label_list = []
-            for label in ['pos', 'neg']:
-                for fname in tqdm(os.listdir(f"Example/P34PyTorch/file/data/aclImdb/train/{label}/")):
-                    if 'txt' not in fname:
-                        continue
-                    with open(os.path.join(f"Example/P34PyTorch/file/data/aclImdb/train/{label}/", fname), encoding="utf-8") as f:
-                        review_list += [f.read()]
-                        label_list += [label]
-
-            # 使用 pickle 儲存
-            mydict = {'review': review_list, 'label': label_list}
-            with open('Example/P34PyTorch/file/data/imdb.pt', 'wb') as f:
-                pickle.dump(mydict, f)
-
+        # 資料前處理
         with open('Example/P34PyTorch/file/data/imdb.pt', 'rb') as f:
-            new_dict = pickle.load(f)
-        review_list = new_dict["review"]
-        label_list = new_dict["label"]
+            dataDict = pickle.load(f) # 載入新聞資料
 
-        print(len(review_list), len(label_list))
+        reviewList = dataDict["review"] # 標題資料
+        labelList = dataDict["label"]  # 標籤資料
 
-        print(review_list[0])
+        reviewPreProssList = [review.lower() for review in reviewList]
+        reviewPreProssList = [''.join([letter for letter in review if letter not in punctuation]) for review in reviewPreProssList] # string.punctuation : 所有的標點字元
+        reviewsStr = ' '.join(reviewPreProssList)           # 將所有的標題合併成一個字串
+        reviewWordList = reviewsStr.split()                 # 將字串切割成單字
+        countWords = Counter(reviewWordList)                # 計算每個字出現的次數
+        sortedReviewWords = countWords.most_common(len(reviewWordList))                             # 將字出現的次數由大到小排序
+        vocabToToken = {word: index + 1 for index, (word, count) in enumerate(sortedReviewWords)}   # 將字與索引值做一個對應
+        reviewsTokenized = []
+        for review in reviewPreProssList:
+            wordToToken = [vocabToToken[word] for word in review.split()]       # 將每個字轉換成對應的token
+            reviewsTokenized.append(wordToToken)                                # 將每個標題轉換成token
+        encodedLabeList = [1 if label == 'pos' else 0 for label in labelList]   # 將標籤轉換成數字
+        reviewsLen = [len(review) for review in reviewsTokenized]               # 計算 reviews_tokenized 每則 review 的長度
 
-        review_list2 = [review.lower() for review in review_list]
-        print(review_list2[0])
+        nZero = [index for index, wordlen in enumerate(reviewsLen) if wordlen == 0]     # 找出 reviews_tokenized 每則 review 的長度為 0 的 index
+                                                                                        # 先做for 後作 in
+        # encodedLabelList 轉成 numpy
+        encodedLabelList = numpy.array([encodedLabeList[index] for index, wordlen in enumerate(reviewsLen) if wordlen > 0], dtype='float32')
 
-        from string import punctuation
-        # string.punctuation : 所有的標點字元
+        def makeFixedLengthMatrix(reviewsTokenized, number):
+            fixedLengthMatrix = numpy.zeros((len(reviewsTokenized), number), dtype=int)     # 建立一個 len(reviewsTokenized) x number 的矩陣
+            for index, review in enumerate(reviewsTokenized):
+                reviewLen = len(review)                                                     # 計算每則 review 的長度
+                if reviewLen <= number:                                                     # 如果每則 review 的長度小於 number
+                    zeros = list(numpy.zeros(number - reviewLen))                           # 建立一個長度為 200 - reviewLen 的 0 list
+                    newList = zeros + review                                                # 將 0 list 與 review 合併
+                elif reviewLen > number:                                                    # 如果每則 review 的長度大於 200
+                    newList = review[0:number]                                              # 將每則 review 的長度取前 200 個字
+                fixedLengthMatrix[index,:] = numpy.array(newList)                           # 將每則 review 的長度為 200 的 index 填入 paddedReviews
+            return fixedLengthMatrix
 
-        review_list3 = [''.join([letter for letter in review if letter not in punctuation]) for review in review_list2]
+        reviewsFixedReviewsMatrix = makeFixedLengthMatrix(reviewsTokenized, 512)
 
-        print(review_list3[0])
+        number = int(0.75 * len(reviewsFixedReviewsMatrix))
+        xTrain = reviewsFixedReviewsMatrix[:number]
+        yTrain = encodedLabelList[:number]
+        xTest = reviewsFixedReviewsMatrix[number:]
+        yTest = encodedLabelList[number:]
 
-        reviews_blob = ' '.join(review_list3)
+        xTrainTensor = torch.tensor(xTrain).to(device)
+        yTrainTensor = torch.tensor(yTrain).to(device)
+        xTestTensor = torch.tensor(xTest).to(device)
+        yTestTensor = torch.tensor(yTest).to(device)
 
-        review_words = reviews_blob.split()
-        print(review_words[:10])
+        trainDataset = TensorDataset(xTrainTensor, yTrainTensor)
+        testDataset = TensorDataset(xTestTensor, yTestTensor)
 
-        from collections import Counter
-        count_words = Counter(review_words)
-        print(count_words['bromwell'])
+        trainDataLoader = DataLoader(trainDataset, batch_size=32, shuffle=True)
+        testDataLoader = DataLoader(testDataset, batch_size=32, shuffle=True)
 
-        sorted_review_words = count_words.most_common(len(review_words))
-        print(sorted_review_words[:10])  # 印出前10名出現最多的單詞
-
-        vocab_to_token = {word: idx + 1 for idx, (word, count) in enumerate(sorted_review_words)}
-        print(list(vocab_to_token.items())[:10])  # 印出字典前10個元素
-
-        reviews_tokenized = []
-        for review in review_list3:
-            word_to_token = [vocab_to_token[word] for word in review.split()]
-            reviews_tokenized.append(word_to_token)
-        print(review_list3[0])
-        print("len=", len(review_list3[0]))
-        print()
-        print(reviews_tokenized[0])
-        print("len=", len(reviews_tokenized[0]))
-
-        encoded_label_list = [1 if label == 'pos' else 0 for label in label_list]
-
-        reviews_len = [len(review) for review in reviews_tokenized]  # 計算 reviews_tokenized 每則 review 的長度
-        print(reviews_len[:10])
-
-        n_zero = [i for i, n in enumerate(reviews_len) if n == 0]
-        print(n_zero)  # 沒有長度為0的分詞 review
-
-        import numpy as np
-        # encoded_label_list 轉成 numpy
-        encoded_label_list = np.array([encoded_label_list[i] for i, n in enumerate(reviews_len) if n > 0],
-                                      dtype='float32')
-
-        def pad_sequence(reviews_tokenized, num):
-            padded_reviews = np.zeros((len(reviews_tokenized), num), dtype=int)
-            for idx, review in enumerate(reviews_tokenized):
-                review_len = len(review)
-                if review_len <= num:
-                    zeros = list(np.zeros(num - review_len))
-                    new_sequence = zeros + review
-                elif review_len > num:
-                    new_sequence = review[0:num]
-                padded_reviews[idx, :] = np.array(new_sequence)
-            return padded_reviews
-
-        padded_reviews = pad_sequence(reviews_tokenized, 512)
-
-        num = int(0.75 * len(padded_reviews))
-        x_train = padded_reviews[:num]
-        y_train = encoded_label_list[:num]
-        x_val = padded_reviews[num:]
-        y_val = encoded_label_list[num:]
-
-        x_train_t = torch.tensor(x_train).to(device)
-        y_train_t = torch.tensor(y_train).to(device)
-        x_val_t = torch.tensor(x_val).to(device)
-        y_val_t = torch.tensor(y_val).to(device)
-        print(x_train_t.shape)  # (batch_size, input_dim)
-        print(x_val_t.shape)
-
-        train_ds = TensorDataset(x_train_t, y_train_t)
-        val_ds = TensorDataset(x_val_t, y_val_t)
-
-        train_loader = DataLoader(train_ds, batch_size=32, shuffle=True)
-        val_loader = DataLoader(val_ds, batch_size=32, shuffle=True)
-
-        x_, y_ = next(iter(train_loader))
-        print(x_.shape, y_.shape)
+        x_, y_ = next(iter(trainDataLoader))
 
         class LSTM(nn.Module):
-            def __init__(self, n_input, n_embed, n_hidden, n_output):
+            def __init__(self, nInput, nEmbed, nHidden, nOutput):
                 super().__init__()
-                self.n_hidden = n_hidden
-                self.embedding_layer = nn.Embedding(n_input, n_embed)
-                self.lstm_layer = nn.LSTM(n_embed, n_hidden, num_layers=1)
-                self.fc_layer = nn.Linear(n_hidden, n_output)
+                self.embeddingLayer = nn.Embedding(nInput, nEmbed)
+                self.lstmLayer = nn.LSTM(nEmbed, nHidden, num_layers=1)
+                self.fcLayer = nn.Linear(nHidden, nOutput)
 
             def forward(self, x):
-                # x shape: (seq,batch)=(512,32)
-                x = self.embedding_layer(x)
-                # x shape: (seq,batch,feature)=(512,32,100)
-                out, hidden = self.lstm_layer(x)
-                # hidden[0] shape: (num_layers, batch, feature)=(1,32,50)
-                out = self.fc_layer(hidden[0].squeeze(0))
+                x = self.embeddingLayer(x)
+                out, hidden = self.lstmLayer(x)
+                out = self.fcLayer(hidden[0].squeeze(0))
                 return out
 
-        n_input = len(vocab_to_token) + 1
-        model = LSTM(n_input, 100, 50, 1).to(device)
-        print(model)
-        print(n_input)
+        nInput = len(vocabToToken) + 1
+        model = LSTM(nInput, 100, 50, 1).to(device)
 
-        myloss = nn.BCEWithLogitsLoss()
-        myoptim = optim.Adam(model.parameters(), lr=0.001)
+        lossfunc = nn.BCEWithLogitsLoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-        def myacc(predictions, ground_truth):
-            rounded_predictions = torch.round(torch.sigmoid(predictions))
-            success = (rounded_predictions == ground_truth).float()  # convert into float for division
+        def accfunc (predictions, actual):
+            roundedPredictions = torch.round(torch.sigmoid(predictions))
+            success = (roundedPredictions == actual).float()  # convert into float for division
             accuracy = success.sum() / len(success)
             return accuracy
 
@@ -1341,68 +1288,53 @@ class ModelUse():
         # 訓練
         epochs = 10
         for epoch in range(epochs):
-            # time_start=time.time()
-            train_loss = 0
-            val_loss = 0
-            train_acc = 0
-            val_acc = 0
-
             model.train()
-            for xx, yy in (train_loader):
-                pred = model(xx.T)
+            trainLoss , trainAcc ,testLoss ,testAcc= 0 ,0 ,0 ,0
+            for x, y in (trainDataLoader):
+                pred = model(x.T)
                 pred = pred.squeeze()
-
-                loss = myloss(pred, yy)
-                myoptim.zero_grad()
-                loss.backward()
-                myoptim.step()
-
-                acc = myacc(pred, yy)
-
-                train_loss += loss.item()
-                train_acc += acc.item()
+                loss = lossfunc(pred, y)
+                acc = accfunc(pred, y)
+                optimizer.zero_grad() ; loss.backward() ; optimizer.step()
+                trainLoss += loss.item()
+                trainAcc += acc.item()
 
             with torch.no_grad():
                 model.eval()
-                for xx2, yy2 in (val_loader):
-                    pred2 = model(xx2.T).squeeze()
-                    loss2 = myloss(pred2, yy2)
-                    acc2 = myacc(pred2, yy2)
+                for x, y in (testDataLoader):
+                    pred = model(x.T).squeeze()
+                    loss = lossfunc(pred, y)
+                    acc = accfunc(pred, y)
+                    testLoss += loss.item()
+                    testAcc += acc.item()
 
-                    val_loss += loss2.item()
-                    val_acc += acc2.item()
+            trainLoss = trainLoss / len(trainDataLoader)
+            testLoss = testLoss / len(testDataLoader)
+            trainAcc = trainAcc / len(trainDataLoader) * 100
+            testAcc = testAcc / len(testDataLoader) * 100
 
-            train_loss = train_loss / len(train_loader)
-            val_loss = val_loss / len(val_loader)
-            train_acc = train_acc / len(train_loader) * 100
-            val_acc = val_acc / len(val_loader) * 100
+            print(f"Epoch:{epoch:2d}, Train Loss: {trainLoss:.3f}, Val Loss:{testLoss:.3f}, Train Acc: {trainAcc:.2f}%, Test Acc:{testAcc:.2f}%")
 
-            print(f"epoch:{epoch:2d}, train_loss: {train_loss:.3f}, val_loss:{val_loss:.3f}, " \
-                  f"train_acc: {train_acc:.2f}%, val_acc:{val_acc:.2f}%")
-
-        def sentiment_inference(model, sentence):
+        def sentimentInference(model, sentence):
             model.eval()
-
-            # text transformations
             sentence = sentence.lower()
             sentence = ''.join([c for c in sentence if c not in punctuation])
-            tokenized = [vocab_to_token[word] for word in sentence.split()]
-            tokenized = np.pad(tokenized, (512 - len(tokenized), 0), 'constant')
+            tokenized = [vocabToToken[word] for word in sentence.split()]
+            tokenized = numpy.pad(tokenized, (512 - len(tokenized), 0), 'constant')
 
-            # model inference
-            model_input = torch.LongTensor(tokenized).to(device)
-            model_input = model_input.unsqueeze(1)
-            pred = torch.sigmoid(model(model_input))
-            pred2 = torch.round(pred, decimals=3)
+            modelInput = torch.LongTensor(tokenized).to(device)
+            modelInput = modelInput.unsqueeze(1)
+            pred = torch.sigmoid(model(modelInput))
+            pred = torch.round(pred, decimals=3)
             return pred.item()
 
-        out1 = sentiment_inference(model, 'This film is horrible')
+        out1 = sentimentInference(model, 'This film is horrible')
         print(f"{out1:.3f}")
-        out2 = sentiment_inference(model, 'Director tried too hard but this film is bad')
+        out2 = sentimentInference(model, 'Director tried too hard but this film is bad')
         print(f"{out2:.3f}")
-        out3 = sentiment_inference(model, 'Decent movie, although could be shorter')
+        out3 = sentimentInference(model, 'Decent movie, although could be shorter')
         print(f"{out3:.3f}")
-        out4 = sentiment_inference(model, "I loved the movie, every part of it")
+        out4 = sentimentInference(model, "I loved the movie, every part of it")
         print(f"{out4:.3f}")
 
         return {}, {}
