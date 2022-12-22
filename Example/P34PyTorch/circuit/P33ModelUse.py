@@ -1191,46 +1191,46 @@ class ModelUse():
         from collections import Counter
         from torch.utils.data import DataLoader, TensorDataset
 
-        torch.manual_seed(123) # 固定隨機種子
+        torch.manual_seed(123)                                          # 固定隨機種子
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         # 資料前處理
         with open('Example/P34PyTorch/file/data/imdb.pt', 'rb') as f:
-            dataDict = pickle.load(f) # 載入新聞資料
+            dataDict = pickle.load(f)                                   # 載入新聞資料
 
-        reviewList = dataDict["review"] # 標題資料
-        labelList = dataDict["label"]  # 標籤資料
+        reviewList = dataDict["review"]                                 # 標題資料
+        labelList = dataDict["label"]                                   # 標籤資料
 
         reviewPreProssList = [review.lower() for review in reviewList]
         reviewPreProssList = [''.join([letter for letter in review if letter not in punctuation]) for review in reviewPreProssList] # string.punctuation : 所有的標點字元
-        reviewsStr = ' '.join(reviewPreProssList)           # 將所有的標題合併成一個字串
-        reviewWordList = reviewsStr.split()                 # 將字串切割成單字
-        countWords = Counter(reviewWordList)                # 計算每個字出現的次數
+        reviewsStr = ' '.join(reviewPreProssList)                                                   # 將所有的標題合併成一個字串
+        reviewWordList = reviewsStr.split()                                                         # 將字串切割成單字
+        countWords = Counter(reviewWordList)                                                        # 計算每個字出現的次數
         sortedReviewWords = countWords.most_common(len(reviewWordList))                             # 將字出現的次數由大到小排序
         vocabToToken = {word: index + 1 for index, (word, count) in enumerate(sortedReviewWords)}   # 將字與索引值做一個對應
         reviewsTokenized = []
         for review in reviewPreProssList:
-            wordToToken = [vocabToToken[word] for word in review.split()]       # 將每個字轉換成對應的token
-            reviewsTokenized.append(wordToToken)                                # 將每個標題轉換成token
-        encodedLabeList = [1 if label == 'pos' else 0 for label in labelList]   # 將標籤轉換成數字
-        reviewsLen = [len(review) for review in reviewsTokenized]               # 計算 reviews_tokenized 每則 review 的長度
+            wordToToken = [vocabToToken[word] for word in review.split()]                           # 將每個字轉換成對應的token
+            reviewsTokenized.append(wordToToken)                                                    # 將每個標題轉換成token
+        encodedLabeList = [1 if label == 'pos' else 0 for label in labelList]                       # 將標籤轉換成數字
+        reviewsLen = [len(review) for review in reviewsTokenized]                                   # 計算 reviews_tokenized 每則 review 的長度
 
-        nZero = [index for index, wordlen in enumerate(reviewsLen) if wordlen == 0]     # 找出 reviews_tokenized 每則 review 的長度為 0 的 index
-                                                                                        # 先做for 後作 in
+        nZero = [index for index, wordlen in enumerate(reviewsLen) if wordlen == 0]                 # 找出 reviews_tokenized 每則 review 的長度為 0 的 index
+                                                                                                    # 先做for 後作 in
         # encodedLabelList 轉成 numpy
         encodedLabelList = numpy.array([encodedLabeList[index] for index, wordlen in enumerate(reviewsLen) if wordlen > 0], dtype='float32')
 
         def makeFixedLengthMatrix(reviewsTokenized, number):
-            fixedLengthMatrix = numpy.zeros((len(reviewsTokenized), number), dtype=int)     # 建立一個 len(reviewsTokenized) x number 的矩陣
+            fixedLengthMatrix = numpy.zeros((len(reviewsTokenized), number), dtype=int)             # 建立一個 len(reviewsTokenized) x number 的矩陣
             for index, review in enumerate(reviewsTokenized):
-                reviewLen = len(review)                                                     # 計算每則 review 的長度
-                if reviewLen <= number:                                                     # 如果每則 review 的長度小於 number
-                    zeros = list(numpy.zeros(number - reviewLen))                           # 建立一個長度為 200 - reviewLen 的 0 list
-                    newList = zeros + review                                                # 將 0 list 與 review 合併
-                elif reviewLen > number:                                                    # 如果每則 review 的長度大於 200
-                    newList = review[0:number]                                              # 將每則 review 的長度取前 200 個字
-                fixedLengthMatrix[index,:] = numpy.array(newList)                           # 將每則 review 的長度為 200 的 index 填入 paddedReviews
+                reviewLen = len(review)                                                             # 計算每則 review 的長度
+                if reviewLen <= number:                                                             # 如果每則 review 的長度小於 number
+                    zeros = list(numpy.zeros(number - reviewLen))                                   # 建立一個長度為 200 - reviewLen 的 0 list
+                    newList = zeros + review                                                        # 將 0 list 與 review 合併
+                elif reviewLen > number:                                                            # 如果每則 review 的長度大於 200
+                    newList = review[0:number]                                                      # 將每則 review 的長度取前 200 個字
+                fixedLengthMatrix[index,:] = numpy.array(newList)                                   # 將每則 review 的長度為 200 的 index 填入 paddedReviews
             return fixedLengthMatrix
 
         reviewsFixedReviewsMatrix = makeFixedLengthMatrix(reviewsTokenized, 512)
@@ -1273,7 +1273,7 @@ class ModelUse():
 
         def accfunc (predictions, actual):
             roundedPredictions = torch.round(torch.sigmoid(predictions))
-            success = (roundedPredictions == actual).float()  # convert into float for division
+            success = (roundedPredictions == actual).float()
             accuracy = success.sum() / len(success)
             return accuracy
 
@@ -1344,43 +1344,43 @@ class ModelUse():
         # R: reward 獎勵
         import numpy as np
 
-        R = np.array([  # R Table 狀態與動作表 -1表示不可行動 0以上表示可行動(0,100)
-            [-1, -1, -1, -1, 0, -1],  # state 0 (action1, action2, action3, action4, action5, action6)
-            [-1, -1, -1, 0, -1, 100],  # state 1 (action1, action2, action3, action4, action5, action6)
-            [-1, -1, -1, 0, -1, -1],  # state 2 (action1, action2, action3, action4, action5, action6)
-            [-1, 0, 0, -1, 0, -1],  # state 3 (action1, action2, action3, action4, action5, action6)
-            [0, -1, -1, 0, -1, 100],  # state 4 (action1, action2, action3, action4, action5, action6)
-            [-1, 0, -1, -1, 0, 100],  # state 5 (action1, action2, action3, action4, action5, action6)
+        R = np.array([                              # R Table 狀態與動作表 -1表示不可行動 0以上表示可行動(0,100)
+            [-1, -1, -1, -1, 0, -1],                # state 0 (action1, action2, action3, action4, action5, action6)
+            [-1, -1, -1, 0, -1, 100],               # state 1 (action1, action2, action3, action4, action5, action6)
+            [-1, -1, -1, 0, -1, -1],                # state 2 (action1, action2, action3, action4, action5, action6)
+            [-1, 0, 0, -1, 0, -1],                  # state 3 (action1, action2, action3, action4, action5, action6)
+            [0, -1, -1, 0, -1, 100],                # state 4 (action1, action2, action3, action4, action5, action6)
+            [-1, 0, -1, -1, 0, 100],                # state 5 (action1, action2, action3, action4, action5, action6)
         ], dtype='float')
         print(R)
 
-        Q = np.zeros((6, 6))  # Q Table 建立一個跟R表一樣的全0 Matrix
+        Q = np.zeros((6, 6))                                            # Q Table 建立一個跟R表一樣的全0 Matrix
 
         def findAvailableActions(state):
-            currentState = R[state, :]  # 當前狀態與動作表
-            availableAct = np.where(currentState >= 0)[0]  # 可用的行動
+            currentState = R[state, :]                                  # 當前狀態與動作表
+            availableAct = np.where(currentState >= 0)[0]               # 可用的行動
             return availableAct
 
         def getRandomAvailableAction(availableAct):
-            action = int(np.random.choice(availableAct, size=1))  # 隨機選擇一個可用的行動
+            action = int(np.random.choice(availableAct, size=1))        # 隨機選擇一個可用的行動
             return action
 
-        def runQLearning(state, action, learn):  # Q學習(狀態, 動作, 衰減率)
-            newState = action  # 下一個狀態
-            reward = R[state, action]  # 獲得獎勵
-            Q[state, action] = reward + learn * np.max(Q[newState, :])  # 更新Q表
-            done = True if newState == 5 else False  # 結束條件
-            score = (np.sum(Q) / np.max(Q) * 100) if (np.max(Q) > 0) else 0  # 獲得分數
+        def runQLearning(state, action, learn):                                 # Q學習(狀態, 動作, 衰減率)
+            newState = action                                                   # 下一個狀態
+            reward = R[state, action]                                           # 獲得獎勵
+            Q[state, action] = reward + learn * np.max(Q[newState, :])          # 更新Q表
+            done = True if newState == 5 else False                             # 結束條件
+            score = (np.sum(Q) / np.max(Q) * 100) if (np.max(Q) > 0) else 0     # 獲得分數
             score = np.round(score, 2)
-            return newState, reward, score, done  # 下一個狀態, 獲得獎勵, 獲得分數, 結束條件
+            return newState, reward, score, done                                # 下一個狀態, 獲得獎勵, 獲得分數, 結束條件
 
-        epochs = 100  # 訓練次數
-        learn = 0.8  # 學習率
+        epochs = 100                                                            # 訓練次數
+        learn = 0.8                                                             # 學習率
         for epoch in range(epochs):
-            state = np.random.randint(0, 6)  # 隨機選擇一個狀態
-            for step in range(20):  # 每次訓練最多20步
-                availableAct = findAvailableActions(state)  # 找出可用的行動
-                action = getRandomAvailableAction(availableAct)  # 隨機選擇一個可用的行動
+            state = np.random.randint(0, 6)                                     # 隨機選擇一個狀態
+            for step in range(20):                                              # 每次訓練最多20步
+                availableAct = findAvailableActions(state)                      # 找出可用的行動
+                action = getRandomAvailableAction(availableAct)                 # 隨機選擇一個可用的行動
                 newState, reward, score, done = runQLearning(state, action, learn)
                 state = newState
                 if done == True:
@@ -1389,13 +1389,13 @@ class ModelUse():
         Q = np.round(Q, 0)
         print(Q)
 
-        state = 0  # 開始狀態
-        states = [state]  # 紀錄每次訓練的狀態
+        state = 0                                                               # 開始狀態
+        states = [state]                                                        # 紀錄每次訓練的狀態
         while state != 5:
-            newState = np.argmax(Q[state, :])  # 選擇最大的Q值
-            state = newState  # 更新狀態
-            states.append(newState)  # 紀錄每次訓練的狀態
-        print(states)  # 顯示最終的訓練結果
+            newState = np.argmax(Q[state, :])                                   # 選擇最大的Q值
+            state = newState                                                    # 更新狀態
+            states.append(newState)                                             # 紀錄每次訓練的狀態
+        print(states)                                                           # 顯示最終的訓練結果
 
         return {}, {}
 
@@ -1405,37 +1405,37 @@ class ModelUse():
         import matplotlib.pyplot as plt
 
         R = np.array([
-            [-1, 0, 0, -1],  # state 0 (action1, action2, action3, action4)
-            [-1, 0, -1, 0],  # state 1 (up, right, down, left)
-            [-1, -1, 0, 0],  # state 2
-            [0, 0, 0, -1],  # state 3
-            [-1, -1, 0, 0],  # state 4
-            [0, -1, -1, -1],  # state 5
-            [0, -1, -1, -1],  # state 6
-            [0, 100, -1, -1],  # state 7
-            [-1, -1, -1, 0],  # state 8
+            [-1, 0, 0, -1],     # state 0 (action1, action2, action3, action4)
+            [-1, 0, -1, 0],     # state 1 (up, right, down, left)
+            [-1, -1, 0, 0],     # state 2
+            [0, 0, 0, -1],      # state 3
+            [-1, -1, 0, 0],     # state 4
+            [0, -1, -1, -1],    # state 5
+            [0, -1, -1, -1],    # state 6
+            [0, 100, -1, -1],   # state 7
+            [-1, -1, -1, 0],    # state 8
         ], dtype='float')
         print(R)
 
         Q = np.zeros((9, 4))
 
         def findAvailableActions(state):
-            currentState = R[state, :]  # 當前狀態與動作表
-            availableAct = np.where(currentState >= 0)[0]  # 可用的行動
+            currentState = R[state, :]                                  # 當前狀態與動作表
+            availableAct = np.where(currentState >= 0)[0]               # 可用的行動
             return availableAct
 
         def getRandomAvailableAction(availableAct):
-            action = int(np.random.choice(availableAct, size=1))  # 隨機選擇一個可用的行動
+            action = int(np.random.choice(availableAct, size=1))        # 隨機選擇一個可用的行動
             return action
 
         def runQLearning(state, action, learn, decay):
-            actionArr = [-3, 1, 3, -1]  # up, right, down, left
-            newState = state + actionArr[action]  # 下一個狀態
-            reward = R[state, action]  # 獲得獎勵
-            maxValue = reward + learn * np.max(Q[newState, :])  # 更新Q表
+            actionArr = [-3, 1, 3, -1]                                                  # up, right, down, left
+            newState = state + actionArr[action]                                        # 下一個狀態
+            reward = R[state, action]                                                   # 獲得獎勵
+            maxValue = reward + learn * np.max(Q[newState, :])                          # 更新Q表
             Q[state, action] = Q[state, action] + decay * (maxValue - Q[state, action])
-            done = True if newState == 8 else False  # 結束條件
-            score = (np.sum(Q) / np.max(Q) * 100) if (np.max(Q) > 0) else 0  # 獲得分數
+            done = True if newState == 8 else False                                     # 結束條件
+            score = (np.sum(Q) / np.max(Q) * 100) if (np.max(Q) > 0) else 0             # 獲得分數
             score = np.round(score, 2)
             return newState, reward, done, score
 
@@ -1472,26 +1472,26 @@ class ModelUse():
         import numpy as np
         import gym
 
-        np.random.seed(10)  # 重現性固定隨機種子
+        np.random.seed(10)                                      # 重現性固定隨機種子
 
         gameEnv = gym.make('FrozenLake-v1', is_slippery=False)  # 遊戲環境
 
-        actionSize = gameEnv.action_space.n  # 行動數量
-        stateSize = gameEnv.observation_space.n  # 狀態數量
+        actionSize = gameEnv.action_space.n                     # 行動數量
+        stateSize = gameEnv.observation_space.n                 # 狀態數量
 
-        Q = np.zeros((stateSize, actionSize))  # 建立初始Q表
+        Q = np.zeros((stateSize, actionSize))                   # 建立初始Q表
 
-        greedy = 1  # 貪婪度
-        epochs = 1000  # 訓練次數
-        learn = 0.5  # 學習率
-        decay = 0.9  # 衰減率
+        greedy = 1                                              # 貪婪度
+        epochs = 1000                                           # 訓練次數
+        learn = 0.5                                             # 學習率
+        decay = 0.9                                             # 衰減率
         for epoch in range(epochs):
             state = gameEnv.reset()[0]
             for step in range(50):
-                if np.random.rand() > greedy:  # 貪婪度
-                    action = np.argmax(Q[state, :])  # 選擇最大的Q值
+                if np.random.rand() > greedy:                   # 貪婪度
+                    action = np.argmax(Q[state, :])             # 選擇最大的Q值
                 else:
-                    action = gameEnv.action_space.sample()  # 隨機選擇一個行動
+                    action = gameEnv.action_space.sample()      # 隨機選擇一個行動
                 # 執行行動 newState, reward, terminated, truncated, info = step(action)
                 # action: 行動
                 # newState: 下一個狀態
@@ -1499,10 +1499,10 @@ class ModelUse():
                 # terminated: 當遊戲結束時，會回傳True
                 # truncated: 當遊戲結束時，會回傳True
                 # info: 遊戲的相關資訊
-                newState, reward, terminated, truncated, info = gameEnv.step(action)  # 執行行動
-                done = terminated or truncated  # 結束條件
+                newState, reward, terminated, truncated, info = gameEnv.step(action)            # 執行行動
+                done = terminated or truncated                                                  # 結束條件
                 maxValue = reward + decay * np.max(Q[newState, :])
-                Q[state, action] = Q[state, action] + learn * (maxValue - Q[state, action])  # 更新Q表
+                Q[state, action] = Q[state, action] + learn * (maxValue - Q[state, action])     # 更新Q表
                 state = newState
                 if done == True:
                     break
@@ -1510,7 +1510,7 @@ class ModelUse():
             score = np.round(score, 2)
             print('epoch:', epoch, 'score:', score) if epoch % 100 == 0 else None
 
-            greedy = 0.01 + (0.09 * np.exp(0.005 * epoch))  # 根據代數更新貪婪程度
+            greedy = 0.01 + (0.09 * np.exp(0.005 * epoch))                                      # 根據代數更新貪婪程度
 
         Q = np.round(Q, 2)
         print(f"final Q:\n {Q}")
@@ -1518,13 +1518,13 @@ class ModelUse():
         state = gameEnv.reset()[0]
         states = [state]
         gameEnv.render()
-        for step in range(50):  # 取得最佳動作
-            action = np.argmax(Q[state, :])  # 選擇最大的Q值
-            newState, reward, terminated, truncated, info = gameEnv.step(action)  # 執行行動
-            done = terminated or truncated  # 結束條件
-            state = newState  # 更新狀態
-            states.append(state)  # 紀錄狀態
-            gameEnv.render()  # 顯示環境
+        for step in range(50):                                                                  # 取得最佳動作
+            action = np.argmax(Q[state, :])                                                     # 選擇最大的Q值
+            newState, reward, terminated, truncated, info = gameEnv.step(action)                # 執行行動
+            done = terminated or truncated                                                      # 結束條件
+            state = newState                                                                    # 更新狀態
+            states.append(state)                                                                # 紀錄狀態
+            gameEnv.render()                                                                    # 顯示環境
             if done == True:
                 break
         print(states)
@@ -1539,51 +1539,51 @@ class ModelUse():
 
         np.random.seed(10)  # 重現性固定隨機種子
 
-        gameEnv = gym.envs.make('MountainCar-v0')  # 遊戲環境
-        nState = gameEnv.observation_space.shape[0]  # 狀態值(非Type類是數值類)
-        nAction = gameEnv.action_space.n  # 行動值(非Type類是數值類)
+        gameEnv = gym.envs.make('MountainCar-v0')                                       # 遊戲環境
+        nState = gameEnv.observation_space.shape[0]                                     # 狀態值(非Type類是數值類)
+        nAction = gameEnv.action_space.n                                                # 行動值(非Type類是數值類)
 
         numPosition = 10
         numSpeed = 10
 
-        def digitizeState(observation):  # 將狀態值離散化 observation: 狀態值
-            def bins(clipMin, clipMax, num):  # 將狀態值分成num個區間
+        def digitizeState(observation):                                                 # 將狀態值離散化 observation: 狀態值
+            def bins(clipMin, clipMax, num):                                            # 將狀態值分成num個區間
                 return np.linspace(clipMin, clipMax, num + 1)[1:-1]
 
-            carPosition, carSpeed = observation  # 獲得車子位置與速度
-            digitized = [  # 將狀態值分成numPosition個區間與numSpeed個區間
+            carPosition, carSpeed = observation                                         # 獲得車子位置與速度
+            digitized = [                                                               # 將狀態值分成numPosition個區間與numSpeed個區間
                 np.digitize(carPosition, bins=bins(-1.2, 0.6, numPosition)),
                 np.digitize(carSpeed, bins=bins(-0.07, 0.07, numSpeed)),
             ]
-            return digitized[0] + (digitized[1] * numPosition)  # 回傳離散化後的狀態值
+            return digitized[0] + (digitized[1] * numPosition)                          # 回傳離散化後的狀態值
 
-        Q = np.random.uniform(low=-1, high=1, size=(numPosition * numSpeed, nAction))  # Q表格初始化 (10*10,3)
+        Q = np.random.uniform(low=-1, high=1, size=(numPosition * numSpeed, nAction))   # Q表格初始化 (10*10,3)
 
         epochs = 10000
-        greedy = 1  # 貪婪度
-        learn = 0.01  # 學習率
-        decay = 0.99  # 衰減率
-        greedyDecayRate = 0.998  # 貪婪度衰減率
-        totalScore = 0  # 總分數
+        greedy = 1                                                                      # 貪婪度
+        learn = 0.01                                                                    # 學習率
+        decay = 0.99                                                                    # 衰減率
+        greedyDecayRate = 0.998                                                         # 貪婪度衰減率
+        totalScore = 0                                                                  # 總分數
         scores = []
         for epoch in range(epochs + 1):
             observation = gameEnv.reset()[0]
             state = digitizeState(observation)
             score = 0
             for step in range(300):
-                if np.random.rand() > greedy:  # 貪婪度
-                    action = np.argmax(Q[state, :])  # 選擇最大的Q值
+                if np.random.rand() > greedy:                                               # 貪婪度
+                    action = np.argmax(Q[state, :])                                         # 選擇最大的Q值
                 else:
-                    action = gameEnv.action_space.sample()  # 隨機選擇一個行動
+                    action = gameEnv.action_space.sample()                                  # 隨機選擇一個行動
                 newObservation, reward, terminated, truncated, info = gameEnv.step(action)  # 執行行動
-                done = terminated or truncated  # 結束條件
-                newState = digitizeState(newObservation)  # 離散化狀態值
-                reward = -200 if done == True else reward  # 結束時獎勵-200
+                done = terminated or truncated                                              # 結束條件
+                newState = digitizeState(newObservation)                                    # 離散化狀態值
+                reward = -200 if done == True else reward                                   # 結束時獎勵-200
 
-                position = newObservation[0]  # 車子位置
-                if position >= 0.5:  # 到達目標位置
+                position = newObservation[0]            # 車子位置
+                if position >= 0.5:                     # 到達目標位置
                     reward += 2000
-                elif position >= 0.45:  # 靠近目標位置
+                elif position >= 0.45:                  # 靠近目標位置
                     reward += 100
                 elif position >= 0.4:
                     reward += 20
@@ -1641,190 +1641,168 @@ class ModelUse():
 
     @classmethod
     def M0_0_18(self, functionInfo):
-        import numpy as np
-        import matplotlib.pyplot as plt
-        import gym
         import random
+        import numpy as np
+        import gym
         import torch
         from torch import nn
         from torch import optim
         import torch.nn.functional as F
         from collections import namedtuple, deque
 
-        torch.manual_seed(10)
+        torch.manual_seed(10)                       # 重現性固定隨機種子
         random.seed(10)
         np.random.seed(10)
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-        env = gym.make('CartPole-v1')
+        gameEnv = gym.make('CartPole-v1')           # 遊戲環境
+        gameEnv.reset()[0]                          # 遊戲初始化
 
-        env.reset()[0]
-        n_state = env.observation_space.shape[0]
-        n_action = env.action_space.n
-        print(n_state, n_action)
+        gamenNT = namedtuple('Tr', ('state', 'action', 'nextState', 'reward', 'done'))  # 建立命名元組
 
-        state = env.reset()[0]
-        print(state)
-        state_size = env.observation_space.shape[0]
-        # state = np.reshape(state, [1, state_size])
-        # print(state)
-
-        Tr = namedtuple('Tr', ('state', 'action', 'next_state', 'reward', 'done'))
-
-        class DQN(nn.Module):
-            def __init__(self, state_size, action_size):
+        class DQN(nn.Module):                                   # DQN模型
+            def __init__(self, inputSize, outputSize):
                 super(DQN, self).__init__()
+                self.fc1 = nn.Linear(inputSize, 24)             # 全連接層
+                self.fc2 = nn.Linear(24, 24)                    # 全連接層
+                self.fc3 = nn.Linear(24, outputSize)            # 全連接層
 
-                self.fc1 = nn.Linear(state_size, 24)
-                self.fc2 = nn.Linear(24, 24)
-                self.fc3 = nn.Linear(24, action_size)
+            def forward(self, input):
+                middle = F.relu(self.fc1(input))
+                middle = F.relu(self.fc2(middle))
+                output = self.fc3(middle)
+                return output
 
-            def forward(self, state):
-                x = F.relu(self.fc1(state))
-                x = F.relu(self.fc2(x))
-                x = self.fc3(x)
-                return x
-
-        batch_size = 32
-        capacity = 10000
-
-        class ReplayMemory:
+        class ReplayMemory():                                   # 回放記憶體
             def __init__(self, capacity):
-                self.capacity = capacity
-                self.memory = []
-                self.index = 0
+                self.capacity = capacity                        # 容量
+                self.index = 0                                  # 索引
+                self.memory = []                                # 記憶
 
-            def push(self, state, action, next_state, reward, done):
-                if len(self.memory) < self.capacity:
-                    self.memory.append(None)
-                self.memory[self.index] = Tr(state, action, next_state, reward, done)
-                self.index = (self.index + 1) % self.capacity
+            def pushMemory(self, state, action, nextState, reward, done):                   # 儲存記憶
+                if len(self.memory) < self.capacity:                                        # 如果記憶體未滿
+                    self.memory.append(None)                                                # 增加記憶體
+                self.memory[self.index] = gamenNT(state, action, nextState, reward, done)   # 儲存記憶
+                self.index = (self.index + 1) % self.capacity                               # 更新索引
 
-            def sample(self, batch_size):
-                return random.sample(self.memory, batch_size)
+            def sample(self, batchSize):                                                    # 隨機取樣
+                return random.sample(self.memory, batchSize)                                # 回傳取樣結果
 
-            def sample_torch(self, batch_size):
-                Trs = self.sample(batch_size)
-                state_batch = np.vstack([tr.state for tr in Trs if tr is not None])
-                action_batch = np.vstack([tr.action for tr in Trs if tr is not None])
-                next_state_batch = np.vstack([tr.next_state for tr in Trs if tr is not None])
-                reward_batch = np.vstack([tr.reward for tr in Trs if tr is not None])
-                done_batch = np.vstack([tr.done for tr in Trs if tr is not None])
+            def sampleTorch(self, batchSize):
+                gamenNTs = self.sample(batchSize)  # 取樣
+                stateBatch = np.vstack([tr.state for tr in gamenNTs if tr is not None])         # 狀態
+                actionBatch = np.vstack([tr.action for tr in gamenNTs if tr is not None])       # 行為
+                nextStateBatch = np.vstack([tr.nextState for tr in gamenNTs if tr is not None]) # 下一狀態
+                rewardBatch = np.vstack([tr.reward for tr in gamenNTs if tr is not None])       # 獎勵
+                doneBatch = np.vstack([tr.done for tr in gamenNTs if tr is not None])           # 結束
 
-                states = torch.from_numpy(state_batch).float().to(device)
-                actions = torch.from_numpy(action_batch).long().to(device)
-                next_states = torch.from_numpy(next_state_batch).float().to(device)
-                rewards = torch.from_numpy(reward_batch).float().to(device)
-                dones = torch.from_numpy(done_batch).float().to(device)
+                states = torch.from_numpy(stateBatch).float().to(device)            # 轉換為張量
+                actions = torch.from_numpy(actionBatch).long().to(device)           # 轉換為張量
+                nextStates = torch.from_numpy(nextStateBatch).float().to(device)    # 轉換為張量
+                rewards = torch.from_numpy(rewardBatch).float().to(device)          # 轉換為張量
+                dones = torch.from_numpy(doneBatch).float().to(device)              # 轉換為張量
 
-                return (states, actions, next_states, rewards, dones)
+                return (states, actions, nextStates, rewards, dones)                # 回傳取樣結果
 
             def __len__(self):
-                return len(self.memory)
+                return len(self.memory)                                             # 回傳記憶長度
 
-        class Agent:
-            def __init__(self, n_state, n_action):
-                self.n_state = n_state
-                self.n_action = n_action
-                self.seed = random.seed(10)
-                self.buffer_size = 2000
-                self.batch_size = 32
-                self.gamma = 0.99
+        class Agent:  # Agent
+            def __init__(self, nState, nAction, device):
+                self.seed = random.seed(10)                         # 隨機種子
+                self.model = DQN(nState, nAction).to(device)        # DQN模型
 
-                self.model = DQN(n_state, n_action).to(device)
-                self.memory = ReplayMemory(self.buffer_size)
+                self.nState = nState                                # 狀態數量
+                self.nAction = nAction                              # 行為數量
 
-                self.optimizer = optim.Adam(self.model.parameters(), lr=0.0025)
-                self.t_step = 0
+                self.memorySize = 2000                              # 記憶體大小
+                self.memory = ReplayMemory(self.memorySize)         # 建立記憶體
 
-            def step(self, state, action, next_state, reward, done):
-                self.memory.push(state, action, next_state, reward, done)
-                self.t_step = (self.t_step + 1) % 4
-                if self.t_step == 0:
-                    if len(self.memory) > self.batch_size:
-                        samples = self.memory.sample_torch(self.batch_size)
-                        self.learn(samples)
+                self.batchSize = 32                                                 # 批次大小
+                self.gamma = 0.99                                                   # 折扣因子
+                self.optimizer = optim.Adam(self.model.parameters(), lr=0.0025)     # 學習優化器
+                self.tStep = 0                                                      # 學習步數
+
+            def step(self, state, action, nextState, reward, done):                 # 學習步驟
+                self.memory.pushMemory(state, action, nextState, reward, done)      # 儲存記憶
+                self.tStep = (self.tStep + 1) % 4                                   # 更新學習步數
+                if self.tStep == 0:                                                 # 如果學習步數為0
+                    if len(self.memory) > self.batchSize:                           # 如果記憶體大於批次大小
+                        samples = self.memory.sampleTorch(self.batchSize)           # 取樣
+                        self.learn(samples)                                         # 學習
 
             def learn(self, samples):
-                states, actions, next_states, rewards, dones = samples
-                q_expected = self.model(states).gather(1, actions)
-                q_targets_max = self.model(next_states).detach().max(1)[0].unsqueeze(1)
-                q_targets = rewards + (self.gamma * q_targets_max * (1 - dones))
-                loss = F.mse_loss(q_expected, q_targets)
-                self.optimizer.zero_grad()
-                loss.backward()
-                self.optimizer.step()
+                states, actions, nextStates, rewards, dones = samples                   # 取樣結果
+                qExpected = self.model(states).gather(1, actions)                       # 預期Q值
+                qTargetsMax = self.model(nextStates).detach().max(1)[0].unsqueeze(1)
+                qTargets = rewards + (self.gamma * qTargetsMax * (1 - dones))           # 目標Q值
+                loss = F.mse_loss(qExpected, qTargets)                                  # 計算損失 (預期,實際)
+                self.optimizer.zero_grad();loss.backward(); self.optimizer.step()       # 清空梯度
 
-            def act(self, state, eps=0.):
-                if random.random() > eps:
-                    state = torch.from_numpy(state).float() \
-                        .unsqueeze(0).to(device)
-                    self.model.eval()
-                    with torch.no_grad():
-                        action_values = self.model(state)
-                    self.model.train()
-                    return np.argmax(action_values.cpu().data.numpy())
-                else:
-                    return random.choice(np.arange(self.n_action))
+            def action(self, state, eps=0.):                                            # 行為
+                if random.random() > eps:                                               # 如果隨機值大於閥值
+                    state = torch.from_numpy(state).float().unsqueeze(0).to(device)     # 轉換為張量
+                    self.model.eval()                                                   # 評估模式
+                    with torch.no_grad():                                               # 不計算梯度
+                        action_values = self.model(state)                               # 行為值
+                    self.model.train()                                                  # 訓練模式
+                    return np.argmax(action_values.cpu().data.numpy())                  # 回傳行為
+                else:                                                                   # 如果隨機值小於閥值
+                    return random.choice(np.arange(self.nAction))                       # 回傳行為
 
-        agent = Agent(n_state, n_action)
+        nState = gameEnv.observation_space.shape[0]                         # 狀態數量
+        nAction = gameEnv.action_space.n                                    # 行為數量
 
-        scores = []  # list containing scores from each episode
-        scores_window = deque(maxlen=100)  # last 100 scores
-        epochs = 5000
-        max_t = 5000
-        eps_start = 1.0
-        eps_end = 0.001
-        eps_decay = 0.9995
-        eps = eps_start
+        agent = Agent(nState, nAction, device)                              # 建立Agent
+
+        scores = []
+        scoresWindow = deque(maxlen=100)
+        epochs = 5000                                                       # 學習週期
+        maxT = 5000                                                         # 最大時間步數
+        epsStart = 1.0                                                      # 開始閥值
+        epsEnd = 0.001                                                      # 結束閥值
+        epsDecay = 0.9995                                                   # 閥值衰減
+        eps = epsStart
 
         for epoch in range(1, epochs + 1):
-            state = env.reset()[0]
-            state_size = env.observation_space.shape[0]
-
+            state = gameEnv.reset()[0]
             score = 0
-            for i in range(max_t):
-                action = agent.act(state, eps)
-                next_state, reward, terminated, truncated, _ = env.step(action)
+            for i in range(maxT):
+                action = agent.action(state, eps)                                           # 行為
+                nextState, reward, terminated, truncated, info = gameEnv.step(action)       # 執行行為
                 done = terminated or truncated
-
-                reward = reward if not done or score == 499 else -10
-                agent.step(state, action, next_state, reward, done)
-                state = next_state
+                reward = reward if not done or score == 499 else -10                        # 設定獎勵
+                agent.step(state, action, nextState, reward, done)                          # 學習步驟
+                state = nextState
                 score += reward
                 if done:
                     break
-            scores_window.append(score)  # save most recent score
-            scores.append(score)  # save most recent score
-            eps = max(eps_end, eps_decay * eps)  # decrease epsilon
-            print('\rEpoch {:4}\t Reward {:8.2f}\t Average Score: {:8.2f}'.format(epoch, score, \
-                                                                                  np.mean(scores_window)), end="")
+            scoresWindow.append(score)
+            scores.append(score)
+            eps = max(epsEnd, epsDecay * eps)
+
+            print('\rEpoch {:4} \tAverage Score: {:8.2f} \tReward: {:8.2f}'.format(epoch, np.mean(scoresWindow), score),end="")
+
             if epoch % 100 == 0:
-                print('\rEpoch {:4}\t Average Score: {:8.2f} \
-                   \tEpsilon: {:8.3f}'.format(epoch, \
-                                              np.mean(scores_window), eps))
+                print('\rEpoch {:4} \tAverage Score: {:8.2f} \tEpsilon: {:8.3f}'.format(epoch, np.mean(scoresWindow),eps))
+
             if epoch > 10 and np.mean(scores[-10:]) > 450:
                 break
 
-        plt.plot(scores)
-        plt.title('Scores over increasing episodes')
-
-        def play_game():
-            done = False
-            state = env.reset()[0]
-            epoch = 0
-            while (not done):
+        def playGame():
+            state = gameEnv.reset()[0]                                                  # 重置環境
+            epoch = 0                                                                   # 遊戲次數
+            done = False                                                                # 結束標記
+            while done == False:
                 action = agent.act(state)
-                next_state, reward, terminated, truncated, _ = env.step(action)
-                done = terminated or truncated
-
-                env.render()
-                state = next_state
-                epoch += 1
+                nextState, reward, terminated, truncated, info = gameEnv.step(action)   # 執行行為
+                done = terminated or truncated                                          # 結束條件
+                gameEnv.render()                                                        # 繪製畫面
+                state = nextState                                                       # 更新狀態
+                epoch += 1                                                              # 更新步數
             print(f"done, epoch:{epoch}")
-            # env.close()
 
-        play_game()
+        playGame()
 
         return {}, {}
 
