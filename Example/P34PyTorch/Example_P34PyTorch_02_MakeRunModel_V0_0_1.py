@@ -21,7 +21,7 @@ if __name__ == "__main__":
             'M0_0_16','M0_0_17','M0_0_18'],
         "RepOPSRecordId": 9999,
         # , "RepFunctionArr": ["R1_0_1","P1_0_1","M1_0_1"]
-        "RunFunctionArr": ["M0_0_13"],
+        "RunFunctionArr": ["M0_0_16"],
         "OrdFunctionArr": [
             {"Parent": "M0_0_10Train", "Child": "M0_0_10Test"},
             {"Parent": "M0_0_11Train", "Child": "M0_0_11Test"},
@@ -42,9 +42,9 @@ if __name__ == "__main__":
             "M0_0_11Test":"使用訓練好的Resnet18進行圖片分類",
             "M0_0_12":"使用RNN做時序預測",
             "M0_0_13":"使用LSTM作情感分析",
-            "M0_0_14":"＿＿＿",
-            "M0_0_15":"＿＿＿",
-            "M0_0_16":"＿＿＿",
+            "M0_0_14":"使用QLearning做路徑遊戲一",
+            "M0_0_15":"使用QLearning做路徑遊戲二",
+            "M0_0_16":"使用QLearning做GYM遊戲",
             "M0_0_17":"＿＿＿",
             "M0_0_18":"＿＿＿",
         },

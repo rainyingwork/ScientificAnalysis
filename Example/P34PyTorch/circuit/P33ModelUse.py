@@ -1470,91 +1470,63 @@ class ModelUse():
     @classmethod
     def M0_0_16(self, functionInfo):
         import numpy as np
-        import gym  # pip install gym==0.23.1
-        import matplotlib.pyplot as plt
+        import gym
 
-        np.random.seed(10)
+        np.random.seed(10)  # 重現性固定隨機種子
 
-        env = gym.make('FrozenLake-v1', is_slippery=False)
+        gameEnv = gym.make('FrozenLake-v1', is_slippery=False)  # 遊戲環境
 
-        action_size = env.action_space.n
-        state_size = env.observation_space.n
-        print(action_size, state_size)
+        actionSize = gameEnv.action_space.n  # 行動數量
+        stateSize = gameEnv.observation_space.n  # 狀態數量
 
-        qtable = np.zeros((state_size, action_size))
+        Q = np.zeros((stateSize, actionSize))  # 建立初始Q表
 
-        eps = 1
-        scores = []
-        gamma = 0.9
-        alpha = 0.5
-
-        epochs = 3000
+        greedy = 1  # 貪婪度
+        epochs = 1000  # 訓練次數
+        learn = 0.5  # 學習率
+        decay = 0.9  # 衰減率
         for epoch in range(epochs):
-            state = env.reset()[0]
-            score = 0
-
+            state = gameEnv.reset()[0]
             for step in range(50):
-                if np.random.rand() > eps:
-                    action = np.argmax(qtable[state, :])
+                if np.random.rand() > greedy:  # 貪婪度
+                    action = np.argmax(Q[state, :])  # 選擇最大的Q值
                 else:
-                    action = env.action_space.sample()
-
-                # new_state, reward, done, info = env.step(action)
-                new_state, reward, terminated, truncated, info = env.step(action)
-                done = terminated or truncated
-
-                max_value = reward + gamma * np.max(qtable[new_state, :])
-                qtable[state, action] += alpha * (max_value - qtable[state, action])
-                state = new_state
-
-                if done:
+                    action = gameEnv.action_space.sample()  # 隨機選擇一個行動
+                # 執行行動 newState, reward, terminated, truncated, info = step(action)
+                # action: 行動
+                # newState: 下一個狀態
+                # reward: 獲得的獎勵
+                # terminated: 當遊戲結束時，會回傳True
+                # truncated: 當遊戲結束時，會回傳True
+                # info: 遊戲的相關資訊
+                newState, reward, terminated, truncated, info = gameEnv.step(action)  # 執行行動
+                done = terminated or truncated  # 結束條件
+                maxValue = reward + decay * np.max(Q[newState, :])
+                Q[state, action] = Q[state, action] + learn * (maxValue - Q[state, action])  # 更新Q表
+                state = newState
+                if done == True:
                     break
-
-            if (np.max(qtable) > 0):
-                score = np.sum(qtable) / np.max(qtable) * 100
-            else:
-                score = 0
+            score = np.sum(Q) / np.max(Q) * 100 if (np.max(Q) > 0) else 0
             score = np.round(score, 2)
+            print('epoch:', epoch, 'score:', score) if epoch % 100 == 0 else None
 
-            scores.append(score)
+            greedy = 0.01 + (0.09 * np.exp(0.005 * epoch))  # 根據代數更新貪婪程度
 
-            eps = 0.01 + (0.09 * np.exp(0.005 * epoch))
-
-        Q = np.round(qtable, 2)
+        Q = np.round(Q, 2)
         print(f"final Q:\n {Q}")
 
-        plt.plot(scores)
-        plt.xlabel("epoch")
-        plt.ylabel("score")
-        plt.show()
-
-        # !pip install pygame
-        states = []
-
-        state = env.reset()[0]
-        env.render()
-        states.append(state)
-
-        step = 0
-        done = False
-        # 最多執行50步
-        for step in range(50):
-            # 取得最佳動作
-            action = np.argmax(qtable[state, :])
-            # print("action:",action)
-
-            # 執行動作
-            new_state, reward, terminated, truncated, info = env.step(action)
-            done = terminated or truncated
-
-            state = new_state
-            states.append(state)
-            env.render()
-
-            if done:
-                print("Number of Steps", step + 1)
+        state = gameEnv.reset()[0]
+        states = [state]
+        gameEnv.render()
+        for step in range(50):  # 取得最佳動作
+            action = np.argmax(Q[state, :])  # 選擇最大的Q值
+            newState, reward, terminated, truncated, info = gameEnv.step(action)  # 執行行動
+            done = terminated or truncated  # 結束條件
+            state = newState  # 更新狀態
+            states.append(state)  # 紀錄狀態
+            gameEnv.render()  # 顯示環境
+            if done == True:
                 break
-
         print(states)
 
         return {}, {}
