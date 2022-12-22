@@ -1405,8 +1405,8 @@ class ModelUse():
         import matplotlib.pyplot as plt
 
         R = np.array([
-            [-1, 0, 0, -1],  # state 0
-            [-1, 0, -1, 0],  # state 1
+            [-1, 0, 0, -1],  # state 0 (action1, action2, action3, action4)
+            [-1, 0, -1, 0],  # state 1 (up, right, down, left)
             [-1, -1, 0, 0],  # state 2
             [0, 0, 0, -1],  # state 3
             [-1, -1, 0, 0],  # state 4
@@ -1415,97 +1415,54 @@ class ModelUse():
             [0, 100, -1, -1],  # state 7
             [-1, -1, -1, 0],  # state 8
         ], dtype='float')
+        print(R)
 
         Q = np.zeros((9, 4))
 
-        gamma = 0.9
-        alpha = 0.8
-        state = 0
+        def findAvailableActions(state):
+            currentState = R[state, :]  # 當前狀態與動作表
+            availableAct = np.where(currentState >= 0)[0]  # 可用的行動
+            return availableAct
 
-        def available_actions(state):
-            current_state = R[state, :]
-            av_act = np.where(current_state >= 0)[0]
-            return av_act
-
-        av_act = available_actions(state)
-        print(f"av_act: {av_act}")
-
-        def get_action(av_act):
-            action = int(np.random.choice(av_act, size=1))
+        def getRandomAvailableAction(availableAct):
+            action = int(np.random.choice(availableAct, size=1))  # 隨機選擇一個可用的行動
             return action
 
-        action = get_action(av_act)
-        print(f"action: {action}")
-
-        def Q_learning(state, action, gamma):
-            if action == 0:  # up
-                new_state = state - 3
-            if action == 1:  # right
-                new_state = state + 1
-            if action == 2:  # down
-                new_state = state + 3
-            if action == 3:  # left
-                new_state = state - 1
-
-            reward = R[state, action]
-            max_value = reward + gamma * np.max(Q[new_state, :])
-            Q[state, action] = Q[state, action] + alpha * (max_value - Q[state, action])
-            if new_state == 8:
-                done = True
-            else:
-                done = False
-
-            if (np.max(Q) > 0):
-                score = np.sum(Q) / np.max(Q) * 100
-            else:
-                score = 0
+        def runQLearning(state, action, learn, decay):
+            actionArr = [-3, 1, 3, -1]  # up, right, down, left
+            newState = state + actionArr[action]  # 下一個狀態
+            reward = R[state, action]  # 獲得獎勵
+            maxValue = reward + learn * np.max(Q[newState, :])  # 更新Q表
+            Q[state, action] = Q[state, action] + decay * (maxValue - Q[state, action])
+            done = True if newState == 8 else False  # 結束條件
+            score = (np.sum(Q) / np.max(Q) * 100) if (np.max(Q) > 0) else 0  # 獲得分數
             score = np.round(score, 2)
-
-            return new_state, reward, done, score
-
-        new_state, reward, done, score = Q_learning(state, action, gamma)
-        print(f"new_state:{new_state},reward:{reward},done:{done}, Q:\n {Q}")
+            return newState, reward, done, score
 
         epochs = 30
-        scores = []
+        learn = 0.8  # 學習率
+        decay = 0.9  # 衰減率
         for epoch in range(epochs):
             state = 0
             for step in range(20):
-                av_act = available_actions(state)
-                action = get_action(av_act)
-                new_state, reward, done, score = Q_learning(state, action, gamma)
+                availableAct = findAvailableActions(state)
+                action = getRandomAvailableAction(availableAct)
+                new_state, reward, done, score = runQLearning(state, action, learn, decay)
                 state = new_state
-                if done:
-                    # print(f"done. score:{score}")
+                if done == True:
                     break
-            scores.append(score)
-
+            print('epoch:', epoch, 'score:', score) if epoch % 10 == 0 else None
         Q = np.round(Q, 0)
-        print(f"final Q:\n {Q}")
+        print(Q)
 
-        plt.plot(scores)
-        plt.xlabel("epoch")
-        plt.ylabel("score")
-        plt.show()
-
-        states = []
         state = 0
-        states.append(state)
-
+        states = [state]
         while state != 8:
             action = np.argmax(Q[state, :])
-            if action == 0:  # up
-                new_state = state - 3
-            if action == 1:  # right
-                new_state = state + 1
-            if action == 2:  # down
-                new_state = state + 3
-            if action == 3:  # left
-                new_state = state - 1
-            state = new_state
-            # print(state)
+            actionArr = [-3, 1, 3, -1]
+            newState = state + actionArr[action]
+            state = newState
             states.append(state)
-
         print(states)
 
         return {}, {}
