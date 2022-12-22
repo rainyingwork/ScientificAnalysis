@@ -44,9 +44,9 @@ if __name__ == "__main__":
             "M0_0_13":"使用LSTM作情感分析",
             "M0_0_14":"使用QLearning做路徑遊戲一",
             "M0_0_15":"使用QLearning做路徑遊戲二",
-            "M0_0_16":"使用QLearning做GYM遊戲",
-            "M0_0_17":"＿＿＿",
-            "M0_0_18":"＿＿＿",
+            "M0_0_16":"使用QLearning做GYM路徑遊戲",
+            "M0_0_17":"使用QLearning做GYM滑車遊戲",
+            "M0_0_18":"使用DQN做GYM滑車遊戲",
         },
     }
     opsInfo["ParameterJson"] = {}

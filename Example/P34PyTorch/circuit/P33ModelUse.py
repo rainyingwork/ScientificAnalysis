@@ -1537,154 +1537,105 @@ class ModelUse():
         import numpy as np
         import matplotlib.pyplot as plt
 
-        # 忽略 warning
-        import warnings
-        warnings.filterwarnings("ignore")
+        np.random.seed(10)  # 重現性固定隨機種子
 
-        np.random.seed(10)
+        gameEnv = gym.envs.make('MountainCar-v0')  # 遊戲環境
+        nState = gameEnv.observation_space.shape[0]  # 狀態值(非Type類是數值類)
+        nAction = gameEnv.action_space.n  # 行動值(非Type類是數值類)
 
-        env = gym.envs.make('MountainCar-v0')
-        n_state = env.observation_space.shape[0]  # car position, car velocity
-        n_action = env.action_space.n  # acc to left, no acc, acc to right
-        print(n_state, n_action)
+        numPosition = 10
+        numSpeed = 10
 
-        # 計算轉換成離散值的臨界值
-        def bins(clip_min, clip_max, num):
-            return np.linspace(clip_min, clip_max, num + 1)[1:-1]
+        def digitizeState(observation):  # 將狀態值離散化 observation: 狀態值
+            def bins(clipMin, clipMax, num):  # 將狀態值分成num個區間
+                return np.linspace(clipMin, clipMax, num + 1)[1:-1]
 
-        car_position = bins(-1.2, 0.6, 10)  # 分成10份
-        car_velocity = bins(-0.07, 0.07, 10)  # 分成10份
-        print(car_position)
-        print(car_velocity)
+            carPosition, carSpeed = observation  # 獲得車子位置與速度
+            digitized = [  # 將狀態值分成numPosition個區間與numSpeed個區間
+                np.digitize(carPosition, bins=bins(-1.2, 0.6, numPosition)),
+                np.digitize(carSpeed, bins=bins(-0.07, 0.07, numSpeed)),
+            ]
+            return digitized[0] + (digitized[1] * numPosition)  # 回傳離散化後的狀態值
 
-        # 將連續值轉換成離散變數
-        num_pos = 10
-        num_v = 10
-
-        def digitize_state(observation):
-            car_pos, car_v = observation
-            digitized = [
-                np.digitize(car_pos, bins=bins(-1.2, 0.6, num_pos)),
-                np.digitize(car_v, bins=bins(-0.07, 0.07, num_v)), ]
-
-            return digitized[0] + (digitized[1] * num_pos)
-
-        # Q表格初始化
-        # qtable=np.zeros((20*14, n_action))
-        qtable = np.random.uniform(low=-1, high=1, size=(num_pos * num_v, n_action))
-        print(qtable.shape)
-
-        # 設定變數
-        eps = 1
-        scores = []
-        gamma = 0.99
-        alpha = 0.01
-        eps_decay_rate = 0.998
+        Q = np.random.uniform(low=-1, high=1, size=(numPosition * numSpeed, nAction))  # Q表格初始化 (10*10,3)
 
         epochs = 10000
-        tot_score = 0
+        greedy = 1  # 貪婪度
+        learn = 0.01  # 學習率
+        decay = 0.99  # 衰減率
+        greedyDecayRate = 0.998  # 貪婪度衰減率
+        totalScore = 0  # 總分數
         scores = []
         for epoch in range(epochs + 1):
-            observation = env.reset()[0]  # get car_pos, car_v
-            state = digitize_state(observation)  # get state
+            observation = gameEnv.reset()[0]
+            state = digitizeState(observation)
             score = 0
-
             for step in range(300):
-                rad = np.random.rand()
-                # print(rad, eps)
-                if rad > eps:
-                    action = np.argmax(qtable[state, :])
+                if np.random.rand() > greedy:  # 貪婪度
+                    action = np.argmax(Q[state, :])  # 選擇最大的Q值
                 else:
-                    action = env.action_space.sample()
-                    # action=np.random.choice(n_action)
+                    action = gameEnv.action_space.sample()  # 隨機選擇一個行動
+                newObservation, reward, terminated, truncated, info = gameEnv.step(action)  # 執行行動
+                done = terminated or truncated  # 結束條件
+                newState = digitizeState(newObservation)  # 離散化狀態值
+                reward = -200 if done == True else reward  # 結束時獎勵-200
 
-                new_observation, reward, terminated, truncated, info = env.step(action)
-                done = terminated or truncated
-                new_state = digitize_state(new_observation)  # get new state
-                # print(new_state)
-
-                if done:
-                    reward = -200
-
-                pos = new_observation[0]  # car position
-                if pos >= 0.5:
+                position = newObservation[0]  # 車子位置
+                if position >= 0.5:  # 到達目標位置
                     reward += 2000
-                elif pos >= 0.45:
+                elif position >= 0.45:  # 靠近目標位置
                     reward += 100
-                elif pos >= 0.4:
+                elif position >= 0.4:
                     reward += 20
-                elif pos >= 0.3:
+                elif position >= 0.3:
                     reward += 10
-                elif pos >= 0.2:
+                elif position >= 0.2:
                     reward += 5
 
-                score += reward
+                score = score + reward
 
-                max_value = reward + gamma * np.max(qtable[new_state, :])
-                qtable[state, action] += alpha * (max_value - qtable[state, action])
-
-                # observateion=new_observation
-
-                state = new_state
-
-                if done:
+                maxValue = reward + decay * np.max(Q[newState, :])
+                Q[state, action] = Q[state, action] + learn * (maxValue - Q[state, action])
+                state = newState
+                if done == True:
                     break
 
             score = np.round(score, 2)
-            # scores.append(score)
-            tot_score += score
-            eps = eps * eps_decay_rate
-            eps = max(eps, 0.01)
+            totalScore = totalScore + score
+            greedy = greedy * greedyDecayRate
+            greedy = max(greedy, 0.01)
 
             if epoch % 100 == 0:
-                print(f"epoch:{epoch},score:{tot_score / 100}, eps={eps:.3f}")
-                scores.append(tot_score / 100)
-                tot_score = 0
+                print(f"Epoch:{epoch}, Total Score:{totalScore / 100}, Greedy:{greedy:.3f}")
+                scores.append(totalScore / 100)
+                totalScore = 0
 
             if epoch > 2000 and np.mean(scores[-20:]) > 1600:
                 print("training completed!")
                 break
 
-        Q = np.round(qtable, 2)
+        Q = np.round(Q, 2)
 
-        plt.plot(scores)
-        plt.xlabel("epoch")
-        plt.ylabel("score")
-        plt.show()
-
-        states = []
-
-        observation = env.reset()[0]
-        state = digitize_state(observation)
-
-        env.render()
-        states.append(observation)
-
-        step = 0
-        done = False
-
-        # 最多執行300步
+        observation = gameEnv.reset()[0]
+        state = digitizeState(observation)
+        states = [state]
+        gameEnv.render()
         for step in range(300):
-            # 取得最佳動作
-            action = np.argmax(qtable[state, :])
-
-            # 執行動作
-            new_observation, reward, terminated, truncated, info = env.step(action)
+            action = np.argmax(Q[state, :])
+            newObservation, reward, terminated, truncated, info = gameEnv.step(action)
             done = terminated or truncated
-            new_state = digitize_state(new_observation)
+            newState = digitizeState(newObservation)
 
-            observation = new_observation
+            observation = newObservation
             pos = observation[0]
-            state = new_state
+            state = newState
             states.append(observation)
-            env.render()
+            gameEnv.render()
 
-            if done:
-                print(f"position: {pos:.3f}")
+            if done == True:
+                print(f"position: {pos:.3f}");
                 print("Number of Steps", step + 1)
                 break
-
-        # print(states)
 
         return {}, {}
 
