@@ -1332,92 +1332,70 @@ class ModelUse():
 
     @classmethod
     def M0_0_14(self, functionInfo):
+        # Agent             大腦
+        # Environment       環境
+        # state             狀態
+        # action            動作
+        # reward            獎勵
+        # MDP (Markov Decision Process) 馬可夫決策過程
+        # S: state 狀態
+        # A: action 動作
+        # P: transition probability 轉移機率
+        # R: reward 獎勵
         import numpy as np
-        import matplotlib.pyplot as plt
 
-        R = np.array([
-            [-1, -1, -1, -1, 0, -1],        # state 0
-            [-1, -1, -1, 0, -1, 100],       # state 1
-            [-1, -1, -1, 0, -1, -1],        # state 2
-            [-1, 0, 0, -1, 0, -1],          # state 3
-            [0, -1, -1, 0, -1, 100],        # state 4
-            [-1, 0, -1, -1, 0, 100]         # state 5
+        R = np.array([  # R Table 狀態與動作表 -1表示不可行動 0以上表示可行動(0,100)
+            [-1, -1, -1, -1, 0, -1],  # state 0 (action1, action2, action3, action4, action5, action6)
+            [-1, -1, -1, 0, -1, 100],  # state 1 (action1, action2, action3, action4, action5, action6)
+            [-1, -1, -1, 0, -1, -1],  # state 2 (action1, action2, action3, action4, action5, action6)
+            [-1, 0, 0, -1, 0, -1],  # state 3 (action1, action2, action3, action4, action5, action6)
+            [0, -1, -1, 0, -1, 100],  # state 4 (action1, action2, action3, action4, action5, action6)
+            [-1, 0, -1, -1, 0, 100],  # state 5 (action1, action2, action3, action4, action5, action6)
         ], dtype='float')
-        print(f"R:\n {R}")
+        print(R)
 
-        Q = np.zeros((6, 6))
-        print(f"Q:\n {Q}")
+        Q = np.zeros((6, 6))  # Q Table 建立一個跟R表一樣的全0 Matrix
 
-        gamma = 0.8
-        state = 1
+        def findAvailableActions(state):
+            currentState = R[state, :]  # 當前狀態與動作表
+            availableAct = np.where(currentState >= 0)[0]  # 可用的行動
+            return availableAct
 
-        def available_actions(state):
-            current_state = R[state, :]
-            av_act = np.where(current_state >= 0)[0]
-            return av_act
-
-        av_act = available_actions(state)
-        print(f"av_act: {av_act}")
-
-        def get_action(av_act):
-            action = int(np.random.choice(av_act, size=1))
+        def getRandomAvailableAction(availableAct):
+            action = int(np.random.choice(availableAct, size=1))  # 隨機選擇一個可用的行動
             return action
 
-        action = get_action(av_act)
-        print(f"action: {action}")
-
-        def Q_learning(state, action, gamma):
-            new_state = action
-            reward = R[state, action]
-            Q[state, action] = reward + gamma * np.max(Q[new_state, :])
-            if new_state == 5:
-                done = True
-            else:
-                done = False
-
-            if (np.max(Q) > 0):
-                score = np.sum(Q) / np.max(Q) * 100
-            else:
-                score = 0
+        def runQLearning(state, action, learn):  # Q學習(狀態, 動作, 衰減率)
+            newState = action  # 下一個狀態
+            reward = R[state, action]  # 獲得獎勵
+            Q[state, action] = reward + learn * np.max(Q[newState, :])  # 更新Q表
+            done = True if newState == 5 else False  # 結束條件
+            score = (np.sum(Q) / np.max(Q) * 100) if (np.max(Q) > 0) else 0  # 獲得分數
             score = np.round(score, 2)
+            return newState, reward, score, done  # 下一個狀態, 獲得獎勵, 獲得分數, 結束條件
 
-            return new_state, reward, done, score
-
-        new_state, reward, done, score = Q_learning(state, action, gamma)
-        print(f"new_state:{new_state},reward:{reward},done:{done}, Q:\n {Q}")
-
-        epochs = 600
-        scores = []
+        epochs = 100  # 訓練次數
+        learn = 0.8  # 學習率
         for epoch in range(epochs):
-            state = np.random.randint(0, 6)
-            for step in range(20):
-                av_act = available_actions(state)
-                action = get_action(av_act)
-                new_state, reward, done, score = Q_learning(state, action, gamma)
-                state = new_state
-                if done:
-                    # print(f"done. score:{score}")
+            state = np.random.randint(0, 6)  # 隨機選擇一個狀態
+            for step in range(20):  # 每次訓練最多20步
+                availableAct = findAvailableActions(state)  # 找出可用的行動
+                action = getRandomAvailableAction(availableAct)  # 隨機選擇一個可用的行動
+                newState, reward, score, done = runQLearning(state, action, learn)
+                state = newState
+                if done == True:
                     break
-            scores.append(score)
-
+            print('epoch:', epoch, 'score:', score) if epoch % 10 == 0 else None
         Q = np.round(Q, 0)
-        print(f"final Q:\n {Q}")
+        print(Q)
 
-        plt.plot(scores)
-        plt.xlabel("epoch")
-        plt.ylabel("score")
-        plt.show()
-
-        states = []
-        state = 0
-        states.append(state)
-
+        state = 0  # 開始狀態
+        states = [state]  # 紀錄每次訓練的狀態
         while state != 5:
-            new_state = np.argmax(Q[state, :])
-            state = new_state
-            states.append(state)
-
-        print(states)
+            newState = np.argmax(Q[state, :])  # 選擇最大的Q值
+            state = newState  # 更新狀態
+            states.append(newState)  # 紀錄每次訓練的狀態
+        print(states)  # 顯示最終的訓練結果
 
         return {}, {}
 
