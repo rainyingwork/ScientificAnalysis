@@ -66,10 +66,10 @@ class ModelUse():
             y_pred = model(x)
             loss = lossfunc(y_pred, y)
             lossList.append(loss.item())
-            optimizer.zero_grad()  # 清除上一次計算的梯度值
-            loss.backward()  # loss 向輸入側進行反向傳播
-            optimizer.step()  # 做梯度下降更新
-            if epoch % 20 == 0:  # 印出20倍數代的相關數據
+            optimizer.zero_grad()                                               # 清除上一次計算的梯度值
+            loss.backward()                                                     # loss 向輸入側進行反向傳播
+            optimizer.step()                                                    # 做梯度下降更新
+            if epoch % 20 == 0:                                                 # 印出20倍數代的相關數據
                 print(f"Epoch:{epoch}, Loss:{loss.item():.3f}")
 
         # 印出損失值過程
