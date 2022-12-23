@@ -6,6 +6,7 @@ class RawData() :
         import pandas
 
         mainDF = pandas.read_csv('common/common/file/data/csv/YearPredictionMSD.csv', nrows=50000, header=None)
+        print(mainDF.shape)
 
         return {}, {"ResultDF":mainDF}
 
@@ -14,7 +15,7 @@ class RawData() :
         import pandas
 
         mainDF = pandas.read_csv('common/common/file/data/csv/UCICreditCard.csv')
-        print(mainDF.shape)  # (30000, 25)
+        print(mainDF.shape)
 
         return {}, {"ResultDF":mainDF}
 
@@ -22,7 +23,7 @@ class RawData() :
     def R0_0_6(self, functionInfo):
         import pandas
 
-        mainDF = pandas.read_csv('Example/P34PyTorch/file/data/iris.csv')
+        mainDF = pandas.read_csv('common/common/file/data/csv/Iris.csv')
         print(mainDF.shape)  # (30000, 25)
 
         return {}, {"ResultDF": mainDF}
