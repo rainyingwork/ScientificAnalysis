@@ -56,14 +56,54 @@ class UseProduct() :
                 o = functional.log_softmax(m, dim=1)
                 return o
 
-        model2 = NeuralNetwork(xTestTensor.shape[1])
-        model2.load_state_dict(torch.load(modelFilePath))
-        model2.eval()
-        testPred = model2(xTestTensor)
-        realTestPred = torch.exp(testPred)                                      # 將log_softmax輸出轉為softmax輸出
-        topPred, topClassTest = realTestPred.topk(1, dim=1)                     # 取出最大值及其索引
-        accTest = accuracy_score(yTestTensor, topClassTest) * 100               # 計算準確值
-        print(f"accTest:{accTest:.2f}%")                                        # acc_test:81.63%
+        model = NeuralNetwork(xTestTensor.shape[1])
+        model.load_state_dict(torch.load(modelFilePath))
+        model.eval()
+        testPred = model(xTestTensor)
+        realTestPred = torch.exp(testPred)                              # 將log_softmax輸出轉為softmax輸出
+        topPred, topClassTest = realTestPred.topk(1, dim=1)             # 取出最大值及其索引
+        accTest = accuracy_score(yTestTensor, topClassTest) * 100       # 計算準確值
+        print(f"accTest:{accTest:.2f}%")                                # acc_test:81.63%
+
+        return {}, {}
+
+    @classmethod
+    def UP0_0_6(self, functionInfo):
+        import copy
+        import torch
+        import torch.nn as nn
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP0_0_6"])
+        functionVersionInfo["Version"] = "UP0_0_6"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+
+        class NeuralNetwork(nn.Module):
+            def __init__(self, inputSize):
+                super(NeuralNetwork, self).__init__()
+                self.net = nn.Sequential(
+                    nn.Linear(inputSize, 100),
+                    nn.ReLU(),
+                    nn.Linear(100, 100),
+                    nn.ReLU(),
+                    nn.Linear(100, 100),
+                    nn.ReLU(),
+                    nn.Linear(100, 3)
+                )
+
+            def forward(self, x):
+                return self.net(x)
+
+        modelFilePath = globalObject['M0_0_6']["ModelFilePath"]
+        xTestTensor = globalObject['P0_0_6']["xTestTensor"]
+        yTestTensor = globalObject['P0_0_6']["yTestTensor"]
+
+        model = NeuralNetwork(xTestTensor.shape[1])
+        model.load_state_dict(torch.load(modelFilePath))
+
+        testPred = model(xTestTensor)
+        _, topClassTest = torch.max(testPred, dim=1)
+        nCorrect = (yTestTensor.view(-1) == topClassTest).sum()        # 比對 yTestTensor.view(-1) 與 topClassTest 是否一致再加總
+        print(f"Valid Acc:{nCorrect / len(xTestTensor):.4f}")          # 計算準確率
 
         return {}, {}
 

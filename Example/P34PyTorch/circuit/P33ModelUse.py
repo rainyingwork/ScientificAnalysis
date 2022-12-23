@@ -247,35 +247,22 @@ class ModelUse():
 
     @classmethod
     def M0_0_6(self, functionInfo):
+        import copy
         import torch
         import torch.nn as nn
         from torch.utils.data import Dataset, DataLoader
-        from sklearn.preprocessing import LabelEncoder
         from sklearn.model_selection import train_test_split
-        import pandas as pd
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
 
         torch.manual_seed(10)  # 設定隨機種子
 
-        # ========== RX_X_X ==========
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_6"])
+        functionVersionInfo["Version"] = "M0_0_6"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
-        irisDF = pd.read_csv('Example/P34PyTorch/file/data/iris.csv')
-
-        # ========== PX_X_X ==========
-
-        labelencoder = LabelEncoder()  # 進行類別編碼
-        irisDF['Species'] = labelencoder.fit_transform(irisDF['Species'])
-
-        x = irisDF[['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm']]
-        x = (x - x.min()) / (x.max() - x.min())
-
-        y = irisDF['Species']
-
-        xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.15, random_state=10)
-
-        xTrainTensor = torch.tensor(xTrain.values).float()
-        yTrainTensor = torch.tensor(yTrain.values).long().unsqueeze(1)
-        xTestTensor = torch.tensor(xTest.values).float()
-        yTestTensor = torch.tensor(yTest.values).long().unsqueeze(1)
+        # 設定隨機種子
+        xTrainTensor = globalObject['P0_0_6']["xTrainTensor"]
+        yTrainTensor = globalObject['P0_0_6']["yTrainTensor"]
 
         class DataSet(Dataset):
             def __init__(self, x, y):
@@ -290,10 +277,8 @@ class ModelUse():
                 return self.nSample
 
         trainDataset = DataSet(xTrainTensor, yTrainTensor)
-        testDataset = DataSet(xTestTensor, yTestTensor)
 
         trainLoader = DataLoader(dataset=trainDataset, batch_size=20, shuffle=True)
-        testLoader = DataLoader(dataset=testDataset, batch_size=20, shuffle=True)
 
         # ========== MX_X_X ==========
 
@@ -327,23 +312,12 @@ class ModelUse():
                 loss = lossfunc(pre, labels)
                 optimizer.zero_grad();loss.backward();optimizer.step()
             if i % 50 == 0:
-                print(f"epch={i:3d}, loss={loss:.3f}")
+                print(f"Epoch:{i:3d}, Loss:{loss:.3f}")
 
-        torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_6/iris_model.pt")
+        modelFilePath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_6/iris.pt"
+        torch.save(model.state_dict(), modelFilePath)
 
-        # ========== UPX_X_X ==========
-
-        # ---------- 模型使用 ----------
-
-        model2 = NeuralNetwork(xTestTensor.shape[1])
-        model2.load_state_dict(torch.load("Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_6/iris_model.pt"))
-
-        pred = model2(xTestTensor)
-        _, topClassTest = torch.max(pred, dim=1)
-        n_correct = (yTestTensor.view(-1) == topClassTest).sum() # 比對 yTestTensor.view(-1) 與 topClassTest 是否一致再加總
-        print(f"valid_acc={n_correct / len(xTestTensor):.4f}") # 計算準確率
-
-        return {}, {}
+        return {}, {"ModelFilePath":modelFilePath}
 
     @classmethod
     def M0_0_7(self, functionInfo):

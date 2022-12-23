@@ -219,6 +219,44 @@ class PreProcess() :
             "yTestTensor": yTestTensor,
         }
 
+    @classmethod
+    def P0_0_6(self, functionInfo):
+        import copy
+        import torch
+        from sklearn.model_selection import train_test_split
+        from sklearn.preprocessing import LabelEncoder
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_6"])
+        functionVersionInfo["Version"] = "P0_0_6"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+
+        mainDF = globalObject["R0_0_6"]["ResultDF"]
+
+        # 設定隨機種子
+        torch.manual_seed(0)
+
+        labelencoder = LabelEncoder()  # 進行類別編碼
+        mainDF['Species'] = labelencoder.fit_transform(mainDF['Species'])
+
+        x = mainDF[['SepalLengthCm', 'SepalWidthCm', 'PetalLengthCm', 'PetalWidthCm']]
+        x = (x - x.min()) / (x.max() - x.min())
+
+        y = mainDF['Species']
+
+        xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.15, random_state=10)
+
+        xTrainTensor = torch.tensor(xTrain.values).float()
+        yTrainTensor = torch.tensor(yTrain.values).long().unsqueeze(1)
+        xTestTensor = torch.tensor(xTest.values).float()
+        yTestTensor = torch.tensor(yTest.values).long().unsqueeze(1)
+
+        return {}, {
+            "xTrainTensor": xTrainTensor,
+            "yTrainTensor": yTrainTensor,
+            "xTestTensor": xTestTensor,
+            "yTestTensor": yTestTensor,
+        }
+
 
     @classmethod
     def P1_0_1(self, functionInfo):
