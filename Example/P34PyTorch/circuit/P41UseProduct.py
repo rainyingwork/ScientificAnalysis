@@ -107,6 +107,84 @@ class UseProduct() :
 
         return {}, {}
 
+    def UP0_0_7(self, functionInfo):
+        import copy
+        import torch
+        import torch.nn as nn
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP0_0_7"])
+        functionVersionInfo["Version"] = "UP0_0_7"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+
+        modelFilePath = globalObject['M0_0_7']["ModelFilePath"]
+        testDataLoader = globalObject['P0_0_7']["TestDataLoader"]
+
+        class NeuralNetwork(nn.Module):
+            def __init__(self):
+                super(NeuralNetwork, self).__init__()
+                self.model = nn.Sequential(
+                    # 圖片大小 28x28
+                    nn.Conv2d(1, 16, 3, 1),         # 28x28x1 -> 26x26x16       16個3x3的卷積核
+                    nn.ReLU(),                      # 26x26x16                  激活函數
+                    nn.Conv2d(16, 32, 3, 1),        # 26x26x16 -> 24x24x32      32個3x3的卷積核
+                    nn.ReLU(),                      # 24x24x32                  激活函數
+                    nn.MaxPool2d(2),                # 24x24x32 -> 12x12x32      池化層
+                    nn.Flatten(1),                  # 12x12x32 -> 4608          展平
+                    nn.Linear(4608, 64),            # 12x12x32 -> 64            全連接層
+                    nn.Dropout(0.10),               # 64 -> 64                  Dropout
+                    nn.ReLU(),                      # 64 -> 64                  激活函數
+                    nn.Linear(64, 10),              # 64 -> 10                  全連接層
+                    nn.Dropout(0.25),               # 10 -> 10                  Dropout
+                    nn.LogSoftmax(dim=1)            # 10 -> 10                  Softmax
+                )
+                # Conv2d：卷積層
+                # Conv2d(in_channels,out_channels,kernel_size,stride,padding )
+                # Conv2d(輸入通道數,輸出通道數,卷積核大小,步長,填充)
+                # MaxPool2d：池化層 也可以使用 AvgPool2d
+                # MaxPool2d(kernel_size,stride,padding)
+                # MaxPool2d(池化核大小,步長,填充)
+                # Flatten：展平層
+                # Flatten(start_dim,end_dim)
+                # Flatten(起始維度,結束維度)
+                # Linear：全連接層
+                # Linear(in_features,out_features)
+                # Linear(輸入特徵數,輸出特徵數)
+                # Dropout：Dropout層 也可以使用 BatchNorm2d
+                # Dropout(p) ; BatchNorm2d(num_features)
+                # Dropout(丟棄率) ; BatchNorm2d(特徵數)
+
+            def forward(self, x):
+                op = self.model(x)
+                return op
+
+        def test(model, device, testDataLoader, lossfunc):
+            model.eval()
+            loss, success = 0, 0
+            with torch.no_grad():
+                for x, y in testDataLoader:
+                    x, y = x.to(device), y.to(device)
+                    predProb = model(x)
+                    loss += lossfunc(predProb, y).item()
+                    pred = predProb.argmax(dim=1, keepdim=True)
+                    success += pred.eq(y.view_as(pred)).sum().item()
+                    datasize = len(testDataLoader.dataset)
+                    overallLoss = loss / len(testDataLoader)
+                    overallAcc = 100 * success / len(testDataLoader.dataset)
+                    print('Loss: {:.4f}, Acc: {}/{} ({:.2f}%)'.format(overallLoss, success, datasize, overallAcc))
+
+        lossfunc = nn.NLLLoss()
+
+        device = torch.device('cpu')
+        model = NeuralNetwork().to(device)
+        model.load_state_dict(torch.load(modelFilePath))
+        test(model, device, testDataLoader, lossfunc)
+        sampleData, sampleTargets = next(iter(testDataLoader))
+        predLabel = model(sampleData).max(dim=1)[1][10]
+        print(f"Model prediction is : {predLabel}")
+        print(f"Ground truth is : {sampleTargets[10]}")
+
+        return {}, {}
+
     @classmethod
     def UP1_0_1(self, functionInfo):
         import copy

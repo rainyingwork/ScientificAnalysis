@@ -257,6 +257,23 @@ class PreProcess() :
             "yTestTensor": yTestTensor,
         }
 
+    @classmethod
+    def P0_0_7(self, functionInfo):
+        import copy
+        from torch.utils.data import DataLoader
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_7"])
+        functionVersionInfo["Version"] = "P0_0_7"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+
+        trainDataSet = globalObject["R0_0_7"]["TrainDataSet"]
+        testDataSet = globalObject["R0_0_7"]["TestDataSet"]
+
+        trainDataLoader = DataLoader(trainDataSet, batch_size=32, shuffle=True)
+        testDataLoader = DataLoader(testDataSet, batch_size=500, shuffle=False)
+
+        return {}, {"TrainDataLoader": trainDataLoader, "TestDataLoader": testDataLoader}
+
 
     @classmethod
     def P1_0_1(self, functionInfo):

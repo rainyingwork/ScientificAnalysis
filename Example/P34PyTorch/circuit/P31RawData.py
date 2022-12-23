@@ -29,6 +29,19 @@ class RawData() :
         return {}, {"ResultDF": mainDF}
 
     @classmethod
+    def R0_0_7(self, functionInfo):
+        import torch
+        from torchvision import datasets, transforms
+
+        torch.manual_seed(0)                                                                # 設定隨機種子
+
+        transform = transforms.Compose([transforms.ToTensor(), ])
+        trainDataSet = datasets.MNIST('Example/P34PyTorch/file/data/', train=True, download=True, transform=transform)
+        testDataSet = datasets.MNIST('Example/P34PyTorch/file/data/', train=False, transform=transform)
+
+        return {}, {"TrainDataSet": trainDataSet,"TestDataSet": testDataSet}
+
+    @classmethod
     def R1_0_1(self, functionInfo):
         import copy
         from torchvision import datasets

@@ -314,33 +314,26 @@ class ModelUse():
             if i % 50 == 0:
                 print(f"Epoch:{i:3d}, Loss:{loss:.3f}")
 
-        modelFilePath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_6/iris.pt"
+        modelFilePath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_6/Iris.pt"
         torch.save(model.state_dict(), modelFilePath)
 
         return {}, {"ModelFilePath":modelFilePath}
 
     @classmethod
     def M0_0_7(self, functionInfo):
+        import copy
         import torch
         import torch.nn as nn
         import torch.optim as optim
-        from torch.utils.data import DataLoader
-        from torchvision import datasets, transforms
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
 
-        torch.manual_seed(0)  # 設定隨機種子
+        torch.manual_seed(10)  # 設定隨機種子
 
-        transform = transforms.Compose([transforms.ToTensor(), ])
-        trainDataSet = datasets.MNIST('Example/P34PyTorch/file/data/', train=True, download=True, transform=transform)
-        testDataSet = datasets.MNIST('Example/P34PyTorch/file/data/', train=False, transform=transform)
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_7"])
+        functionVersionInfo["Version"] = "M0_0_7"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
-        train_x = trainDataSet.data
-        train_y = trainDataSet.targets
-        test_x = testDataSet.data
-        test_y = testDataSet.targets
-        print(train_x.shape, train_y.shape, test_x.shape, test_y.shape)
-
-        trainDataLoader = DataLoader(trainDataSet, batch_size=32, shuffle=True)
-        testDataLoader = DataLoader(testDataSet, batch_size=500, shuffle=False)
+        trainDataLoader = globalObject['P0_0_7']["TrainDataLoader"]
 
         class NeuralNetwork(nn.Module):
             def __init__(self):
@@ -404,37 +397,12 @@ class ModelUse():
         for epoch in range(epochs):
             train(model, device, trainDataLoader, lossfunc, optimizer, epoch)
 
-        torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_7/mnist_model.pt")
+        modelFilePath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_7/MNIST.pt"
+        torch.save(model.state_dict(), modelFilePath)
 
-        # ========== UPX_X_X ==========
+        return {}, {"ModelFilePath": modelFilePath}
 
-        # ---------- 模型使用 ----------
 
-        def test(model, device, testDataLoader, lossfunc):
-            model.eval()
-            loss, success = 0, 0
-            with torch.no_grad():
-                for x, y in testDataLoader:
-                    x, y = x.to(device), y.to(device)
-                    predProb = model(x)
-                    loss += lossfunc(predProb, y).item()
-                    pred = predProb.argmax(dim=1, keepdim=True)
-                    success += pred.eq(y.view_as(pred)).sum().item()
-                    num1 = loss / len(testDataLoader)
-                    num2 = len(testDataLoader.dataset)
-                    num3 = 100 * success / len(testDataLoader.dataset)
-                    print('Overall Loss: {:.4f}, Overall Accuracy: {}/{} ({:.2f}%)'.format(num1, success, num2, num3))
-
-        device2 = torch.device('cpu')
-        model2 = NeuralNetwork().to(device2)
-        model2.load_state_dict(torch.load("Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_7/mnist_model.pt"))
-        test(model2, device2, testDataLoader, lossfunc)
-        sampleData, sampleTargets = next(iter(testDataLoader))
-        predLabel = model2(sampleData).max(dim=1)[1][10]
-        print(f"Model prediction is : {predLabel}")
-        print(f"Ground truth is : {sampleTargets[10]}")
-
-        return {}, {}
 
     @classmethod
     def M0_0_8(self, functionInfo):
