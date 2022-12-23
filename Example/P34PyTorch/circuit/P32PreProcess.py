@@ -98,6 +98,23 @@ class PreProcess() :
         return {}, {'x': x, 'y': y}
 
     @classmethod
+    def P0_0_3(self, functionInfo):
+        import torch
+
+        torch.manual_seed(0)  # 設定隨機種子
+
+        # ========== RX_X_X ========== 相關說明可以參考 M0_0_2
+
+        w = torch.tensor([1, 3, 5]).float()
+        x = torch.cat([torch.ones(100, 1), torch.randn(100, 2)], dim=1)
+        y = torch.mv(x, w) + torch.randn(100) * 0.3
+        y = y.unsqueeze(1)  # 在軸1擴展維度
+        print(x.shape, y.shape)
+
+        return {}, {'x': x, 'y': y}
+
+
+    @classmethod
     def P1_0_1(self, functionInfo):
         import copy
         from package.common.osbasic.GainObjectCtrl import GainObjectCtrl

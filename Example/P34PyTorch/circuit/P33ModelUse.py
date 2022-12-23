@@ -9,8 +9,7 @@ class ModelUse():
         functionVersionInfo["Version"] = "M0_0_2"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
-        x = globalObject['P0_0_2']["x"]
-        y = globalObject['P0_0_2']["y"]
+        x ,y = globalObject['P0_0_2']["x"] , globalObject['P0_0_2']["y"]
 
         torch.manual_seed(0) # 設定隨機種子
 
@@ -40,21 +39,17 @@ class ModelUse():
 
     @classmethod
     def M0_0_3(self, functionInfo):
+        import copy
         import torch
         import torch.nn as nn
         import torch.optim as optim
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_3"])
+        functionVersionInfo["Version"] = "M0_0_3"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
-        torch.manual_seed(0)  # 設定隨機種子
+        x, y = globalObject['P0_0_3']["x"], globalObject['P0_0_3']["y"]
 
-        # ========== RX_X_X ========== 相關說明可以參考 M0_0_2
-
-        w = torch.tensor([1, 3, 5]).float()
-        x = torch.cat([torch.ones(100, 1), torch.randn(100, 2)], dim=1)
-        y = torch.mv(x, w) + torch.randn(100) * 0.3
-        y = y.unsqueeze(1)  # 在軸1擴展維度
-        print(x.shape, y.shape)
-
-        # ========== MX_X_X ==========
         # 使用線性神經網路 輸入3 輸出1 偏置設置為False
         # 何謂偏置 -> 基本來說設定 False，至於怎麼用可能要問一下數學家..XD
         model = nn.Sequential(

@@ -15,7 +15,7 @@ if __name__ == "__main__":
         "ExeFunctionArr": [
             "P0_0_1",
             "P0_0_2","M0_0_2",
-            "M0_0_3",
+            "P0_0_3","M0_0_3",
             "M0_0_4",
             "M0_0_5",
             "M0_0_6",
@@ -34,9 +34,10 @@ if __name__ == "__main__":
         ],
         "RepOPSRecordId": 9999,
         # , "RepFunctionArr": ["R1_0_1","P1_0_1","M1_0_1"]
-        "RunFunctionArr": ["P0_0_2","M0_0_2",],
+        "RunFunctionArr": ["P0_0_3","M0_0_3",],
         "OrdFunctionArr": [
             {"Parent": "P0_0_2", "Child": "M0_0_2"},
+            {"Parent": "P0_0_3", "Child": "M0_0_3"},
             {"Parent": "M0_0_10Train", "Child": "M0_0_10Test"},
             {"Parent": "M0_0_11Train", "Child": "M0_0_11Test"},
         ],
