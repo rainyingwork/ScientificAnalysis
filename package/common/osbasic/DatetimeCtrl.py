@@ -1,9 +1,9 @@
 import datetime
 import calendar
 
-def DatetimeCtrl ():
+class DatetimeCtrl ():
 
-    def getISOCalendar (makeDatetime , firstweekday ) :
+    def getISOCalendar (self , makeDatetime , firstweekday ) :
         firstDayBasicToYear = datetime.datetime(makeDatetime.year, 1, 1, 0, 0, 0, 0).weekday() - (firstweekday - 1 )
         firstDayBasicToYear = firstDayBasicToYear + 7 if firstDayBasicToYear < 0 else firstDayBasicToYear
         countDayToYear = (makeDatetime - datetime.datetime(makeDatetime.year, 1, 1, 0, 0, 0, 0)).days
@@ -16,14 +16,14 @@ def DatetimeCtrl ():
             week = (countDayToYear + firstDayBasicToYear) // 7 + 1
         return (year,week,day)
 
-    def getThisWeekFirstDate (makeDatetime, firstweekday) :
-        dateISOCalendar = getISOCalendar(makeDatetime, firstweekday)
+    def getThisWeekFirstDate (self ,makeDatetime, firstweekday) :
+        dateISOCalendar = self.getISOCalendar(makeDatetime, firstweekday)
         return makeDatetime - datetime.timedelta(days=dateISOCalendar[2]-1)
 
-    def getThisMonthFirstDate (makeDatetime) :
+    def getThisMonthFirstDate (self ,makeDatetime) :
         return datetime.datetime(makeDatetime.year, makeDatetime.month, 1, 0, 0, 0, 0)
 
-    def getThisQuartFirstDate (makeDatetime) :
+    def getThisQuartFirstDate (self ,makeDatetime) :
         if makeDatetime.month in (1, 2, 3):
             return datetime.datetime(makeDatetime.year, 1, 1, 0, 0, 0, 0)
         elif makeDatetime.month in (4, 5, 6):
@@ -33,24 +33,24 @@ def DatetimeCtrl ():
         elif makeDatetime.month in (10, 11, 12):
             return datetime.datetime(makeDatetime.year, 10, 1, 0, 0, 0, 0)
 
-    def getThisHalfFirstDate (makeDatetime) :
+    def getThisHalfFirstDate (self ,makeDatetime) :
         if makeDatetime.month in (1, 2, 3, 4, 5, 6):
             return datetime.datetime(makeDatetime.year, 1, 1, 0, 0, 0, 0)
         elif makeDatetime.month in (7, 8, 9, 10, 11, 12):
             return datetime.datetime(makeDatetime.year, 7, 1, 0, 0, 0, 0)
 
-    def getThisYearFirstDate (makeDatetime) :
+    def getThisYearFirstDate (self ,makeDatetime) :
         return datetime.datetime(makeDatetime.year, 1, 1, 0, 0, 0, 0)
 
-    def getThisWeekLastDate (makeDatetime, firstweekday) :
-        dateISOCalendar = getISOCalendar(makeDatetime, firstweekday)
+    def getThisWeekLastDate (self ,makeDatetime, firstweekday) :
+        dateISOCalendar = self.getISOCalendar(makeDatetime, firstweekday)
         lastDateToWeek = makeDatetime + datetime.timedelta(days=(7 - dateISOCalendar[2]))
         return lastDateToWeek
 
-    def getThisMonthLastDate (makeDatetime) :
+    def getThisMonthLastDate (self ,makeDatetime) :
         return datetime.datetime(makeDatetime.year, makeDatetime.month, calendar.monthrange(makeDatetime.year, makeDatetime.month)[1])
 
-    def getThisQuartLastDate (makeDatetime) :
+    def getThisQuartLastDate (self ,makeDatetime) :
         if makeDatetime.month in (1, 2, 3):
             return datetime.datetime(makeDatetime.year, 3, calendar.monthrange(makeDatetime.year, 3)[1])
         elif makeDatetime.month in (4, 5, 6):
@@ -60,30 +60,30 @@ def DatetimeCtrl ():
         elif makeDatetime.month in (10, 11, 12):
             return datetime.datetime(makeDatetime.year, 12, calendar.monthrange(makeDatetime.year, 12)[1])
 
-    def getThisHalfLastDate (makeDatetime) :
+    def getThisHalfLastDate (self ,makeDatetime) :
         if makeDatetime.month in (1, 2, 3, 4, 5, 6):
             return datetime.datetime(makeDatetime.year, 6, calendar.monthrange(makeDatetime.year, 6)[1])
         elif makeDatetime.month in (7, 8, 9, 10, 11, 12):
             return datetime.datetime(makeDatetime.year, 12, calendar.monthrange(makeDatetime.year, 12)[1])
 
-    def getThisYearLastDate (makeDatetime) :
+    def getThisYearLastDate (self ,makeDatetime) :
         return datetime.datetime(makeDatetime.year, 12, calendar.monthrange(makeDatetime.year, 12)[1])
 
-    def getPeriodThisFirstAndLastDate (makeDatetime ,periodtype, firstweekday) :
+    def getPeriodThisFirstAndLastDate (self ,makeDatetime ,periodtype, firstweekday) :
         if periodtype == "day" :
             return makeDatetime , makeDatetime
         if periodtype == "week" :
-            return getThisWeekFirstDate (makeDatetime, firstweekday) , getThisWeekLastDate (makeDatetime, firstweekday)
+            return self.getThisWeekFirstDate (makeDatetime, firstweekday) , self.getThisWeekLastDate (makeDatetime, firstweekday)
         elif periodtype == "month" :
-            return getThisMonthFirstDate (makeDatetime),  getThisMonthLastDate (makeDatetime)
+            return self.getThisMonthFirstDate (makeDatetime),  self.getThisMonthLastDate (makeDatetime)
         elif periodtype == "quart":
-            return getThisQuartFirstDate (makeDatetime), getThisQuartLastDate (makeDatetime)
+            return self.getThisQuartFirstDate (makeDatetime), self.getThisQuartLastDate (makeDatetime)
         elif periodtype == "half":
-            return getThisHalfFirstDate (makeDatetime), getThisHalfLastDate (makeDatetime)
+            return self.getThisHalfFirstDate (makeDatetime), self.getThisHalfLastDate (makeDatetime)
         elif periodtype == "year":
-            return  getThisYearFirstDate (makeDatetime), getThisYearLastDate (makeDatetime)
+            return  self.getThisYearFirstDate (makeDatetime), self.getThisYearLastDate (makeDatetime)
 
-    def getRangeAllDateArr (startDateTime , endDateTime) :
+    def getRangeAllDateArr (self ,startDateTime , endDateTime) :
         makeTimeArr = []
         makeDatetime = startDateTime
         while makeDatetime <= endDateTime:
@@ -91,7 +91,7 @@ def DatetimeCtrl ():
             makeDatetime = makeDatetime + datetime.timedelta(days=1)
         return makeTimeArr
 
-    def getRangeDateInfoArr (startDateTime , endDateTime , periodtype , firstweekday=None) :
+    def getRangeDateInfoArr (self ,startDateTime , endDateTime , periodtype , firstweekday=None) :
         dateInfoArr = []
         if periodtype == "day":
             makeDatetime = startDateTime
@@ -100,65 +100,65 @@ def DatetimeCtrl ():
                     "dateName": makeDatetime.strftime("%Y-%m-%d")
                     , "startDateTime": makeDatetime
                     , "endDateTime": makeDatetime
-                    , "allDateArr": getRangeAllDateArr(makeDatetime , endDateTime)
+                    , "allDateArr": self.getRangeAllDateArr(makeDatetime , endDateTime)
                 }
                 dateInfoArr.append(dateInfo)
                 makeDatetime = makeDatetime + datetime.timedelta(days=1)
         elif periodtype == "week":
-            makeDatetime = getThisWeekFirstDate(startDateTime, firstweekday)
+            makeDatetime = self.getThisWeekFirstDate(startDateTime, firstweekday)
             while makeDatetime <= endDateTime:
-                dateISOCalendar = getISOCalendar(makeDatetime, firstweekday)
+                dateISOCalendar = self.getISOCalendar(makeDatetime, firstweekday)
                 dateInfo = {
                     "dateName": "W{}{}".format(dateISOCalendar[0],dateISOCalendar[1])
                     , "startDateTime": makeDatetime
                     , "endDateTime": makeDatetime + datetime.timedelta(days=6)
-                    , "allDateArr": getRangeAllDateArr(makeDatetime , makeDatetime + datetime.timedelta(days=6))
+                    , "allDateArr": self.getRangeAllDateArr(makeDatetime , makeDatetime + datetime.timedelta(days=6))
                 }
                 dateInfoArr.append(dateInfo)
                 makeDatetime = makeDatetime + datetime.timedelta(days=7)
         elif periodtype == "month":
-            makeDatetime = getThisMonthFirstDate(startDateTime)
+            makeDatetime = self.getThisMonthFirstDate(startDateTime)
             while makeDatetime <= endDateTime:
                 dateInfo = {
                     "dateName": "M{}".format(makeDatetime.strftime("%Y%m"))
                     , "startDateTime": makeDatetime
-                    , "endDateTime": getThisMonthLastDate(makeDatetime)
-                    , "allDateArr": getRangeAllDateArr(makeDatetime, getThisMonthLastDate(makeDatetime))
+                    , "endDateTime": self.getThisMonthLastDate(makeDatetime)
+                    , "allDateArr": self.getRangeAllDateArr(makeDatetime, self.getThisMonthLastDate(makeDatetime))
                 }
                 dateInfoArr.append(dateInfo)
-                makeDatetime = getThisMonthLastDate(makeDatetime) + datetime.timedelta(days=1)
+                makeDatetime = self.getThisMonthLastDate(makeDatetime) + datetime.timedelta(days=1)
         elif periodtype == "quart":
-            makeDatetime = getThisQuartFirstDate(startDateTime)
+            makeDatetime = self.getThisQuartFirstDate(startDateTime)
             while makeDatetime <= endDateTime:
                 dateInfo = {
                     "dateName": "Q{}{}".format(makeDatetime.strftime("%Y"),(makeDatetime.month //3 + 1 ).zfill(2))
                     , "startDateTime": makeDatetime
-                    , "endDateTime": getThisQuartLastDate(makeDatetime)
-                    , "allDateArr": getRangeAllDateArr(makeDatetime, getThisQuartLastDate(makeDatetime))
+                    , "endDateTime": self.getThisQuartLastDate(makeDatetime)
+                    , "allDateArr": self.getRangeAllDateArr(makeDatetime, self.getThisQuartLastDate(makeDatetime))
                 }
                 dateInfoArr.append(dateInfo)
-                makeDatetime = getThisQuartLastDate(makeDatetime) + datetime.timedelta(days=1)
+                makeDatetime = self.getThisQuartLastDate(makeDatetime) + datetime.timedelta(days=1)
         elif periodtype == "half":
-            makeDatetime = getThisHalfFirstDate(startDateTime)
+            makeDatetime = self.getThisHalfFirstDate(startDateTime)
             while makeDatetime <= endDateTime:
                 dateInfo = {
                     "dateName": "H{}{}".format(makeDatetime.strftime("%Y"),(makeDatetime.month //6 + 1).zfill(2))
                     , "startDateTime": makeDatetime
-                    , "endDateTime": getThisHalfLastDate(makeDatetime)
-                    , "allDateArr": getRangeAllDateArr(makeDatetime, getThisHalfLastDate(makeDatetime))
+                    , "endDateTime": self.getThisHalfLastDate(makeDatetime)
+                    , "allDateArr": self.getRangeAllDateArr(makeDatetime, self.getThisHalfLastDate(makeDatetime))
                 }
                 dateInfoArr.append(dateInfo)
-                makeDatetime = getThisHalfLastDate(makeDatetime) + datetime.timedelta(days=1)
+                makeDatetime = self.getThisHalfLastDate(makeDatetime) + datetime.timedelta(days=1)
         elif periodtype == "year":
-            makeDatetime = getThisYearFirstDate(startDateTime)
+            makeDatetime = self.getThisYearFirstDate(startDateTime)
             while makeDatetime <= endDateTime:
                 dateInfo = {
                     "dateName": "Y{}".format(makeDatetime.strftime("%Y"))
                     , "startDateTime": makeDatetime
-                    , "endDateTime": getThisYearLastDate(makeDatetime)
-                    , "allDateArr": getRangeAllDateArr(makeDatetime, getThisYearLastDate(makeDatetime))
+                    , "endDateTime": self.getThisYearLastDate(makeDatetime)
+                    , "allDateArr": self.getRangeAllDateArr(makeDatetime, self.getThisYearLastDate(makeDatetime))
                 }
                 dateInfoArr.append(dateInfo)
-                makeDatetime = getThisYearLastDate(makeDatetime) + datetime.timedelta(days=1)
+                makeDatetime = self.getThisYearLastDate(makeDatetime) + datetime.timedelta(days=1)
 
         return dateInfoArr
