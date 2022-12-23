@@ -84,11 +84,13 @@ class ModelUse():
         import copy
         import torch
         import torch.nn as nn
-        import torch.optim as optim
         from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_4"])
         functionVersionInfo["Version"] = "M0_0_4"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+
+        # 設定隨機種子
+        torch.manual_seed(0)
 
         xTrainTensor = globalObject['P0_0_4']["xTrainTensor"]
         yTrainTensor = globalObject['P0_0_4']["yTrainTensor"]
@@ -133,61 +135,43 @@ class ModelUse():
                 if trainLoss.item() < 81:
                     break
 
-        # torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_4/YearPred.pt")
+        #
 
         return {}, {"model":model}
 
     @classmethod
     def M0_0_5(self, functionInfo):
-        import numpy as np
-        import pandas as pd
-        from sklearn.model_selection import train_test_split
+        import copy
+        import torch
+        import torch.nn as nn
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
         from sklearn.metrics import accuracy_score
         import torch as torch
         import torch.nn as nn
         import torch.nn.functional as functional
         import torch.optim as optim
         from torch.utils.data import TensorDataset, DataLoader
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_5"])
+        functionVersionInfo["Version"] = "M0_0_5"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
         # 設定隨機種子
-        np.random.seed(10)
-        torch.manual_seed(10)
+        torch.manual_seed(0)
 
-        # ========== RX_X_X ==========
-
-        # 讀取資料
-        creditCardDF = pd.read_csv("Example/P34PyTorch/file/data/UCI_Credit_Card.csv")
-        print(creditCardDF.shape)  # (30000, 25)
-
-        creditCardDF = creditCardDF.drop(columns=["ID"])
-
-        x = creditCardDF.iloc[:, :-1]
-        y = creditCardDF.iloc[:, -1]
-        x = (x - x.min()) / (x.max() - x.min())
-
-        # 拆分數據成2個子集，x_new : x_test = 80:20
-        # 再拆分數據集x_new成2個子集, x_train : x_dev = 75:25
-        xTrainDev, xTest, yTrainDev, yTest = train_test_split(x, y, test_size=0.2, random_state=0)
-        xTrain, xDev, yTrain, yDev = train_test_split(xTrainDev, yTrainDev, test_size=0.25, random_state=0)
-
-        xTrainTensor = torch.tensor(xTrain.values).float()
-        yTrainTensor = torch.tensor(yTrain.values).long()
-        xDevTensor = torch.tensor(xDev.values).float()
-        yDevTensor = torch.tensor(yDev.values).long()
-        xTestTensor = torch.tensor(xTest.values).float()
-        yTestTensor = torch.tensor(yTest.values).long()
+        # 設定隨機種子
+        xTrainTensor = globalObject['P0_0_5']["xTrainTensor"]
+        yTrainTensor = globalObject['P0_0_5']["yTrainTensor"]
+        xDevTensor = globalObject['P0_0_5']["xDevTensor"]
+        yDevTensor = globalObject['P0_0_5']["yDevTensor"]
 
         trainDataset = TensorDataset(xTrainTensor, yTrainTensor)
         devDataset = TensorDataset(xDevTensor, yDevTensor)
-        testDataset = TensorDataset(xTestTensor, yTestTensor)
 
         batch_size = 100
         trainLoader = DataLoader(trainDataset, batch_size=batch_size, shuffle=True)
-        devLoader = DataLoader(devDataset, batch_size=batch_size, shuffle=False)
-        testLoader = DataLoader(testDataset, batch_size=batch_size, shuffle=False)
 
         x_, y_ = next(iter(trainLoader))
-        print(x_.shape, y_.shape)  # torch.Size([100, 23]) torch.Size([100])
+        print(x_.shape, y_.shape)                                           # torch.Size([100, 23]) torch.Size([100])
 
         # ========== MX_X_X ==========
 
@@ -207,8 +191,7 @@ class ModelUse():
                 o = functional.log_softmax(m, dim=1)
                 return o
 
-        model = NeuralNetwork(xTrain.shape[1])
-        print(model)
+        model = NeuralNetwork(xTrainTensor.shape[1])
 
         # 損失函數：使用NLLLoss 與 學習函數：使用Adam
         lossfunc = nn.NLLLoss()
@@ -221,27 +204,27 @@ class ModelUse():
         for epoch in range(epochs):
             trainLossValue = 0
             trainAccValue = 0
-            model.train()  # 切換成訓練模式
-            for xBatch, yBatch in trainLoader:  # 進行批次訓練
+            model.train()                                                           # 切換成訓練模式
+            for xBatch, yBatch in trainLoader:                                      # 進行批次訓練
                 pred = model(xBatch)
                 trainLoss = lossfunc(pred, yBatch)
                 optimizer.zero_grad();trainLoss.backward();optimizer.step()
-                trainLossValue += trainLoss.item()  # 每一批都要進行損失值加總
+                trainLossValue += trainLoss.item()                                  # 每一批都要進行損失值加總
 
-                realTrainPred = torch.exp(pred)  # 將log_softmax輸出轉為softmax輸出
-                topPred, topClass = realTrainPred.topk(1, dim=1)  # 取出最大值及其索引
-                trainAccValue += accuracy_score(yBatch, topClass) # 計算準確率
+                realTrainPred = torch.exp(pred)                                     # 將log_softmax輸出轉為softmax輸出
+                topPred, topClass = realTrainPred.topk(1, dim=1)                    # 取出最大值及其索引
+                trainAccValue += accuracy_score(yBatch, topClass)                   # 計算準確率
 
             # 驗證
             devLossValue = 0
             devAccValue = 0
             with torch.no_grad():
-                model.eval()  # 切換成驗證模式
+                model.eval()                                                        # 切換成驗證模式
                 predDev = model(xDevTensor)
                 devLoss = lossfunc(predDev, yDevTensor)
 
-                realDevPred = torch.exp(predDev)  # 將log_softmax輸出轉為softmax輸出
-                topPred, topClassDev = realDevPred.topk(1, dim=1)  # 取出最大值及其索引
+                realDevPred = torch.exp(predDev)                                    # 將log_softmax輸出轉為softmax輸出
+                topPred, topClassDev = realDevPred.topk(1, dim=1)                   # 取出最大值及其索引
                 devLossValue += devLoss.item()
                 devAccValue += accuracy_score(yDevTensor, topClassDev) * 100
 
@@ -255,25 +238,12 @@ class ModelUse():
 
             model.eval()
             if epoch % 1 == 0:
-                print(f"Epoch:{epoch},TrainLoss:{trainLossValue:.3f},ValLoss:{devLossValue:.3f}" \
-                      f"TrainAcc:{trainAccValue:.2f}%,ValAcc:{devAccValue:.2f}%")
+                print(f"Epoch:{epoch},TrainLoss:{trainLossValue:.3f},ValLoss:{devLossValue:.3f}" f"TrainAcc:{trainAccValue:.2f}%,ValAcc:{devAccValue:.2f}%")
 
-        torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_5/credit_model.pt")
+        modelFilePath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_5/UCICreditCard.pt"
+        torch.save(model.state_dict(), modelFilePath)
 
-        # ========== UPX_X_X ==========
-
-        # ---------- 模型使用 ----------
-
-        model2 = NeuralNetwork(xTest.shape[1])
-        model2.load_state_dict(torch.load("Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_5/credit_model.pt"))
-        model2.eval()
-        testPred = model2(xTestTensor)
-        realTestPred = torch.exp(testPred)  # 將log_softmax輸出轉為softmax輸出
-        topPred, topClassTest = realTestPred.topk(1, dim=1)  # 取出最大值及其索引
-        accTest = accuracy_score(yTestTensor, topClassTest) * 100  # 計算準確值
-        print(f"accTest:{accTest:.2f}%")  # acc_test:81.63%
-
-        return {}, {}
+        return {}, {"ModelFilePath":modelFilePath}
 
     @classmethod
     def M0_0_6(self, functionInfo):

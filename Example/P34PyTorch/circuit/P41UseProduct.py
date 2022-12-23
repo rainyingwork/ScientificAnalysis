@@ -25,6 +25,49 @@ class UseProduct() :
         return {}, {}
 
     @classmethod
+    def UP0_0_5(self, functionInfo):
+        import copy
+        import torch
+        import torch.nn as nn
+        import torch.nn.functional as functional
+        from sklearn.metrics import accuracy_score
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP0_0_5"])
+        functionVersionInfo["Version"] = "UP0_0_5"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+
+        modelFilePath = globalObject['M0_0_5']["ModelFilePath"]
+        xTestTensor = globalObject['P0_0_5']["xTestTensor"]
+        yTestTensor = globalObject['P0_0_5']["yTestTensor"]
+
+        class NeuralNetwork(nn.Module):
+            def __init__(self, inputSize):
+                super(NeuralNetwork, self).__init__()
+                self.model = nn.Sequential(
+                    nn.Linear(inputSize, 100)
+                    , nn.ReLU()
+                    , nn.Linear(100, 100)
+                    , nn.ReLU()
+                    , nn.Linear(100, 2)
+                )
+
+            def forward(self, x):
+                m = self.model(x)
+                o = functional.log_softmax(m, dim=1)
+                return o
+
+        model2 = NeuralNetwork(xTestTensor.shape[1])
+        model2.load_state_dict(torch.load(modelFilePath))
+        model2.eval()
+        testPred = model2(xTestTensor)
+        realTestPred = torch.exp(testPred)                                      # 將log_softmax輸出轉為softmax輸出
+        topPred, topClassTest = realTestPred.topk(1, dim=1)                     # 取出最大值及其索引
+        accTest = accuracy_score(yTestTensor, topClassTest) * 100               # 計算準確值
+        print(f"accTest:{accTest:.2f}%")                                        # acc_test:81.63%
+
+        return {}, {}
+
+    @classmethod
     def UP1_0_1(self, functionInfo):
         import copy
         import torch

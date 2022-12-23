@@ -177,6 +177,48 @@ class PreProcess() :
             "yTestTensor": yTestTensor,
         }
 
+    @classmethod
+    def P0_0_5(self, functionInfo):
+        import copy
+        import torch
+        from sklearn.model_selection import train_test_split
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_5"])
+        functionVersionInfo["Version"] = "P0_0_5"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+
+        mainDF = globalObject["R0_0_5"]["ResultDF"]
+
+        # 設定隨機種子
+        torch.manual_seed(0)
+
+        mainDF = mainDF.drop(columns=["ID"])
+
+        x = mainDF.iloc[:, :-1]
+        y = mainDF.iloc[:, -1]
+        x = (x - x.min()) / (x.max() - x.min())
+
+        # 拆分數據成2個子集，x_new : x_test = 80:20
+        # 再拆分數據集x_new成2個子集, x_train : x_dev = 75:25
+        xTrainDev, xTest, yTrainDev, yTest = train_test_split(x, y, test_size=0.2, random_state=0)
+        xTrain, xDev, yTrain, yDev = train_test_split(xTrainDev, yTrainDev, test_size=0.25, random_state=0)
+
+        xTrainTensor = torch.tensor(xTrain.values).float()
+        yTrainTensor = torch.tensor(yTrain.values).long()
+        xDevTensor = torch.tensor(xDev.values).float()
+        yDevTensor = torch.tensor(yDev.values).long()
+        xTestTensor = torch.tensor(xTest.values).float()
+        yTestTensor = torch.tensor(yTest.values).long()
+
+        return {}, {
+            "xTrainTensor": xTrainTensor,
+            "yTrainTensor": yTrainTensor,
+            "xDevTensor": xDevTensor,
+            "yDevTensor": yDevTensor,
+            "xTestTensor": xTestTensor,
+            "yTestTensor": yTestTensor,
+        }
+
 
     @classmethod
     def P1_0_1(self, functionInfo):

@@ -10,6 +10,15 @@ class RawData() :
         return {}, {"ResultDF":mainDF}
 
     @classmethod
+    def R0_0_5(self, functionInfo):
+        import pandas
+
+        mainDF = pandas.read_csv('common/common/file/data/csv/UCICreditCard.csv')
+        print(mainDF.shape)  # (30000, 25)
+
+        return {}, {"ResultDF":mainDF}
+
+    @classmethod
     def R1_0_1(self, functionInfo):
         import copy
         from torchvision import datasets
