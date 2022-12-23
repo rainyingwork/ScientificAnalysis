@@ -1,6 +1,29 @@
 
 class UseProduct() :
 
+
+    @classmethod
+    def UP0_0_4(self, functionInfo):
+        import copy
+        import torch
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_4"])
+        functionVersionInfo["Version"] = "M0_0_4"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+
+        model = globalObject['M0_0_4']["model"]
+        xTestTensor = globalObject['P0_0_4']["xTestTensor"]
+        yTestTensor = globalObject['P0_0_4']["yTestTensor"]
+
+        model.eval()
+        lossfunc = torch.nn.MSELoss()
+        yTestPred = model(xTestTensor)  # 使用為訓練的資料進行損失函數驗證
+        validLoss = lossfunc(yTestPred, yTestTensor)
+
+        print(validLoss)
+
+        return {}, {}
+
     @classmethod
     def UP1_0_1(self, functionInfo):
         import copy

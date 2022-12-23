@@ -81,63 +81,19 @@ class ModelUse():
 
     @classmethod
     def M0_0_4(self, functionInfo):
-        import pandas
-        from sklearn.model_selection import train_test_split
+        import copy
         import torch
         import torch.nn as nn
+        import torch.optim as optim
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_4"])
+        functionVersionInfo["Version"] = "M0_0_4"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
-        # 設定隨機種子
-        torch.manual_seed(0)
-
-        # ========== RX_X_X ==========
-
-        # 讀取資料 YearPredictionMSD
-        msdDF = pandas.read_csv('Example/P34PyTorch/file/data/YearPredictionMSD.csv', nrows=50000, header=None)
-        print(msdDF.shape)  # (50000, 91)
-
-        # 數據所有資料欄位
-        msdColumns = msdDF.columns
-        # 數據中所有為數值型態的資料欄位
-        msdNumColumns = msdDF._get_numeric_data().columns
-        print(list(set(msdColumns) - set(msdNumColumns)))  # [] -> 代表所有都是數值欄位
-        print(msdDF.isnull().sum().sum())  # 0 -> 代表資料非常乾淨沒有空值
-
-        outlierColumnList = []  # 確認雜訊欄位有哪一些
-        for columnNum in range(msdDF.shape[1]):
-            # 平均 +- 三倍標準差 (過濾雜訊)
-            maxValue = msdDF[msdDF.columns[columnNum]].mean() + (3 * msdDF[msdDF.columns[columnNum]].std())
-            minValue = msdDF[msdDF.columns[columnNum]].mean() - (3 * msdDF[msdDF.columns[columnNum]].std())
-            noiseCount = 0
-            for value in msdDF[msdDF.columns[columnNum]]:
-                if value > maxValue or value < minValue:
-                    noiseCount += 1
-            noisePer = noiseCount / msdDF.shape[0]
-            if noisePer > 0.05:  # 雜訊比例大於5%的盡量不要使用
-                outlierColumnList.append(columnNum)
-        print(outlierColumnList)  # [] 列出雜訊欄位
-
-        x = msdDF.iloc[:, 1:]  # 欄位 1 ~ 90
-        y = msdDF.iloc[:, 0]  # 欄位 0
-        x = (x - x.mean()) / x.std()  # 訓練數據標準化
-
-        print(x.head())
-
-        # 拆分數據成2個子集，x_new : x_test = 80:20
-        # 再拆分數據集x_new成2個子集, x_train : x_dev = 75:25
-        xTrainDev, xTest, yTrainDev, yTest = train_test_split(x, y, test_size=0.2, random_state=0)
-        xTrain, xDev, yTrain, yDev = train_test_split(xTrainDev, yTrainDev, test_size=0.25, random_state=0)
-        print(xTrain.shape, xDev.shape, xTest.shape)  # (30000, 90) (10000, 90) (10000, 90)
-
-        xTrainTensor = torch.tensor(xTrain.values).float()
-        yTrainTensor = torch.tensor(yTrain.values).float().unsqueeze(1)  # 使用unsqueeze增加一個維度
-        xDevTensor = torch.tensor(xDev.values).float()
-        yDevTensor = torch.tensor(yDev.values).float().unsqueeze(1)  # 使用unsqueeze增加一個維度
-        xTestTensor = torch.tensor(xTest.values).float()
-        yTestTensor = torch.tensor(yTest.values).float().unsqueeze(1)  # 使用unsqueeze增加一個維度
-
-        print(xTrainTensor.shape, yTrainTensor.shape)  # torch.Size([30000, 90]) torch.Size([30000, 1])
-
-        # ========== MX_X_X ==========
+        xTrainTensor = globalObject['P0_0_4']["xTrainTensor"]
+        yTrainTensor = globalObject['P0_0_4']["yTrainTensor"]
+        xDevTensor = globalObject['P0_0_4']["xDevTensor"]
+        yDevTensor = globalObject['P0_0_4']["yDevTensor"]
 
         # 建立神經網路
         model = nn.Sequential(
@@ -169,28 +125,17 @@ class ModelUse():
             if epoch % 400 == 0:
                 with torch.no_grad():
                     model.eval()  # 切換成驗證模式
-                    yPred2 = model(xDevTensor)  # 使用為訓練的資料進行損失函數驗證
-                    validLoss = lossfunc(yPred2, yDevTensor)
+                    yDevPred = model(xDevTensor)  # 使用為訓練的資料進行損失函數驗證
+                    validLoss = lossfunc(yDevPred, yDevTensor)
                 # 可以注意到損失會不斷的下降
-                print(f"Epoch:{epoch},Train Loss:{trainLoss.item():.3f},Valid Loss:{validLoss.item():.3f}")
+                print(f"Epoch:{epoch}, Train Loss:{trainLoss.item():.3f}, Valid Loss:{validLoss.item():.3f}")
                 # 損失值小於81 會提前結束訓練
                 if trainLoss.item() < 81:
                     break
 
-        # ========== UPX_X_X ==========
+        # torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_4/YearPred.pt")
 
-        # ---------- 模型驗證 ----------
-
-        model = model.to("cpu")
-        pred = model(xTestTensor)
-        testLoss = lossfunc(pred, yTestTensor)
-        print(f"TestLoss:{testLoss.item():.3f}")
-
-        # ---------- 模型使用 ----------
-        for i in range(100, 110):
-            print(f"Truth:{yTestTensor[i].item():.0f},Pred:{pred[i].item():.0f}")
-
-        return {}, {}
+        return {}, {"model":model}
 
     @classmethod
     def M0_0_5(self, functionInfo):

@@ -4,7 +4,6 @@ from Example.P34PyTorch.circuit.P23Standard import Standard
 from Example.P34PyTorch.circuit.P31RawData import RawData
 from Example.P34PyTorch.circuit.P32PreProcess import PreProcess
 from Example.P34PyTorch.circuit.P33ModelUse import ModelUse
-from Example.P34PyTorch.circuit.P41ChartReport import ChartReport
 from Example.P34PyTorch.circuit.P41UseProduct import UseProduct
 
 class CircuitMain(
@@ -14,7 +13,6 @@ class CircuitMain(
     , RawData
     , PreProcess
     , ModelUse
-    , ChartReport
     , UseProduct
     ) :
     pass

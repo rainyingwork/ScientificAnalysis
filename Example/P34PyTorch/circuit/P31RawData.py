@@ -2,6 +2,14 @@
 class RawData() :
 
     @classmethod
+    def R0_0_4(self, functionInfo):
+        import pandas
+
+        mainDF = pandas.read_csv('common/common/file/data/csv/YearPredictionMSD.csv', nrows=50000, header=None)
+
+        return {}, {"ResultDF":mainDF}
+
+    @classmethod
     def R1_0_1(self, functionInfo):
         import copy
         from torchvision import datasets

@@ -113,6 +113,70 @@ class PreProcess() :
 
         return {}, {'x': x, 'y': y}
 
+    @classmethod
+    def P0_0_4(self, functionInfo):
+        import copy
+        import torch
+        from sklearn.model_selection import train_test_split
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_4"])
+        functionVersionInfo["Version"] = "P0_0_4"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+
+        mainDF = globalObject["R0_0_4"]["ResultDF"]
+
+        # 設定隨機種子
+        torch.manual_seed(0)
+
+        # 數據所有資料欄位
+        msdColumns = mainDF.columns
+        # 數據中所有為數值型態的資料欄位
+        msdNumColumns = mainDF._get_numeric_data().columns
+        print(list(set(msdColumns) - set(msdNumColumns)))  # [] -> 代表所有都是數值欄位
+        print(mainDF.isnull().sum().sum())  # 0 -> 代表資料非常乾淨沒有空值
+
+        outlierColumnList = []  # 確認雜訊欄位有哪一些
+        for columnNum in range(mainDF.shape[1]):
+            # 平均 +- 三倍標準差 (過濾雜訊)
+            maxValue = mainDF[mainDF.columns[columnNum]].mean() + (3 * mainDF[mainDF.columns[columnNum]].std())
+            minValue = mainDF[mainDF.columns[columnNum]].mean() - (3 * mainDF[mainDF.columns[columnNum]].std())
+            noiseCount = 0
+            for value in mainDF[mainDF.columns[columnNum]]:
+                if value > maxValue or value < minValue:
+                    noiseCount += 1
+            noisePer = noiseCount / mainDF.shape[0]
+            if noisePer > 0.05:  # 雜訊比例大於5%的盡量不要使用
+                outlierColumnList.append(columnNum)
+        print(outlierColumnList)  # [] 列出雜訊欄位
+
+        x = mainDF.iloc[:, 1:]  # 欄位 1 ~ 90
+        y = mainDF.iloc[:, 0]  # 欄位 0
+        x = (x - x.mean()) / x.std()  # 訓練數據標準化
+
+        print(x.head())
+
+        # 拆分數據成2個子集，x_new : x_test = 80:20
+        # 再拆分數據集x_new成2個子集, x_train : x_dev = 75:25
+        xTrainDev, xTest, yTrainDev, yTest = train_test_split(x, y, test_size=0.2, random_state=0)
+        xTrain, xDev, yTrain, yDev = train_test_split(xTrainDev, yTrainDev, test_size=0.25, random_state=0)
+        print(xTrain.shape, xDev.shape, xTest.shape)  # (30000, 90) (10000, 90) (10000, 90)
+
+        xTrainTensor = torch.tensor(xTrain.values).float()
+        yTrainTensor = torch.tensor(yTrain.values).float().unsqueeze(1)  # 使用unsqueeze增加一個維度
+        xDevTensor = torch.tensor(xDev.values).float()
+        yDevTensor = torch.tensor(yDev.values).float().unsqueeze(1)  # 使用unsqueeze增加一個維度
+        xTestTensor = torch.tensor(xTest.values).float()
+        yTestTensor = torch.tensor(yTest.values).float().unsqueeze(1)  # 使用unsqueeze增加一個維度
+
+        return {}, {
+            "xTrainTensor": xTrainTensor,
+            "yTrainTensor": yTrainTensor,
+            "xDevTensor": xDevTensor,
+            "yDevTensor": yDevTensor,
+            "xTestTensor": xTestTensor,
+            "yTestTensor": yTestTensor,
+        }
+
 
     @classmethod
     def P1_0_1(self, functionInfo):
