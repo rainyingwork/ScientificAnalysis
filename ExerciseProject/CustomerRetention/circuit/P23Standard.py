@@ -13,8 +13,8 @@ class Standard () :
             , port=int(os.getenv("POSTGRES_POST"))
             , user=os.getenv("POSTGRES_USERNAME")
             , password=os.getenv("POSTGRES_PASSWORD")
-            , database="scientificanalysis"
-            , schema="public"
+            , database=os.environ["POSTGRES_OPSNABAGEMENT_DATABASE"]
+            , schema=os.environ["POSTGRES_OPSNABAGEMENT_SCHEMA"]
         )
         sqlStrs = """
         DELETE FROM observationdata.standarddata AA 

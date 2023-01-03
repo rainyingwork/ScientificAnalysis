@@ -18,3 +18,10 @@ pandas.set_option('display.float_format', '{:,.5f}'.format)
 class Config () :
     buildUsers = ['vicying']
     productNames = ['Example']
+
+os.environ["POSTGRES_OPSNABAGEMENT_DATABASE"] = "scientificanalysis"
+os.environ["POSTGRES_OPSNABAGEMENT_SCHEMA"] = "public"
+os.environ["STORAGE_RECORDSAVEPATH"] = "Storage/OPSData"
+
+
+
