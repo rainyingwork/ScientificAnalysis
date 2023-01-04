@@ -402,43 +402,10 @@ class ModelUse():
 
         return {}, {"ModelFilePath": modelFilePath}
 
-
-
-    @classmethod
-    def M0_0_8(self, functionInfo):
-        from PIL import Image
-        import torch
-        from torchvision import transforms
-        from torchvision import models
-        import numpy as np
-        import pandas as pd
-
-        imgStep1 = Image.open("Example/P34PyTorch/file/data/dog.jpg")
-
-        preprocess = transforms.Compose([
-            transforms.Resize(256), # 縮放圖片長邊變成256
-            transforms.CenterCrop(244), # 從中心裁切出244x244的圖片
-            transforms.ToTensor() # 將圖片轉成Tensor，並把數值normalize到[0,1]
-        ])
-
-        imgStep2 = preprocess(imgStep1)
-        imgStep3 = torch.unsqueeze(imgStep2, 0)
-        resnetModel = models.resnet18(weights='ResNet18_Weights.DEFAULT') # 載入torchvision的預訓練模型
-        resnetModel.eval() # 將resnetModel設為驗證
-        predictList = resnetModel(imgStep3)  # 將圖片輸入
-
-        predictNumpys = predictList.detach().numpy()  # 轉為NumPy
-        outClass = np.argmax(predictNumpys, axis=1)  # 找出最大值的索引
-        imageNetClassesDF = pd.read_csv("Example/P34PyTorch/file/data/imagenet_classes.csv", header=None)
-        label = imageNetClassesDF.iloc[outClass].values
-        print(label)
-        score = torch.nn.functional.softmax(predictList, dim=1)[0] * 100 # 列出所有對應標籤的百分比
-        print(f"Score:{score[outClass].item():.2f}") # 找出對應標籤的百分比
-
-        return {}, {}
-
     @classmethod
     def M0_0_9(self, functionInfo):
+        import copy
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import numpy
         import random
         import torch
@@ -454,51 +421,12 @@ class ModelUse():
         random.seed(1234)
         torch.manual_seed(1234)
 
-        trainTransforms = transforms.Compose([
-            transforms.RandomResizedCrop(224),      # 隨機裁切圖片224x224
-            transforms.RandomHorizontalFlip(),      # 隨機水平翻轉圖片，機率為0.5
-            transforms.ToTensor(),                  # 將圖片轉成Tensor，並把數值normalize到[0,1]
-            transforms.Normalize(                   # 標準化
-                [0.485, 0.456, 0.406],
-                [0.229, 0.224, 0.225]
-            )
-        ])
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_9"])
+        functionVersionInfo["Version"] = "M0_0_9"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
-        verifyTransforms = transforms.Compose([
-            transforms.Resize(256),                 # 縮放圖片長邊變成256
-            transforms.CenterCrop(224),             # 從中心裁切出224x224的圖片
-            transforms.ToTensor(),                  # 將圖片轉成Tensor，並把數值normalize到[0,1]
-            transforms.Normalize(                   # 標準化
-                [0.485, 0.456, 0.406],
-                [0.229, 0.224, 0.225]
-            )
-        ])
-
-        trainDataSet = datasets.ImageFolder(
-            # 使用 root 撈取圖片位置
-            root="Example/P34PyTorch/file/data/bees_ants/train",
-            # 使用 transform 轉成模型可以吃的標準圖片
-            transform=trainTransforms
-        )
-        verifyDataSet = datasets.ImageFolder(
-            # 使用 root 撈取圖片位置
-            root="Example/P34PyTorch/file/data/bees_ants/val",
-            # 使用 transform 轉成模型可以吃的標準圖片
-            transform=verifyTransforms
-        )
-
-        trainDataLoader = torch.utils.data.DataLoader(
-            trainDataSet,   # 輸入資料集
-            batch_size=4,   # 每次撈取4張圖片
-            shuffle=True,   # 每次撈取前都先洗牌
-            num_workers=4   # 使用4個子執行緒
-        )
-        verifyDataLoader = torch.utils.data.DataLoader(
-            verifyDataSet,  # 輸入資料集
-            batch_size=4,   # 每次撈取4張圖片
-            shuffle=True,   # 每次撈取前都先洗牌
-            num_workers=4   # 使用4個子執行緒
-        )
+        trainDataLoader = globalObject['P0_0_9']["TrainDataLoader"]
+        verifyDataLoader = globalObject['P0_0_9']["VerifyDataLoader"]
 
         # 載入預訓練模型
         model = models.resnet18(weights='ResNet18_Weights.DEFAULT')

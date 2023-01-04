@@ -274,6 +274,66 @@ class PreProcess() :
 
         return {}, {"TrainDataLoader": trainDataLoader, "TestDataLoader": testDataLoader}
 
+    @classmethod
+    def P0_0_9(self, functionInfo):
+        import numpy
+        import random
+        import torch
+        from torchvision import datasets, models
+        from torchvision import transforms
+
+        # 隨機種子
+        numpy.random.seed(1234)
+        random.seed(1234)
+        torch.manual_seed(1234)
+
+        trainTransforms = transforms.Compose([
+            transforms.RandomResizedCrop(224),  # 隨機裁切圖片224x224
+            transforms.RandomHorizontalFlip(),  # 隨機水平翻轉圖片，機率為0.5
+            transforms.ToTensor(),  # 將圖片轉成Tensor，並把數值normalize到[0,1]
+            transforms.Normalize(  # 標準化
+                [0.485, 0.456, 0.406],
+                [0.229, 0.224, 0.225]
+            )
+        ])
+
+        verifyTransforms = transforms.Compose([
+            transforms.Resize(256),  # 縮放圖片長邊變成256
+            transforms.CenterCrop(224),  # 從中心裁切出224x224的圖片
+            transforms.ToTensor(),  # 將圖片轉成Tensor，並把數值normalize到[0,1]
+            transforms.Normalize(  # 標準化
+                [0.485, 0.456, 0.406],
+                [0.229, 0.224, 0.225]
+            )
+        ])
+
+        trainDataSet = datasets.ImageFolder(
+            # 使用 root 撈取圖片位置
+            root="common/common/file/data/imgs/beesAnts/train",
+            # 使用 transform 轉成模型可以吃的標準圖片
+            transform=trainTransforms
+        )
+        verifyDataSet = datasets.ImageFolder(
+            # 使用 root 撈取圖片位置
+            root="common/common/file/data/imgs/beesAnts/val",
+            # 使用 transform 轉成模型可以吃的標準圖片
+            transform=verifyTransforms
+        )
+
+        trainDataLoader = torch.utils.data.DataLoader(
+            trainDataSet,  # 輸入資料集
+            batch_size=4,  # 每次撈取4張圖片
+            shuffle=True,  # 每次撈取前都先洗牌
+            num_workers=4  # 使用4個子執行緒
+        )
+        verifyDataLoader = torch.utils.data.DataLoader(
+            verifyDataSet,  # 輸入資料集
+            batch_size=4,  # 每次撈取4張圖片
+            shuffle=True,  # 每次撈取前都先洗牌
+            num_workers=4  # 使用4個子執行緒
+        )
+
+        return {}, {"TrainDataLoader": trainDataLoader, "VerifyDataLoader": verifyDataLoader}
 
     @classmethod
     def P1_0_1(self, functionInfo):

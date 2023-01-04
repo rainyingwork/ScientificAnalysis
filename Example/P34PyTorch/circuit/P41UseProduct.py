@@ -1,7 +1,6 @@
 
 class UseProduct() :
 
-
     @classmethod
     def UP0_0_4(self, functionInfo):
         import copy
@@ -107,6 +106,7 @@ class UseProduct() :
 
         return {}, {}
 
+    @classmethod
     def UP0_0_7(self, functionInfo):
         import copy
         import torch
@@ -182,6 +182,39 @@ class UseProduct() :
         predLabel = model(sampleData).max(dim=1)[1][10]
         print(f"Model prediction is : {predLabel}")
         print(f"Ground truth is : {sampleTargets[10]}")
+
+        return {}, {}
+
+    @classmethod
+    def UP0_0_8(self, functionInfo):
+        from PIL import Image
+        import torch
+        from torchvision import transforms
+        from torchvision import models
+        import numpy as np
+        import pandas as pd
+
+        preprocess = transforms.Compose([
+            transforms.Resize(256),                                         # 縮放圖片長邊變成256
+            transforms.CenterCrop(244),                                     # 從中心裁切出244x244的圖片
+            transforms.ToTensor()                                           # 將圖片轉成Tensor，並把數值normalize到[0,1]
+        ])
+
+        resnetImageClassesDF = pd.read_csv("common/common/file/data/csv/ResnetImageClasses.csv", header=None)  # 對應表
+        oriImg = Image.open("common/common/file/data/imgs/dog/dog.jpg")
+        preImg = preprocess(oriImg)
+        preImg = torch.unsqueeze(preImg, 0)
+
+        model = models.resnet18(weights='ResNet18_Weights.DEFAULT')         # 載入torchvision的預訓練模型
+        model.eval()                                                        # 將resnetModel設為驗證
+        predictList = model(preImg)                                         # 將圖片輸入 輸出成各個結果的機率
+
+        predictNumpys = predictList.detach().numpy()                        # 轉為NumPy
+        predictClass = np.argmax(predictNumpys, axis=1)                     # 找出最大值的索引
+        predictLabel = resnetImageClassesDF.iloc[predictClass].values       # 找出對應的類別
+        print(predictLabel)
+        score = torch.nn.functional.softmax(predictList, dim=1)[0] * 100    # 列出所有對應標籤的百分比
+        print(f"Score:{score[predictClass].item():.2f}")                    # 找出對應標籤的百分比
 
         return {}, {}
 
