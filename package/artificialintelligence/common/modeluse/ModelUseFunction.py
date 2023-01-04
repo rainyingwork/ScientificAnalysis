@@ -250,8 +250,8 @@ class ModelUseFunction(CommonFunction):
             modeldist['ModelFileName'] = modeldist['ModelName'] + ".pkl"
             modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
             modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir,modeldist['ModelFileName'])
-            modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv["STORAGE_RECORDSAVEPATH"],exeFunctionRDir)
-            modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv["STORAGE_RECORDSAVEPATH"],exeFunctionRDir, modeldist['ModelFileName'])
+            modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+            modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir, modeldist['ModelFileName'])
             modeldist['ModelResult'] = {}
             modeldist['ModelResult']['TN'] = int(tn)
             modeldist['ModelResult']['FP'] = int(fp)
@@ -326,8 +326,8 @@ class ModelUseFunction(CommonFunction):
             modeldist['ModelFileName'] = modeldist['ModelName'] + ".pkl"
             modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
             modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldist['ModelFileName'])
-            modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv["STORAGE_RECORDSAVEPATH"],exeFunctionRDir)
-            modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv["STORAGE_RECORDSAVEPATH"],exeFunctionRDir,modeldist['ModelFileName'])
+            modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+            modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldist['ModelFileName'])
             modeldist['ModelResult'] = {}
             modeldist['ModelResult']['MAE'] = float(MAE)
             modeldist['ModelResult']['MSE'] = float(MSE)
@@ -388,8 +388,8 @@ class ModelUseFunction(CommonFunction):
         modeldist['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn)
         modeldist['ModelResult']['F1Score'] = 2 * modeldist['ModelResult']['Recall'] * modeldist['ModelResult']['Precision'] / (modeldist['ModelResult']['Recall'] + modeldist['ModelResult']['Precision'])
 
-        modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv["STORAGE_RECORDSAVEPATH"],exeFunctionRDir)
-        modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv["STORAGE_RECORDSAVEPATH"],exeFunctionRDir,modeldist['ModelFileName'])
+        modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+        modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldist['ModelFileName'])
 
         sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
         sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
@@ -446,8 +446,8 @@ class ModelUseFunction(CommonFunction):
         modeldist['ModelResult']['R2'] = float(R2)
         modeldist['ModelResult']['EVS'] = float(EVS)
 
-        modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv["STORAGE_RECORDSAVEPATH"],exeFunctionRDir)
-        modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv["STORAGE_RECORDSAVEPATH"],exeFunctionRDir,modeldist['ModelFileName'])
+        modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+        modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldist['ModelFileName'])
 
         sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
         sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
