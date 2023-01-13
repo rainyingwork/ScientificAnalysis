@@ -330,15 +330,14 @@ class UseProduct() :
         for testData, testTarget in testLoader:
             testData = testData.to(device)
             testTarget = testTarget.to(device)
-
-            test_pred = model(testData)
-            loss3 = lossFunction(test_pred, testTarget)
+            testPred = model(testData)
+            loss3 = lossFunction(testPred, testTarget)
             testLoss += loss3.item()
-            _, predicted = torch.max(test_pred, 1)
+            _, predicted = torch.max(testPred, 1)
             numCorrect += (predicted == testTarget).float().sum()
 
-        testLoss = testLoss / len(testLoss)
-        numCorrect = numCorrect / (len(testLoss) * batchSize)
+        testLoss = testLoss / len(testLoader)
+        numCorrect = numCorrect / (len(testLoader) * batchSize)
         print(f"Test Loss: {testLoss:.3f}, Correct: {numCorrect:.3f}")
 
         return {}, {}

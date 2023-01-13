@@ -24,7 +24,7 @@ if __name__ == "__main__":
             "R0_0_9","P0_0_9","M0_0_9","UP0_0_9",
             "P0_0_10","M0_0_10","UP0_0_10",
             "P0_0_11","M0_0_11","UP0_0_11",
-            "M0_0_12",
+            "P0_0_12","M0_0_12","UP0_0_12",
             "M0_0_13",
             "M0_0_14",
             "M0_0_15",
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         ],
         "RepOPSRecordId": 9999,
         "RepFunctionArr": [],
-        "RunFunctionArr": ["P0_0_11","M0_0_11","UP0_0_11"], #
+        "RunFunctionArr": ["P0_0_12","M0_0_12","UP0_0_12"], #
         "OrdFunctionArr": [
             {"Parent": "P0_0_2", "Child": "M0_0_2"},
             {"Parent": "P0_0_3", "Child": "M0_0_3"},
@@ -45,8 +45,7 @@ if __name__ == "__main__":
             {"Parent": "P0_0_9", "Child": "M0_0_9"},{"Parent": "M0_0_9", "Child": "UP0_0_9"},
             {"Parent": "P0_0_10", "Child": "M0_0_10"},{"Parent": "M0_0_10", "Child": "UP0_0_10"},
             {"Parent": "P0_0_11", "Child": "M0_0_11"},{"Parent": "M0_0_11", "Child": "UP0_0_11"},
-            {"Parent": "M0_0_10Train", "Child": "M0_0_10Test"},
-            {"Parent": "M0_0_11Train", "Child": "M0_0_11Test"},
+            {"Parent": "P0_0_12", "Child": "M0_0_12"},{"Parent": "M0_0_12", "Child": "UP0_0_12"},
         ],
         "FunctionMemo": {
             "M0_0_1":"熟悉Pytorch的張量操作",
