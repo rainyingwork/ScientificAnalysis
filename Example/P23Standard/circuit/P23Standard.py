@@ -1,3 +1,4 @@
+
 class Standard () :
 
     @classmethod

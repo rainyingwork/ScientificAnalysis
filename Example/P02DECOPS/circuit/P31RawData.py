@@ -1,6 +1,3 @@
-import copy , pprint
-from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
-
 
 class RawData() :
 

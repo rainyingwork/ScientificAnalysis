@@ -1,12 +1,9 @@
-import os
-import copy , pprint
-from dotenv import load_dotenv
-from package.common.database.PostgresCtrl import PostgresCtrl
 
 class RawData() :
 
     @classmethod
     def R0_0_0(self, functionInfo):
+        import copy
         from package.artificialintelligence.common.rawdata.RawDataFunction import RawDataFunction
         rawDataFunction = RawDataFunction()
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["R0_0_0"])
@@ -14,9 +11,9 @@ class RawData() :
         resultObject , globalObjectDict = rawDataFunction.executionFunctionByFunctionType(functionVersionInfo)
         return resultObject, globalObjectDict
 
-
     @classmethod
     def R0_0_1(self, functionInfo):
+        import copy
         from package.artificialintelligence.common.rawdata.RawDataFunction import RawDataFunction
         rawDataFunction = RawDataFunction()
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["R0_0_1"])
