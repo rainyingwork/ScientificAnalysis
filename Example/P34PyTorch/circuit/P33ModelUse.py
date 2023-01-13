@@ -445,7 +445,7 @@ class ModelUse():
         # 學習調度器 代表每step_size的步數學習率下降gamma optimizerScheduler.step() 為一步
         optimizerScheduler = StepLR(optimizer, step_size=7, gamma=0.1)
 
-        epochs = 21
+        epochs = 1
         for epoch in range(epochs):
             model.train() # 模型訓練
             losses = 0.0
@@ -502,7 +502,7 @@ class ModelUse():
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_10"])
         functionVersionInfo["Version"] = "M0_0_10"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
-        trainData = globalObject['P0_0_10']["TrainDataSet"]
+        trainData = globalObject['P0_0_10']["TrainData"]
 
         devSize = 0.2
         idList = list(range(len(trainData)))

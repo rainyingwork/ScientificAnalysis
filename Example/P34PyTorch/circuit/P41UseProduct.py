@@ -223,19 +223,23 @@ class UseProduct() :
         import torch
         import copy
         from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        import torch.nn as nn
         import torchvision
+        from torchvision import datasets, models
         import numpy
 
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP0_0_9"])
         functionVersionInfo["Version"] = "UP0_0_9"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
-        trainDataSet = globalObject['P0_0_9']["TrainDataSet"]
         verifyDataSet = globalObject['P0_0_9']["VerifyDataSet"]
-        trainDataLoader = globalObject['P0_0_9']["TrainDataLoader"]
         verifyDataLoader = globalObject['P0_0_9']["VerifyDataLoader"]
 
-        model = torch.load("Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_9/model.pt")
+        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_9/model.pt"
+
+        model = models.resnet18(weights='ResNet18_Weights.DEFAULT')
+        model.fc = nn.Linear(model.fc.in_features, 2)
+        model.load_state_dict(torch.load(modelFile))
 
         inputs, classes = next(iter(verifyDataLoader))  # 取得一批圖像
         className = verifyDataSet.classes  # 建立類別名稱列表
@@ -247,42 +251,26 @@ class UseProduct() :
         _, preds = torch.max(outputs, 1)
         title = [className[x] for x in preds]
 
-        out = torchvision.utils.make_grid(inputs)           # 顯示圖像
-        out = out.numpy().transpose((1, 2, 0))              # 轉換成numpy
-        mean = numpy.array([0.485, 0.456, 0.406])           # 轉換成標準圖像
-        std = numpy.array([0.229, 0.224, 0.225])            # 轉換成標準圖像
-        out = std * out + mean                              # 取消在transforms.Normalize()中的標準化
-        out = numpy.clip(out, 0, 1)                         # 將圖像限制在0~1之間
-
         print(title)
-        print(out)
 
         return {}, {}
 
     @classmethod
     def UP0_0_10(self, functionInfo):
+        import copy
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import torch
         from torch import nn
         from torchvision import datasets
         import torchvision.transforms as transforms
         from torch.utils.data import DataLoader
 
-        # 轉為張量與作正規化
-        transform = transforms.Compose([  # 轉為張量與作正規化
-            transforms.ToTensor(),  # 轉為張量
-            transforms.Normalize(  # 正規化
-                mean=(0.4914, 0.4822, 0.4465),
-                std=(0.2470, 0.2435, 0.2616))
-        ])
-
-        testData = datasets.CIFAR10('common/common/file/data/imgs/cifar10/test', train=False, download=True,transform=transform)
-
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+        testData = globalObject['P0_0_10']["TestData"]
         batchSize = 100
         testDataLoader = DataLoader(testData, batch_size=batchSize)
-        print(len(testDataLoader))
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"Deivce:{device}")
 
         import Example.P34PyTorch.package.cifar10_model as cifar10Model
         modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
