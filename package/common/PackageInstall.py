@@ -4,9 +4,10 @@ import sys
 # 以 Python 3.9.13 為最該系統的版本
 
 isInstall = False
+isLocalDir = False
 pythonEXEPath = "python" if os.path.isfile("venv/python.exe") else "bin/python" if os.name == "posix" else "Scripts/python"
 __pythonexePath = "{}/venv/{}".format(sys.path[1],pythonEXEPath)
-__pipFunction = "pip install" if isInstall else "pip download -d venv\pip"
+__pipFunction = "pip install --no-index --find-links=venv\pip" if isLocalDir == True else "pip install" if isInstall == True else "pip download -d venv\pip"
 
 # Python套件 -------------------------------------------
 os.system("{} -m {} pip==22.3.1".format(__pythonexePath,__pipFunction))
