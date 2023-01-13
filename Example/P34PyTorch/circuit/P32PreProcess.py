@@ -398,7 +398,7 @@ class PreProcess() :
         return {}, {"TrainData": trainData, "TestData": testData}
 
     @classmethod
-    def M0_0_12(self, functionInfo):
+    def P0_0_12(self, functionInfo):
         import pandas as pd
         import torch
         from torch import nn, optim
