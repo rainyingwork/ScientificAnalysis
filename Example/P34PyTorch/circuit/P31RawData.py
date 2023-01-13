@@ -36,8 +36,8 @@ class RawData() :
         torch.manual_seed(0)                                                                # 設定隨機種子
 
         transform = transforms.Compose([transforms.ToTensor(), ])
-        trainDataSet = datasets.MNIST('Example/P34PyTorch/file/data/', train=True, download=True, transform=transform)
-        testDataSet = datasets.MNIST('Example/P34PyTorch/file/data/', train=False, transform=transform)
+        trainDataSet = datasets.MNIST('common/common/file/data/imgs', train=True, download=True, transform=transform)
+        testDataSet = datasets.MNIST('common/common/file/data/imgs', train=False, transform=transform)
 
         return {}, {"TrainDataSet": trainDataSet,"TestDataSet": testDataSet}
 

@@ -333,7 +333,46 @@ class PreProcess() :
             num_workers=4  # 使用4個子執行緒
         )
 
-        return {}, {"TrainDataLoader": trainDataLoader, "VerifyDataLoader": verifyDataLoader}
+        return {}, {
+            "TrainDataLoader": trainDataLoader
+            , "VerifyDataLoader": verifyDataLoader
+            , "TrainDataSet": trainDataSet
+            , "VerifyDataSet": verifyDataSet
+        }
+
+    @classmethod
+    def P0_0_10(self, functionInfo):
+        import numpy
+        import random
+        import torch
+        from torch import nn, optim
+        from torchvision import datasets
+        from torch.utils.data import DataLoader
+        import torchvision.transforms as transforms
+        from torch.utils.data.sampler import SubsetRandomSampler
+        import matplotlib.pyplot as plt
+        from tqdm import tqdm
+
+        # 設定隨機種子
+        torch.manual_seed(10)
+        numpy.random.seed(10)
+        random.seed(10)
+
+        # 轉為張量與作正規化
+        transform = transforms.Compose([
+            transforms.ToTensor(),  # 轉為張量
+            transforms.Normalize(  # 正規化
+                mean=(0.4914, 0.4822, 0.4465),
+                std=(0.2470, 0.2435, 0.2616),
+            )
+        ])
+
+        trainData = datasets.CIFAR10('common/common/file/data/imgs/cifar10/train'
+                                     , train=True, download=True, transform=transform)
+        testData = datasets.CIFAR10('common/common/file/data/imgs/cifar10/test'
+                                    , train=False, download=True, transform=transform)
+
+        return {}, {"TrainData": trainData, "TestData": testData}
 
     @classmethod
     def P1_0_1(self, functionInfo):

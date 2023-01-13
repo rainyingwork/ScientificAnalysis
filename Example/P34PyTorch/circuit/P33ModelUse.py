@@ -425,6 +425,8 @@ class ModelUse():
         functionVersionInfo["Version"] = "M0_0_9"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
 
+        trainDataSet = globalObject['P0_0_9']["TrainDataSet"]
+        verifyDataSet = globalObject['P0_0_9']["VerifyDataSet"]
         trainDataLoader = globalObject['P0_0_9']["TrainDataLoader"]
         verifyDataLoader = globalObject['P0_0_9']["VerifyDataLoader"]
 
@@ -479,27 +481,14 @@ class ModelUse():
 
             print(f"Epoch: {epoch}, Train Loss: {trainLoss:.4f}, Acc:{trainAcc:.4f}, Val Loss: {verifyLoss:.4f}, Acc:{verifyAcc:.4f}")
 
-        inputs , classes = next(iter(verifyDataLoader))  # 取得一批圖像
-        className = verifyDataSet.classes # 建立類別名稱列表
-
-        inputs = inputs.to(device)
-        outputs = model(inputs)  # 預測輸出
-        _ , preds = torch.max(outputs, 1)
-        title = [className[x] for x in preds]
-
-        out = torchvision.utils.make_grid(inputs) # 顯示圖像
-        out = out.numpy().transpose((1, 2, 0)) # 轉換成numpy
-        mean = numpy.array([0.485, 0.456, 0.406])  # 轉換成標準圖像
-        std = numpy.array([0.229, 0.224, 0.225]) # 轉換成標準圖像
-        out = std * out + mean # 取消在transforms.Normalize()中的標準化
-        out = numpy.clip(out, 0, 1) # 將圖像限制在0~1之間
-
-        torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_9/bee.pt")
+        torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_9/model.pt")
 
         return {}, {}
 
     @classmethod
-    def M0_0_10Train(self, functionInfo):
+    def M0_0_10(self, functionInfo):
+        import copy
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import numpy
         import random
         import torch
@@ -511,31 +500,18 @@ class ModelUse():
         import matplotlib.pyplot as plt
         from tqdm import tqdm
 
-        # 設定隨機種子
-        torch.manual_seed(10)
-        numpy.random.seed(10)
-        random.seed(10)
-
-        # 轉為張量與作正規化
-        transform = transforms.Compose([
-            transforms.ToTensor() ,                 # 轉為張量
-            transforms.Normalize(                   # 正規化
-                mean=(0.4914, 0.4822, 0.4465) ,
-                std=(0.2470, 0.2435, 0.2616) ,
-            )
-        ])
-
-        trainData = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/train',
-                                    train=True, download=True, transform=transform)
-        print(trainData.data.shape)
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_10"])
+        functionVersionInfo["Version"] = "M0_0_10"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+        trainData = globalObject['P0_0_10']["TrainDataSet"]
 
         devSize = 0.2
         idList = list(range(len(trainData)))
-        numpy.random.shuffle(idList) # 隨機切分驗證集
-        splitSize = int(numpy.floor(devSize * len(trainData))) # 切分數量
+        numpy.random.shuffle(idList)                                        # 隨機切分驗證集
+        splitSize = int(numpy.floor(devSize * len(trainData)))              # 切分數量
         trainIDList, devIDList = idList[splitSize:], idList[:splitSize]
-        trainSampler = SubsetRandomSampler(trainIDList) # 訓練集
-        devSampler = SubsetRandomSampler(devIDList) # 驗證集
+        trainSampler = SubsetRandomSampler(trainIDList)                     # 訓練集
+        devSampler = SubsetRandomSampler(devIDList)                         # 驗證集
 
         batchSize = 100
         trainDataLoader = DataLoader(trainData, batch_size=batchSize, sampler=trainSampler)
@@ -615,7 +591,7 @@ class ModelUse():
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        testData = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/test', train=False, download=True, transform=transform)
+        testData = datasets.CIFAR10('common/common/file/data/imgs/cifar10/test', train=False, download=True, transform=transform)
 
         batchSize = 100
         testDataLoader = DataLoader(testData, batch_size=batchSize)
