@@ -489,13 +489,12 @@ class ModelUse():
     def M0_0_10(self, functionInfo):
         import copy
         from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
-        import numpy
-        import random
+        import numpy , random
         import torch
         from torch import nn, optim
         from torchvision import datasets
+        from torchvision import transforms
         from torch.utils.data import DataLoader
-        import torchvision.transforms as transforms
         from torch.utils.data.sampler import SubsetRandomSampler
         import matplotlib.pyplot as plt
         from tqdm import tqdm
@@ -572,58 +571,6 @@ class ModelUse():
 
         model = model.to("cpu")
         torch.save(model.state_dict(), modelFile)
-
-        return {}, {}
-
-    @classmethod
-    def M0_0_10Test(self, functionInfo):
-        import torch
-        from torch import nn
-        from torchvision import datasets
-        import torchvision.transforms as transforms
-        from torch.utils.data import DataLoader
-
-        # 轉為張量與作正規化
-        transform = transforms.Compose([            # 轉為張量與作正規化
-            transforms.ToTensor(),                  # 轉為張量
-            transforms.Normalize(                   # 正規化
-                mean=(0.4914, 0.4822, 0.4465),
-                std=(0.2470, 0.2435, 0.2616))
-        ])
-
-        testData = datasets.CIFAR10('common/common/file/data/imgs/cifar10/test', train=False, download=True, transform=transform)
-
-        batchSize = 100
-        testDataLoader = DataLoader(testData, batch_size=batchSize)
-        print(len(testDataLoader))
-
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"Deivce:{device}")
-
-        import Example.P34PyTorch.package.cifar10_model as cifar10Model
-        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"
-
-        model = cifar10Model.CNN()
-        model.load_state_dict(torch.load(modelFile))
-
-        model = model.to(device)
-
-        lossfunc = nn.NLLLoss()
-
-        numCorrect = 0.0 # 正確數量
-        testLoss = 0
-        model.eval() # 模型驗證
-        for x , y in testDataLoader:
-            x, y = x.to(device), y.to(device)
-            pred = model(x)
-            loss = lossfunc(pred, y)  # 計算損失函數
-            testLoss += loss.item()
-            _, predicted = torch.max(pred, 1)
-            numCorrect += (predicted == y).float().sum()
-
-        testLoss = testLoss / len(testDataLoader)
-        numCorrect = numCorrect / (len(testDataLoader) * batchSize)
-        print(f"TestLoss: {testLoss:.3f}, Correct: {numCorrect:.3f}")
 
         return {}, {}
 
