@@ -575,7 +575,9 @@ class ModelUse():
         return {}, {}
 
     @classmethod
-    def M0_0_11Train(self, functionInfo):
+    def M0_0_11(self, functionInfo):
+        import copy
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import numpy as np
         import random
         import torch
@@ -587,21 +589,10 @@ class ModelUse():
         import matplotlib.pyplot as plt
         from tqdm import tqdm
 
-        # 設定隨機種子
-        torch.manual_seed(10)
-        np.random.seed(10)
-        random.seed(10)
-
-        # 轉為張量與作正規化
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=(0.4914, 0.4822, 0.4465),
-                std=(0.2470, 0.2435, 0.2616))
-        ])
-
-        trainData = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/train', train=True, download=True, transform=transform)
-        print(trainData.data.shape)
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_11"])
+        functionVersionInfo["Version"] = "M0_0_11"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+        trainData = globalObject['P0_0_11']["TrainData"]
 
         devSize = 0.2
         idList = list(range(len(trainData)))
@@ -623,7 +614,7 @@ class ModelUse():
         print(f"Deivce:{device}")
 
         import Example.P34PyTorch.package.cifar10_resnet as cifar10Model
-        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_11/cifar10_resnet.pt"
+        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_11/model.pt"
         epochs = 10
         endLoss = 0.45
 
@@ -678,83 +669,21 @@ class ModelUse():
         return {}, {}
 
     @classmethod
-    def M0_0_11Test(self, functionInfo):
-        import torch
-        from torch import nn
-        from torchvision import datasets
-        import torchvision.transforms as transforms
-        from torch.utils.data import DataLoader
-        import Example.P34PyTorch.package.cifar10_resnet as cifar10_model
-        model_file = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_11/cifar10_resnet.pt"
-
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize(
-                mean=(0.4914, 0.4822, 0.4465),
-                std=(0.2470, 0.2435, 0.2616))
-        ])
-
-        test_data = datasets.CIFAR10('Example/P34PyTorch/file/data/cifar10/test', train=False, download=True, transform=transform)
-
-        batch_size = 100
-        test_loader = DataLoader(test_data, batch_size=batch_size)
-        print(len(test_loader))
-
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"deivce:{device}")
-
-        model = cifar10_model.CNN()
-        model.load_state_dict(torch.load(model_file))
-
-        model = model.to(device)
-
-        loss_function = nn.NLLLoss()
-
-        num_correct = 0.0
-        test_loss = 0
-        # 測試資料
-        model.eval()
-        for data_test, target_test in test_loader:
-            data_test = data_test.to(device)
-            target_test = target_test.to(device)
-
-            test_pred = model(data_test)
-            loss3 = loss_function(test_pred, target_test)
-            test_loss += loss3.item()
-            _, predicted = torch.max(test_pred, 1)
-            num_correct += (predicted == target_test).float().sum()
-
-        test_loss = test_loss / len(test_loader)
-        num_correct = num_correct / (len(test_loader) * batch_size)
-        print(f"Test Loss: {test_loss:.3f}, Correct: {num_correct:.3f}")
-
-        return {}, {}
-
-    @classmethod
     def M0_0_12(self, functionInfo):
+        import copy
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import pandas as pd
         import torch
         from torch import nn, optim
         from sklearn.model_selection import train_test_split
 
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_12"])
+        functionVersionInfo["Version"] = "M0_0_11"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+        xTrainTensor = globalObject['P0_0_12']["XTrainTensor"]
+        yTrainTensor = globalObject['P0_0_12']["YTrainTensor"]
+
         torch.manual_seed(10) # 固定隨機種子
-
-        # 讀取資料
-        mainDF = pd.read_csv('Example/P34PyTorch/file/data/Sales_Transactions_dataset_weekly.csv')
-        mainDF.head()
-
-        # 資料前處理
-        mainDF = mainDF.iloc[:, 1:53]
-        x = mainDF.iloc[:, :-1]     # w0 - w50
-        y = mainDF.iloc[:, -1]      # w51
-
-        # 資料切分 80%訓練, 20%測試
-        xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2, random_state=1)
-
-        xTrainTensor = torch.tensor(xTrain.values).float().unsqueeze(1) # unsqueeze(1)增加維度
-        yTrainTensor = torch.tensor(yTrain.values).float().unsqueeze(1)
-        xTestTensor = torch.tensor(xTest.values).float().unsqueeze(1)
-        yTestTensor = torch.tensor(yTest.values).float().unsqueeze(1)
 
         class RNN(nn.Module):
             def __init__(self, inputSize, hiddenSize, numLayers):
@@ -788,13 +717,8 @@ class ModelUse():
             if epoch % 1000 == 0:
                 print(f"Epoch:{epoch:5d}, Loss:{loss.item():.3f}")
 
-        pred , hidden = model(xTestTensor, None)
-        loss = lossfunc(pred , yTestTensor)
-        print(f"loss:{loss.item():.3f}")
-        for i in range(20):
-            truth = yTestTensor[i].item()
-            predSample = pred[i].item()
-            print(f"Truth:{truth:3.0f} Pred:{predSample:5.2f}")
+        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_12/model.pt"
+        torch.save(model.state_dict(), modelFile)
 
         return {}, {}
 

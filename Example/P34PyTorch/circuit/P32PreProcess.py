@@ -345,13 +345,8 @@ class PreProcess() :
         import numpy
         import random
         import torch
-        from torch import nn, optim
         from torchvision import datasets
-        from torch.utils.data import DataLoader
         import torchvision.transforms as transforms
-        from torch.utils.data.sampler import SubsetRandomSampler
-        import matplotlib.pyplot as plt
-        from tqdm import tqdm
 
         # 設定隨機種子
         torch.manual_seed(10)
@@ -373,6 +368,67 @@ class PreProcess() :
                                     , train=False, download=True, transform=transform)
 
         return {}, {"TrainData": trainData, "TestData": testData}
+
+    @classmethod
+    def P0_0_11(self, functionInfo):
+        import numpy
+        import random
+        import torch
+        from torchvision import datasets
+        import torchvision.transforms as transforms
+
+        # 設定隨機種子
+        torch.manual_seed(10)
+        numpy.random.seed(10)
+        random.seed(10)
+
+        # 轉為張量與作正規化
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=(0.4914, 0.4822, 0.4465),
+                std=(0.2470, 0.2435, 0.2616))
+        ])
+
+        trainData = datasets.CIFAR10('Example/common/file/data/cifar10/train'
+                                     , train=True, download=True,transform=transform)
+        testData = datasets.CIFAR10('common/common/file/data/cifar10/test'
+                                    , train=False, download=True, transform=transform)
+
+        return {}, {"TrainData": trainData, "TestData": testData}
+
+    @classmethod
+    def M0_0_12(self, functionInfo):
+        import pandas as pd
+        import torch
+        from torch import nn, optim
+        from sklearn.model_selection import train_test_split
+
+        torch.manual_seed(10)  # 固定隨機種子
+
+        # 讀取資料
+        mainDF = pd.read_csv('Example/P34PyTorch/file/data/Sales_Transactions_dataset_weekly.csv')
+        mainDF.head()
+
+        # 資料前處理
+        mainDF = mainDF.iloc[:, 1:53]
+        x = mainDF.iloc[:, :-1]  # w0 - w50
+        y = mainDF.iloc[:, -1]  # w51
+
+        # 資料切分 80%訓練, 20%測試
+        xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2, random_state=1)
+
+        xTrainTensor = torch.tensor(xTrain.values).float().unsqueeze(1)  # unsqueeze(1)增加維度
+        yTrainTensor = torch.tensor(yTrain.values).float().unsqueeze(1)
+        xTestTensor = torch.tensor(xTest.values).float().unsqueeze(1)
+        yTestTensor = torch.tensor(yTest.values).float().unsqueeze(1)
+
+        return {}, {
+                    "XTrainTensor": xTrainTensor
+                    , "YTrainTensor": yTrainTensor
+                    , "XTestTensor": xTestTensor
+                    , "YTestTensor": yTestTensor
+                    }
 
     @classmethod
     def P1_0_1(self, functionInfo):

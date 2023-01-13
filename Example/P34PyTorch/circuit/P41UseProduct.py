@@ -261,8 +261,6 @@ class UseProduct() :
         from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import torch
         from torch import nn
-        from torchvision import datasets
-        import torchvision.transforms as transforms
         from torch.utils.data import DataLoader
 
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -296,6 +294,101 @@ class UseProduct() :
         testLoss = testLoss / len(testDataLoader)
         numCorrect = numCorrect / (len(testDataLoader) * batchSize)
         print(f"TestLoss: {testLoss:.3f}, Correct: {numCorrect:.3f}")
+
+        return {}, {}
+
+    @classmethod
+    def UP0_0_11(self, functionInfo):
+        import copy
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        import torch
+        from torch import nn, optim
+        from torch.utils.data import DataLoader
+
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_11"])
+        functionVersionInfo["Version"] = "M0_0_11"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+        testData = globalObject['P0_0_11']["TestData"]
+
+        batchSize = 100
+        testLoader = DataLoader(testData, batch_size=batchSize)
+
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_11/model.pt"
+
+        import Example.P34PyTorch.package.cifar10_resnet as cifar10_model
+        model = cifar10_model.CNN()
+        model.load_state_dict(torch.load(modelFile))
+
+        model = model.to(device)
+
+        lossFunction = nn.NLLLoss()
+        numCorrect = 0.0
+        testLoss = 0
+        # 測試資料
+        model.eval()
+        for testData, testTarget in testLoader:
+            testData = testData.to(device)
+            testTarget = testTarget.to(device)
+
+            test_pred = model(testData)
+            loss3 = lossFunction(test_pred, testTarget)
+            testLoss += loss3.item()
+            _, predicted = torch.max(test_pred, 1)
+            numCorrect += (predicted == testTarget).float().sum()
+
+        testLoss = testLoss / len(testLoss)
+        numCorrect = numCorrect / (len(testLoss) * batchSize)
+        print(f"Test Loss: {testLoss:.3f}, Correct: {numCorrect:.3f}")
+
+        return {}, {}
+
+    @classmethod
+    def UP0_0_12(self, functionInfo):
+        import copy
+        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        import torch
+        from torch import nn, optim
+
+        functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_12"])
+        functionVersionInfo["Version"] = "M0_0_11"
+        globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
+        xTestTensor = globalObject['P0_0_12']["XTestTensor"]
+        yTestTensor = globalObject['P0_0_12']["YTestTensor"]
+
+        torch.manual_seed(10)  # 固定隨機種子
+
+        class RNN(nn.Module):
+            def __init__(self, inputSize, hiddenSize, numLayers):
+                super().__init__()
+                self.hiddenSize = hiddenSize
+                self.rnn = nn.RNN(inputSize, hiddenSize, numLayers, batch_first=True)
+                self.fc1 = nn.Linear(hiddenSize, 50)
+                self.relu = nn.ReLU()
+                self.fc2 = nn.Linear(50, 1)
+
+            def forward(self, x, hidden):
+                out, hidden = self.rnn(x, hidden)
+                out = out.view(-1, self.hiddenSize)
+                out = self.fc1(out)
+                out = self.relu(out)
+                out = self.fc2(out)
+                return out, hidden
+
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_12/model.pt"
+        model = RNN()
+        model.load_state_dict(torch.load(modelFile))
+        model = model.to(device)
+        lossfunc = nn.MSELoss()
+
+        pred, hidden = model(xTestTensor, None)
+        loss = lossfunc(pred, yTestTensor)
+        print(f"Loss:{loss.item():.3f}")
+        for i in range(20):
+            truth = yTestTensor[i].item()
+            predSample = pred[i].item()
+            print(f"Truth: {truth:3.0f} Pred: {predSample:5.2f}")
 
         return {}, {}
 
