@@ -2,7 +2,7 @@ import os ,sys ; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else 
 import re , copy , json , pprint
 import time , datetime
 from package.common.osbasic.InputCtrl import InputCtrl
-from package.opsmanagement.OPSCtrl_local import OPSCtrl
+from package.opsmanagement.OPSCtrlLocal import OPSCtrl
 
 opsCtrl = OPSCtrl()
 
