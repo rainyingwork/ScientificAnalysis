@@ -1,7 +1,7 @@
 import os , copy
 import Config
 from dotenv import load_dotenv
-import OPSCommon_local as executeOPSCommon
+import OPSCommonLocal as executeOPSCommon
 
 load_dotenv(dotenv_path="env/postgresql.env")
 
