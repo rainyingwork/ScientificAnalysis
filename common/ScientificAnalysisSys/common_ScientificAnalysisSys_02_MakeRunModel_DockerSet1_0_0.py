@@ -1,7 +1,7 @@
 import os , copy
 import Config
 from dotenv import load_dotenv
-import OPSCommon as executeOPSCommon
+import OPSCommonLocal as executeOPSCommon
 
 load_dotenv(dotenv_path="env/postgresql.env")
 load_dotenv(dotenv_path="env/mongodb.env")
@@ -9,17 +9,18 @@ load_dotenv(dotenv_path="env/mongodb.env")
 if __name__ == "__main__":
     basicInfo = {
         "RunType": ["runops"]
-        , "Product": ["ExerciseProject"]
+        , "Product": ["common"]
         , "Project": ["ScientificAnalysisSys"]
     }
     opsInfo = copy.deepcopy(basicInfo)
     opsInfo["OPSVersion"] = ["DockerSet1_0_0"]
     opsInfo["OPSRecordId"] = [9999]
     opsInfo["OPSOrderJson"] = {
-        "ExeFunctionArr": ["D1_1_0","D1_2_0","D1_2_1","D1_2_2","D1_3_0"]
-        , "RepOPSRecordId": 9999
-        , "RepFunctionArr": ["D1_1_0","D1_3_0"]
-        , "RunFunctionArr": ["D1_2_0","D1_2_1","D1_2_2"]
+        # "ExeFunctionArr": ["D1_1_0","D1_2_0","D1_2_1","D1_2_2","D1_3_0"]
+        "ExeFunctionArr": ["D1_2_0","D1_3_0","D1_2_1","D1_2_2",]
+        # , "RepOPSRecordId": 9999
+        # , "RepFunctionArr": ["D1_1_0","D1_3_0"]
+        # , "RunFunctionArr": ["D1_2_0","D1_2_1","D1_2_2"]
         , "OrdFunctionArr": [
             {"Parent": "D1_2_0", "Child": "D1_2_1"}
             , {"Parent": "D1_2_1", "Child": "D1_2_2"}
@@ -29,7 +30,7 @@ if __name__ == "__main__":
             , "D1_2_0": "部署Python"
             , "D1_3_0": "部署MongoDB"
             , "D1_2_1": "安裝Python基本套件"
-            , "D1_2_2": "安裝Python AI套件"
+            , "D1_2_2": "安裝PythonAI套件"
         }
     }
     opsInfo["ParameterJson"] = {
@@ -48,7 +49,7 @@ if __name__ == "__main__":
                             , "PGDATA": "/lib/postgresql/data"
                         }
                         , "volumes": [
-                            "/mfs/Docker/PostgreSQL/Volumes/Data:/lib/postgresql/data"
+                            "/Docker/PostgreSQL/Volumes/Data:/lib/postgresql/data"
                             # 本機位置 : 遠端位置
                         ]
                         , "ports": [
@@ -70,8 +71,8 @@ if __name__ == "__main__":
                             "ACCEPT_EULA": "Y"
                         }
                         , "volumes": [
-                            "/mfs/Docker/Python39/Volumes/Library:/Library"
-                            , "/mfs/Docker/Python39/Volumes/Data:/Data"
+                            "/Docker/Python39/Volumes/Library:/Library" ,
+                            "/Docker/Python39/Volumes/Data:/Data" ,
                         ]
                     }
                 }
@@ -86,12 +87,12 @@ if __name__ == "__main__":
                         "image": "mongo:6.0.3"
                         , "restart": "always"
                         , "environment": {
-                            "MONGO_INITDB_ROOT_USERNAME": os.getenv("POSTGRES_USERNAME")
-                            , "MONGO_INITDB_ROOT_PASSWORD": os.getenv("POSTGRES_USERNAME")
+                            "MONGO_INITDB_ROOT_USERNAME": os.getenv("MONGO_USERNAME")
+                            , "MONGO_INITDB_ROOT_PASSWORD": os.getenv("MONGO_PASSWORD")
                             , "MONGO_INITDB_DATABASE": "admin"
                         }
                         , "volumes": [
-                            "/mfs/Docker/Mongo/Volumes/Data:/Data"
+                            "/Docker/Mongo/Volumes/Data:/Data"
                         ]
                         , "ports": [
                             "27017:27017"
@@ -154,14 +155,14 @@ if __name__ == "__main__":
                 , "docker exec -it python39 pip install rake_nltk==1.0.6" # 自然語言處理套件
                 , "docker exec -it python39 pip install gensim==4.2.0" # 自然語言處理套件
                 # Pytorch套件 -------------------------------------------------
-                , "docker exec -it python39 pip install torch==1.12.0"  # 深度學習套件
-                , "docker exec -it python39 pip install torchvision==0.13.0"  # 深度學習套件
-                , "docker exec -it python39 pip install torchaudio==0.13.0"  # 深度學習套件
+                , "docker exec -it python39 pip install --no-cache-dir torch==1.12.0"  # 深度學習套件
+                , "docker exec -it python39 pip install --no-cache-dir torchvision==0.13.0"  # 深度學習套件
+                , "docker exec -it python39 pip install --no-cache-dir torchaudio==0.13.0"  # 深度學習套件
                 # Tensorflow 套件 -------------------------------------------------
-                , "docker exec -it python39 pip install tensorflow==2.11.0"
+                , "docker exec -it python39 pip install --no-cache-dir tensorflow==2.11.0"
                 # 自動機器學習套件 -------------------------------------------------
-                , "docker exec -it python39 pip install pycaret==3.0.0rc2" # 自動機器學習套件
-                , "docker exec -it python39 pip install autokeras==1.0.20"  # 自動機器學習套件
+                , "docker exec -it python39 pip install --no-cache-dir pycaret==3.0.0rc2" # 自動機器學習套件
+                , "docker exec -it python39 pip install --no-cache-dir autokeras==1.0.20"  # 自動機器學習套件
                 # 其他套件 -------------------------------------------------
                 , "docker exec -it python39 pip install gym==0.26.2" # 遊戲場套件
             ]

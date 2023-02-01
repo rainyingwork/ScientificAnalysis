@@ -1,11 +1,11 @@
 import os , copy; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
 import Config
-import OPSCommon_local as executeOPSCommon
+import OPSCommonLocal as executeOPSCommon
 
 if __name__ == "__main__":
     basicInfo = {
         "RunType": ["runops"]
-        , "Product": ["ExerciseProject"]
+        , "Product": ["common"]
         , "Project": ["ScientificAnalysisSys"]
     }
     opsInfo = copy.deepcopy(basicInfo)
