@@ -65,7 +65,7 @@ class SSHCtrl:
                                   timeout=self.__timeout,
                                   pkey=key)
         except Exception as e:
-            raise RuntimeError("sftp connect failed [%s]" % str(e))
+            raise RuntimeError("ssh connect failed [%s]" % str(e))
 
     # common ----------------------------------------------------------------------------------------------------
 
