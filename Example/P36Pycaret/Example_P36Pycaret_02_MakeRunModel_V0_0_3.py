@@ -14,6 +14,21 @@ if __name__ == "__main__":
         }
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_3"]
+        opsInfo["OPSOrderJson"] = {
+            "ExeFunctionArr": ["R0_0_3", "P0_0_2", "M0_0_3"],
+            "RepOPSRecordId": 9,
+            "RepFunctionArr": ["R0_0_3", "P0_0_2"],
+            "RunFunctionArr": ["M0_0_3"],
+            "OrdFunctionArr": [
+                {"Parent": "R0_0_3", "Child": "P0_0_2"},
+                {"Parent": "P0_0_2", "Child": "M0_0_3"},
+            ],
+            "FunctionMemo": {
+                "R0_0_3": "撈取相關資料",
+                "P0_0_2": "處理相關資料",
+                "M0_0_3": "使用相關模型",
+            },
+        }
         opsInfo["ParameterJson"] = {
             "R0_0_3": {
                 "FunctionType": "GetXYDataByDatabaseRusult",
@@ -21,7 +36,7 @@ if __name__ == "__main__":
                 "DatabaseProduct": "Example",
                 "DatabaseProject": "P36Pycaret",
                 "DatabaseOPSVersion": "V0_0_1",
-                "DatabaseOPSRecord": 640,
+                "DatabaseOPSRecord": 6,
                 "DatabaseFunction": "M0_0_1",
             },
             "P0_0_2": {
@@ -37,9 +52,9 @@ if __name__ == "__main__":
                 "DatabaseProduct": "Example",
                 "DatabaseProject": "P36Pycaret",
                 "DatabaseOPSVersion": "V0_0_1",
-                "DatabaseOPSRecord": 863,
+                "DatabaseOPSRecord": 6,
                 "DatabaseFunction": "M0_0_2",
-                "DatabaseModelName": "CatBoostClassifier",
+                "DatabaseModelName": "LogisticRegression",
             },
         }
         opsInfo["ResultJson"] = {}

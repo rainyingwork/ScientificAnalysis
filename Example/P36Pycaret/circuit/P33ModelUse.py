@@ -54,4 +54,5 @@ class ModelUse() :
         functionVersionInfo["MakeDataKeys"] = functionInfo["ResultJson"][functionInfo["ParameterJson"]["M0_0_3"]["DataVersion"]]["MakeDataKeys"]
         functionVersionInfo["MakeDataInfo"] = functionInfo["ResultJson"][functionInfo["ParameterJson"]["M0_0_3"]["DataVersion"]]["MakeDataInfo"]
         resultObject, globalObjectDict = modelUseFunction.executionFunctionByFunctionType(functionVersionInfo)
+        ModelUseFunction.insertOverwriteAnalysisData("Example","P36Pycaret","V0_0_3","20220101",globalObjectDict["ResultArr"][0], useType= 'IO')
         return resultObject, globalObjectDict

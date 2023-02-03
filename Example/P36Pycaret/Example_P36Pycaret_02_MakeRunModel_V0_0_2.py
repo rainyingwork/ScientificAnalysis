@@ -21,7 +21,7 @@ if __name__ == "__main__":
                 "DatabaseProduct": "Example",
                 "DatabaseProject": "P36Pycaret",
                 "DatabaseOPSVersion": "V0_0_1",
-                "DatabaseOPSRecord": 640,
+                "DatabaseOPSRecord": 6,
                 "DatabaseFunction": "M0_0_1",
             },
             "P0_0_2": {
@@ -35,7 +35,7 @@ if __name__ == "__main__":
                 "DataVersion": "P0_0_2",
                 "ModelFunction": "TrainPycaretDefult",
                 "ModelParameter": {
-                    "TaskType": "Regression",
+                    "TaskType": "Classification",
                 },
             },
         }

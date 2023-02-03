@@ -31,6 +31,7 @@ class ModelUseFunction(CommonFunction):
             elif functionVersionInfo['ModelFunction'] == "UsePycaretModelByDatabaseRusult":
                 otherInfo = self.muAutoMLByUsePycaretModelByDatabaseRusult(functionVersionInfo)
                 resultDict = otherInfo['ResultInfo']
+                globalObjectDict["ResultArr"] = resultDict["ResultArr"] ; resultDict.pop("ResultArr")
         elif functionVersionInfo['FunctionType'] == "ExeSQLStrs":
             otherInfo = self.muExeSQLStrs(functionVersionInfo)
             resultDict["SQLStrs"] = ""
@@ -377,6 +378,11 @@ class ModelUseFunction(CommonFunction):
 
         predictions = predict_model(bestmodel, data=df)
 
+        oriDF = fvInfo["ResultArr"][0]
+        resultDF = oriDF[commonColumnNames]
+        resultDF[self.getDoubleColumnArr()[0]] = predictions[yColumnNames[0]]
+        resultDF[self.getDoubleColumnArr()[1]] = predictions['Label']
+
         tn, fp, fn, tp = confusion_matrix(predictions[yColumnNames[0]], predictions['Label']).ravel()
 
         modeldist['ModelResult']['TN'] = int(tn)
@@ -394,7 +400,7 @@ class ModelUseFunction(CommonFunction):
         sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
         sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
         resultDict = copy.deepcopy(fvInfo)
-        resultDict["ResultArr"] = None
+        resultDict["ResultArr"] = [resultDF]
         return resultDict
 
     @classmethod
@@ -435,6 +441,11 @@ class ModelUseFunction(CommonFunction):
 
         predictions = predict_model(bestmodel, data=df)
 
+        oriDF = fvInfo["ResultArr"][0]
+        resultDF = oriDF[commonColumnNames]
+        resultDF[self.getDoubleColumnArr()[0]] = predictions[yColumnNames[0]]
+        resultDF[self.getDoubleColumnArr()[1]] = predictions['Label']
+
         MAE = mean_absolute_error(predictions[yColumnNames[0]], predictions['Label'])
         MSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'])
         RMSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'], squared=False)
@@ -452,6 +463,6 @@ class ModelUseFunction(CommonFunction):
         sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
         sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
         resultDict = copy.deepcopy(fvInfo)
-        resultDict["ResultArr"] = None
+        resultDict["ResultArr"] = [resultDF]
         return resultDict
 
