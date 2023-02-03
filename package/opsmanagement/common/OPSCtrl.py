@@ -1,11 +1,11 @@
-import os , sys, copy , shutil
+import os , copy , shutil
 import threading
 import time
 from queue import Queue
 import pickle
 from dotenv import load_dotenv
 from package.common.osbasic.SSHCtrl import SSHCtrl
-import pprint
+
 
 class OPSCtrl:
 
@@ -79,7 +79,7 @@ class OPSCtrl:
             project = opsInfo["Project"]
             opsVersion = opsInfo["OPSVersion"]
             opsRecordId = opsInfo["OPSRecordId"]
-            from package.opsmanagement.entity.OPSDetailEntity import OPSDetailEntity
+            from package.opsmanagement.common.entity.OPSDetailEntity import OPSDetailEntity
             functionRestlt["ExeFunctionLDir"] = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId),executeFunction)
             functionRestlt["ExeFunctionRDir"] = "{}/{}/{}/{}/{}".format(product,project,opsVersion,str(opsRecordId),executeFunction)
             os.makedirs(functionRestlt["ExeFunctionLDir"]) if not os.path.isdir(functionRestlt["ExeFunctionLDir"]) else None
@@ -155,7 +155,7 @@ class OPSCtrl:
     def dceExecuteFunction(self,executeFunction, opsInfo,threadQueue):
         sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD"))
         product, project, opsVersion, opsRecordId = opsInfo["Product"], opsInfo["Project"], opsInfo["OPSVersion"], opsInfo["OPSRecordId"]
-        from package.opsmanagement.entity.OPSDetailEntity import OPSDetailEntity
+        from package.opsmanagement.common.entity.OPSDetailEntity import OPSDetailEntity
         opsDetailEntityCtrl = OPSDetailEntity()
         isHaveOPSDetailEntity = opsDetailEntityCtrl.isHaveOPSDetailEntityByOPSRecordAndExeFunctionAndState(opsRecordId,executeFunction,state="FINISH")
         if isHaveOPSDetailEntity == True :
