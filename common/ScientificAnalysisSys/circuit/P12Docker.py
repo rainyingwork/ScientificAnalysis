@@ -14,12 +14,24 @@ class Docker():
         return self.__DX_X_X(functionInfo, "D1_3_0")
 
     @classmethod
-    def D1_2_1(self, functionInfo):
-        return self.__DX_X_X(functionInfo, "D1_2_1")
+    def D1_3_1(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D1_3_1")
 
     @classmethod
-    def D1_2_2(self, functionInfo):
-        return self.__DX_X_X(functionInfo, "D1_2_2")
+    def D1_3_2(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D1_3_2")
+
+    @classmethod
+    def D1_4_0(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D1_4_0")
+
+    @classmethod
+    def D1_4_1(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D1_4_1")
+
+    @classmethod
+    def D1_4_2(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D1_4_2")
 
     @classmethod
     def __DX_X_X(self, functionInfo, functionVersion):
