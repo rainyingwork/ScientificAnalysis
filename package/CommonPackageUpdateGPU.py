@@ -4,8 +4,8 @@ import sys
 isInstall = True
 isLocalDir = False
 pythonEXEPath = "python" if os.path.isfile("venv/python.exe") else "bin/python" if os.name == "posix" else "Scripts/python"
-__pythonexePath = "{}/venv/{}".format(sys.path[1],pythonEXEPath)
-__pipFunction = "pip install --no-index --find-links=venv/pip" if isLocalDir == True else "pip install" if isInstall == True else "pip download -d venv/pip"
+__pythonexePath = "{}/venv-gpu/{}".format(sys.path[1],pythonEXEPath)
+__pipFunction = "pip install --no-index --find-links=venv-gpu/pip" if isLocalDir == True else "pip install" if isInstall == True else "pip download -d venv-gpu/pip"
 
 # Hadoop套件 -------------------------------------------------
 os.system("{} -m {} impyla==0.18.0".format(__pythonexePath,__pipFunction))          # 用於讀取Hive資料
@@ -27,11 +27,11 @@ os.system("{} -m {} nltk==3.8".format(__pythonexePath,__pipFunction))           
 os.system("{} -m {} rake_nltk==1.0.6".format(__pythonexePath,__pipFunction))        # 自然語言處理套件
 os.system("{} -m {} gensim==4.2.0".format(__pythonexePath,__pipFunction))           # 自然語言處理套件
 # Pytorch套件 -------------------------------------------------
-os.system("{} -m {} torch==1.13.0".format(__pythonexePath,__pipFunction))           # 深度學習套件
-os.system("{} -m {} torchvision==0.14.0".format(__pythonexePath,__pipFunction))     # 深度學習套件
-os.system("{} -m {} torchaudio==0.13.0".format(__pythonexePath,__pipFunction))      # 深度學習套件
+os.system("{} -m {} torch==1.13.0 --extra-index-url https://download.pytorch.org/whl/cu116".format(__pythonexePath,__pipFunction))           # 深度學習套件
+os.system("{} -m {} torchvision==0.14.0 --extra-index-url https://download.pytorch.org/whl/cu116".format(__pythonexePath,__pipFunction))     # 深度學習套件
+os.system("{} -m {} torchaudio==0.13.0 --extra-index-url https://download.pytorch.org/whl/cu116".format(__pythonexePath,__pipFunction))      # 深度學習套件
 # Tensorflow 套件 -------------------------------------------------
-os.system("{} -m {} tensorflow==2.11.0".format(__pythonexePath,__pipFunction))
+os.system("{} -m {} tensorflow-gpu==2.12.0".format(__pythonexePath,__pipFunction))
 # 自動機器學習套件 -------------------------------------------------
 os.system("{} -m {} pycaret==3.0.0rc2".format(__pythonexePath,__pipFunction))       # 自動機器學習套件
 os.system("{} -m {} autokeras==1.0.20".format(__pythonexePath,__pipFunction))       # 自動機器學習套件
