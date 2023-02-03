@@ -1,6 +1,6 @@
 import os, json; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
 from flask import Flask, request
-from package.opsmanagement.LWLCtrl import LWLCtrl
+from package.opsmanagement.common.LWLCtrl import LWLCtrl
 from package.common.osbasic.BaseFunction import timethis
 
 

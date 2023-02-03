@@ -1,11 +1,9 @@
 import os, sys ; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
-import re, copy, json, pprint
-import time, datetime
-import Config
+import json
 from package.common.osbasic.InputCtrl import InputCtrl
-from package.opsmanagement.OPSCtrl import OPSCtrl
-from package.opsmanagement.entity.OPSVersionEntity import OPSVersionEntity
-from package.opsmanagement.entity.OPSRecordEntity import OPSRecordEntity
+from package.opsmanagement.common.OPSCtrl import OPSCtrl
+from package.opsmanagement.common.entity.OPSVersionEntity import OPSVersionEntity
+from package.opsmanagement.common.entity.OPSRecordEntity import OPSRecordEntity
 
 opsCtrl = OPSCtrl()
 opsVersionEntityCtrl = OPSVersionEntity()
