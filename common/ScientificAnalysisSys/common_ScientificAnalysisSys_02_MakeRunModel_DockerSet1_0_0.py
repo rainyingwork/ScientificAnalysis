@@ -16,10 +16,10 @@ if __name__ == "__main__":
     opsInfo["OPSVersion"] = ["DockerSet1_0_0"]
     opsInfo["OPSRecordId"] = [9999]
     opsInfo["OPSOrderJson"] = {
-        "ExeFunctionArr": ["D1_1_0","D1_2_0","D1_3_0","D1_3_1","D1_3_2","D1_4_0","D1_4_1","D1_4_2"]
+        "ExeFunctionArr": ["D1_1_0","D1_2_0","D1_3_0","D1_3_1","D1_3_2","D1_4_0","D1_4_1","D1_4_2","D2_3_0","D2_4_0"]
         # , "RepOPSRecordId": 9999
         # , "RepFunctionArr": []
-        # , "RunFunctionArr": ["D1_3_1","D1_3_2"]
+        # , "RunFunctionArr": []
         , "OrdFunctionArr": [
             {"Parent": "D1_3_0", "Child": "D1_3_1"},
             {"Parent": "D1_3_1", "Child": "D1_3_2"},
@@ -29,12 +29,14 @@ if __name__ == "__main__":
         , "FunctionMemo": {
             "D1_1_0": "部署PostgreSQL"
             , "D1_2_0": "部署MongoDB"
-            , "D1_3_0": "部署Python39"
+            , "D1_3_0": "部署Python39基底"
             , "D1_3_1": "安裝Python39基本套件"
             , "D1_3_2": "安裝Python39機器學習套件"
-            , "D1_4_0": "部署Python39-GPU"
+            , "D1_4_0": "部署Python39-GPU基底"
             , "D1_4_1": "安裝Python39-GPU基本套件"
             , "D1_4_2": "安裝Python39-GPU機器學習套件"
+            , "D2_3_0": "部署完整Python39"
+            , "D2_4_0": "部署完整Python39-GPU"
         }
     }
     opsInfo["ParameterJson"] = {
@@ -108,10 +110,6 @@ if __name__ == "__main__":
         , "D1_3_1": {
             "FunctionType": "RunDockerCmdStr"
             , "DockerCmdStrs": [
-                """
-                "docker exec -it python39 apt update"
-                 ,"docker exec -it python39 apt install -y build-essential"
-                """
                 # 基本套件 --------------------------------------------------
                 "docker exec -it python39 pip install pip==22.3.1"
                 , "docker exec -it python39 pip install setuptools==65.6.3"
@@ -177,7 +175,7 @@ if __name__ == "__main__":
                 "version": "3.7"
                 , "services": {
                     "python39-gpu": {
-                        "image": "python:3.9.13-slim-bullseye"
+                        "image": "nvidia/cuda:11.6.2-cudnn8-devel-ubuntu20.04"
                         , "restart": "always"
                         , "environment": {
                             "ACCEPT_EULA": "Y"
@@ -193,8 +191,6 @@ if __name__ == "__main__":
         , "D1_4_1": {
             "FunctionType": "RunDockerCmdStr"
             , "DockerCmdStrs": [
-                "docker exec -it python39-gpu apt update"
-                ,"docker exec -it python39-gpu apt install -y build-essential"
                 # 基本套件 --------------------------------------------------
                 "docker exec -it python39-gpu pip install pip==22.3.1"
                 , "docker exec -it python39-gpu pip install setuptools==65.6.3"
@@ -245,6 +241,7 @@ if __name__ == "__main__":
                 , "docker exec -it python39-gpu pip install --no-cache-dir torch==1.13.0 --extra-index-url https://download.pytorch.org/whl/cu116"  # 深度學習套件
                 , "docker exec -it python39-gpu pip install --no-cache-dir torchvision==0.14.0 --extra-index-url https://download.pytorch.org/whl/cu116"  # 深度學習套件
                 , "docker exec -it python39-gpu pip install --no-cache-dir torchaudio==0.13.0 --extra-index-url https://download.pytorch.org/whl/cu116"  # 深度學習套件
+                , "docker exec -it python39-gpu pip install backports.lzma==0.0.14"
                 # Tensorflow 套件 -------------------------------------------------
                 , "docker exec -it python39-gpu pip install --no-cache-dir tensorflow-gpu==2.12.0 "
                 # 自動機器學習套件 -------------------------------------------------
@@ -253,6 +250,44 @@ if __name__ == "__main__":
                 # 其他套件 -------------------------------------------------
                 , "docker exec -it python39-gpu pip install gym==0.26.2" # 遊戲場套件
             ]
+        }
+        , "D2_3_0": {
+            "FunctionType": "RunContainerByDockerComposeInfo"
+            , "DockerComposeInfo": {
+                "version": "3.7"
+                , "services": {
+                    "python39": {
+                        "image": "vicying/python:3.9.13-cpu-0.1.1"
+                        , "restart": "always"
+                        , "environment": {
+                            "ACCEPT_EULA": "Y"
+                        }
+                        , "volumes": [
+                            "/Docker/Python39/Volumes/Library:/Library" ,
+                            "/Docker/Python39/Volumes/Data:/Data" ,
+                        ]
+                    }
+                }
+            }
+        }
+        , "D2_4_0": {
+            "FunctionType": "RunContainerByDockerComposeInfo"
+            , "DockerComposeInfo": {
+                "version": "3.7"
+                , "services": {
+                    "python39-gpu": {
+                        "image": "vicying/python:3.9.13-gpu-0.1.0"
+                        , "restart": "always --gpus all"
+                        , "environment": {
+                            "ACCEPT_EULA": "Y"
+                        }
+                        , "volumes": [
+                            "/Docker/Python39/Volumes/Library:/Library" ,
+                            "/Docker/Python39/Volumes/Data:/Data" ,
+                        ]
+                    }
+                }
+            }
         }
 
     }

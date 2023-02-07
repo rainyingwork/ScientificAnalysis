@@ -1,4 +1,4 @@
-# 主要步上傳
+# 主要不上傳
 .idea
 env
 */*/file/data
@@ -16,3 +16,4 @@ UnitTestLocal/*
 Example/P35NetworkX
 OnlineExample
 RWTaiwan/TagData
+Investment/old/*
