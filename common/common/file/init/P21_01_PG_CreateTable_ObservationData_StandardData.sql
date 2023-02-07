@@ -50,3 +50,5 @@ CREATE TABLE IF NOT EXISTS observationdata.standarddata (
     , json_001 text
     , json_002 text
 ) --PARTITION BY RANGE (product , project ,tablename,  dt) ;
+
+CREATE INDEX standarddata_index ON observationdata.standarddata (product,project,tablename,dt);

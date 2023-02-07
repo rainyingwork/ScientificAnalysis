@@ -223,3 +223,5 @@ CREATE TABLE IF NOT EXISTS observationdata.analysisdata (
     , double_200 double precision
     , json_001 text
 ) --PARTITION BY RANGE (product , project ,version,  dt);
+
+CREATE INDEX analysisdata_index ON observationdata.analysisdata (product,project,version,dt) ;

@@ -18,10 +18,10 @@ postgresCtrl = PostgresCtrl(
 )
 
 sqlFilePathArr = [
-    "common/common/file/init/P11_00_PG_CreateSchema_OPSManagement.sql",
-    "common/common/file/init/P11_01_PG_CreateTable_OPSManagement_OPSVersion.sql",
-    "common/common/file/init/P11_02_PG_CreateTable_OPSManagement_OPSRecord.sql",
-    "common/common/file/init/P11_02_PG_CreateTable_OPSManagement_OPSDetail.sql",
+    # "common/common/file/init/P11_00_PG_CreateSchema_OPSManagement.sql",
+    # "common/common/file/init/P11_01_PG_CreateTable_OPSManagement_OPSVersion.sql",
+    # "common/common/file/init/P11_02_PG_CreateTable_OPSManagement_OPSRecord.sql",
+    # "common/common/file/init/P11_02_PG_CreateTable_OPSManagement_OPSDetail.sql",
 ]
 
 for sqlFilePath in sqlFilePathArr :
