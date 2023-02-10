@@ -6,7 +6,7 @@ from package.common.common.osbasic.BaseFunction import timethis
 from dotenv import load_dotenv
 
 class SSHCtrl:
-    def __init__(self, host=None , port=None, user=None, passwd=None,pkey=None,env=None,timeout=30):
+    def __init__(self, host=None , port=None, user=None, passwd=None,pkey=None,env=None,timeout=30,printLog=True):
         if env == None :
             self.__host = host
             self.__port = port
@@ -23,6 +23,7 @@ class SSHCtrl:
         self.__timeout = timeout
         self.__ssh = None
         self.__sftp = None
+        self.__printLog = printLog
         self.connectSSH()
         self.connectSFTP()
 
@@ -102,8 +103,9 @@ class SSHCtrl:
     def execCommand(self, commandStr):
         try:
             stdin, stdout, stderr = self.__ssh.exec_command(commandStr, get_pty=True)
-            for line in iter(stdout.readline, ""):
-                print(line, end="")
+            if self.__printLog :
+                for line in iter(stdout.readline, ""):
+                    print(line, end="")
             return stdout.read().decode()
         except Exception as e:
             raise RuntimeError("Exec command [%s] failed" % str(commandStr))
@@ -112,7 +114,8 @@ class SSHCtrl:
     def execSSHCommand(self, cmd, path="~"):
         try:
             result = self.execCommand("cd " + path + ";" + cmd)
-            print(result)
+            if self.__printLog:
+                print(result)
         except Exception:
             raise RuntimeError("exec cmd [%s] failed" % cmd)
 
@@ -141,7 +144,8 @@ class SSHCtrl:
                 raise RuntimeError("File [%s] is not a shell file" % localFile)
             self.checkFileConsistent(localFile, remoteFile)
             result = self.execCommand("chmod +x " + remoteFile + "; cd" + execPath + ";/bin/bash " + remoteFile)
-            print("exec shell result: ", result)
+            if self.__printLog:
+                print("exec shell result: ", result)
         except Exception as e:
             raise RuntimeError("ssh exec shell failed [%s]" % str(e))
 
@@ -196,7 +200,8 @@ class SSHCtrl:
                 except:
                     self.execSSHCommand('mkdir -p %s' % remotePath)
                 self.__sftp.put(file, remoteFilename)
-                print("Loacl " + str(file) + " file to remote " + str(remoteFilename) + " file.")
+                if self.__printLog:
+                    print("Loacl " + str(file) + " file to remote " + str(remoteFilename) + " file.")
         except:
             print('ssh get dir from master failed.')
             print(traceback.format_exc())

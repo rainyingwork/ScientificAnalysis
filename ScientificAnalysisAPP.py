@@ -1,7 +1,7 @@
 import os, json; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
 from flask import Flask, request
 from package.opsmanagement.common.LWLCtrl import LWLCtrl
-from package.common.osbasic.BaseFunction import timethis
+from package.common.common.osbasic.BaseFunction import timethis
 
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ def RecommendSysV0_0_2():
 
 def getJsonRecommendSysV0_0_2():
     opsInfo = {
-        "RunType": ["runops"]
+        "RunType": ["RunOPS"]
         , "Product": ["ExerciseProject"]
         , "Project": ["RecommendSys"]
     }

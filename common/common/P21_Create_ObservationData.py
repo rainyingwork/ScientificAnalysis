@@ -1,7 +1,6 @@
-import os ,sys
-import Config
-from package.common.database.tool.SqlTool import SqlTool
-from package.common.database.PostgresCtrl import PostgresCtrl
+import os
+from package.common.common.database.tool.SqlTool import SqlTool
+from package.common.common.database.PostgresCtrl import PostgresCtrl
 from dotenv import load_dotenv
 import time
 

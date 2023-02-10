@@ -1,5 +1,6 @@
 import os ,sys ; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
-from package.common.osbasic.InputCtrl import InputCtrl
+import Config
+from package.common.common.osbasic.InputCtrl import InputCtrl
 from package.opsmanagement.common.OPSCtrlLocal import OPSCtrl
 
 opsCtrl = OPSCtrl()
@@ -40,14 +41,13 @@ def main(parametersData = {}):
             runFunctionArr = parametersData[key]
 
     opsInfo = {}
-    if runType in  ["runops" ]:
-        opsInfo = makeRunOPSInfo(runType, product, project, opsVersion,opsRecordId,opsOrderJson, parameterJson, resultJson)
-
-    if runType == "runops":
+    if runType == "RunOPS":
+        opsInfo = makeOPSInfoByRunOPS(runType, product, project, opsVersion, opsRecordId, opsOrderJson, parameterJson,resultJson)
         opsCtrl.executeOPS(opsInfo)
         print("Finish Run OPS , Version is {} , OPSRecordID is {} ".format(opsInfo["OPSVersion"],opsInfo["OPSRecordId"]))
 
-def makeRunOPSInfo (runType, product, project, opsVersion,opsRecordId,opsOrderJson, parameterJson, resultJson) :
+def makeOPSInfoByRunOPS (runType, product, project, opsVersion,opsRecordId,opsOrderJson, parameterJson, resultJson) :
+    # 只RunOPS但無須建立資料庫紀錄
     opsInfo = {
         "OPSRecordId": opsRecordId
         , "RunType": runType

@@ -6,7 +6,6 @@ import pickle
 from dotenv import load_dotenv
 from package.common.common.osbasic.SSHCtrl import SSHCtrl
 
-
 class OPSCtrl:
 
     def __init__(self):
@@ -17,8 +16,13 @@ class OPSCtrl:
             , user=os.getenv("SSH_USER")
             , passwd=os.getenv("SSH_PASSWD")
         )
-        self.sshCtrl_RPM = self.sshCtrl
-        self.sshCtrl_COE = self.sshCtrl
+        self.sshCtrl_DCE =SSHCtrl(
+            host=os.getenv("SSH_IP")
+            , port=int(os.getenv("SSH_PORT"))
+            , user=os.getenv("SSH_USER")
+            , passwd=os.getenv("SSH_PASSWD")
+            , printLog=False
+        )
 
     def executeDCE(self, opsInfo):
         product, project , opsVersion , opsRecordId = opsInfo["Product"] , opsInfo["Project"] , opsInfo["OPSVersion"] , opsInfo["OPSRecordId"]
@@ -162,12 +166,9 @@ class OPSCtrl:
             print("  Exist DCE Function , Function is {}  ".format(executeFunction))
         else :
             print("  Start DCE Function , Function is {}  ".format(executeFunction))
-            sshStr = "docker exec -it python310 python3 /Data/ScientificAnalysis/OPSCommon.py --RunType runfunc --Product {} --Project {} --OPSVersion {} --OPSRecordId {} --RunFunctionArr {}"
+            sshStr = "docker exec -it python39-cpu python3 /Data/ScientificAnalysis/OPSCommon.py --RunType RunOnlyFunc --Product {} --Project {} --OPSVersion {} --OPSRecordId {} --RunFunctionArr {}"
             sshStr = sshStr.format(product, project, opsVersion, opsRecordId, executeFunction)
-            if "C" in executeFunction or "O" in executeFunction or "E" in executeFunction :
-                self.sshCtrl_COE.execSSHCommandReturn(sshStr)
-            elif "R" in executeFunction or "P" in executeFunction or "M" in executeFunction :
-                self.sshCtrl_RPM.execSSHCommandReturn(sshStr)
+            self.sshCtrl_DCE.execSSHCommandReturn(sshStr)
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId),executeFunction)
         exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId), executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
