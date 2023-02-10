@@ -1,5 +1,4 @@
 import os , copy; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
-import Config
 import OPSCommon as executeOPSCommon
 
 if __name__ == "__main__":
@@ -8,25 +7,22 @@ if __name__ == "__main__":
     ]
     for dateInfo in dateInfoArr :
         basicInfo = {
-            "RunType": ["runops"]
-            , "Product": ["Example"]
-            , "Project": ["P36Pycaret"]
+            "RunType": ["RunOPS"],
+            "Product": ["Example"],
+            "Project": ["P36Pycaret"],
         }
         opsInfo = copy.deepcopy(basicInfo)
-        opsInfo["OPSVersion"] = ["V0_0_3"]
+        opsInfo["OPSVersion"] = ["V0_0_2"]
         opsInfo["OPSOrderJson"] = {
-            "ExeFunctionArr": ["R0_0_3", "P0_0_2", "M0_0_3"],
-            "RepOPSRecordId": 9,
-            "RepFunctionArr": ["R0_0_3", "P0_0_2"],
-            "RunFunctionArr": ["M0_0_3"],
+            "ExeFunctionArr": ["R0_0_3", "P0_0_2", "M0_0_2"],
             "OrdFunctionArr": [
                 {"Parent": "R0_0_3", "Child": "P0_0_2"},
-                {"Parent": "P0_0_2", "Child": "M0_0_3"},
+                {"Parent": "P0_0_2", "Child": "M0_0_2"},
             ],
             "FunctionMemo": {
-                "R0_0_3": "撈取相關資料",
-                "P0_0_2": "處理相關資料",
-                "M0_0_3": "使用相關模型",
+                "R0_0_3": "撈取資料庫XYData資料，使用其他OPSRecord的結果",
+                "P0_0_2": "預處理資料庫XYData資料",
+                "M0_0_2": "使用AutoML做模型訓練",
             },
         }
         opsInfo["ParameterJson"] = {
@@ -36,7 +32,7 @@ if __name__ == "__main__":
                 "DatabaseProduct": "Example",
                 "DatabaseProject": "P36Pycaret",
                 "DatabaseOPSVersion": "V0_0_1",
-                "DatabaseOPSRecord": 6,
+                "DatabaseOPSRecord": 151,
                 "DatabaseFunction": "M0_0_1",
             },
             "P0_0_2": {
@@ -44,17 +40,14 @@ if __name__ == "__main__":
                 "DataTime": dateInfo['DataTime'],
                 "DataVersion": "R0_0_3",
             },
-            "M0_0_3": {
+            "M0_0_2": {
                 "FunctionType": "AutoML",
                 "DataTime": dateInfo['DataTime'],
                 "DataVersion": "P0_0_2",
-                "ModelFunction": "UsePycaretModelByDatabaseRusult",
-                "DatabaseProduct": "Example",
-                "DatabaseProject": "P36Pycaret",
-                "DatabaseOPSVersion": "V0_0_1",
-                "DatabaseOPSRecord": 6,
-                "DatabaseFunction": "M0_0_2",
-                "DatabaseModelName": "LogisticRegression",
+                "ModelFunction": "TrainPycaretDefult",
+                "ModelParameter": {
+                    "TaskType": "Classification",
+                },
             },
         }
         opsInfo["ResultJson"] = {}
