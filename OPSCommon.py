@@ -49,30 +49,30 @@ def main(parametersData = {},):
     opsInfo = {}
     if runType == "BuildOPS":
         opsInfo = makeOPSInfoByBuildOPS(runType, product, project, opsVersion, opsOrderJson, parameterJson, resultJson)
-        print("Finish Build OPS , Version is {} ".format(opsInfo["OPSVersion"]))
+        print("Finish Build OPS , Product is {} , Project is {} , Version is {} ".format(opsInfo["Product"],opsInfo["Project"],opsInfo["OPSVersion"]))
     elif runType == "RunOPS":
         opsInfo = makeOPSInfoByRunOPS(runType, product, project, opsVersion, opsOrderJson, parameterJson, resultJson)
         opsCtrl.executeOPS(opsInfo)
         opsRecordEntityCtrl.setColumnValue("state", "FINISH")
         opsRecordEntityCtrl.setColumnValue("resultjson", json.dumps(opsInfo["ResultJson"],ensure_ascii=False) if "ResultJson" in opsInfo.keys() else '{}')
         opsRecordEntityCtrl.updateEntity()
-        print("Finish Run OPS , Version is {} , OPSRecordID is {} ".format(opsInfo["OPSVersion"],opsInfo["OPSRecordId"]))
+        print("Finish Run OPS , Product is {} , Project is {} , Version is {} , OPSRecordID is {} ".format(opsInfo["Product"],opsInfo["Project"],opsInfo["OPSVersion"],opsInfo["OPSRecordId"]))
     elif runType == "CreatDCEOPS":
         opsInfo = makeOPSInfoByCreatDCEOPS(runType, product, project, opsVersion, opsOrderJson, parameterJson, resultJson)
-        print("Finish Creat DCE OPS , Version is {} , OPSRecordID is {}".format(opsInfo["OPSVersion"],opsInfo["OPSRecordId"]))
+        print("Finish Creat DCE OPS , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(opsInfo["Product"],opsInfo["Project"],opsInfo["OPSVersion"],opsInfo["OPSRecordId"]))
     elif runType == "RunDCEOPS":
         opsInfo = makeOPSInfoByRunDCEOPS(runType, product, project, opsVersion, opsRecordId)
         opsCtrl.executeDCE(opsInfo)
         opsRecordEntityCtrl.setColumnValue("state", "FINISH")
         opsRecordEntityCtrl.setColumnValue("resultjson", json.dumps(opsInfo["ResultJson"],ensure_ascii=False) if "ResultJson" in opsInfo.keys() else '{}')
         opsRecordEntityCtrl.updateEntity()
-        print("Finish Run DCE OPS , Version is {} , OPSRecordID is {}".format(opsInfo["OPSVersion"],opsInfo["OPSRecordId"]))
+        print("Finish Run DCE OPS , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(opsInfo["Product"],opsInfo["Project"],opsInfo["OPSVersion"],opsInfo["OPSRecordId"]))
     elif runType == "RunOnlyFunc":
         opsInfo = makeOPSInfoByRunOnlyFunc(runType, product, project, opsVersion, opsRecordId)
         opsInfo["OPSOrderJson"]["RepOPSRecordId"] = opsRecordId
         opsInfo["OPSOrderJson"]["RunFunctionArr"] = runFunctionArr
         opsCtrl.executeOPS(opsInfo)
-        print("Finish Run Only Func , Version is {} , OPSRecordID is {}".format(opsInfo["OPSVersion"],opsInfo["OPSRecordId"]))
+        print("Finish Run Only Func , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(opsInfo["Product"],opsInfo["Project"],opsInfo["OPSVersion"],opsInfo["OPSRecordId"]))
     return opsInfo
 
 def makeOPSInfoByBuildOPS (runType, product, project, opsVersion,opsOrderJson, parameterJson, resultJson) :
