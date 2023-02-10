@@ -1,5 +1,4 @@
 import os , copy; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
-import Config
 import OPSCommon as executeOPSCommon
 
 if __name__ == "__main__":
