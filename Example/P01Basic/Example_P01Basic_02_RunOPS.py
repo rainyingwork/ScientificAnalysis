@@ -1,5 +1,4 @@
 import os , copy
-import Config
 import OPSCommon as executeOPSCommon
 
 if __name__ == "__main__":
