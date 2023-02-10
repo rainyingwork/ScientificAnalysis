@@ -201,6 +201,7 @@ class ModelUseFunction(CommonFunction):
 
     @classmethod
     def makeAutoMLByTrainPycaretDefultClassification(self, fvInfo, otherInfo):
+        import os , shutil
         from sklearn.model_selection import train_test_split
         from sklearn.metrics import confusion_matrix
         from pycaret.classification import setup
@@ -265,11 +266,12 @@ class ModelUseFunction(CommonFunction):
             sshCtrl.uploadFile(modeldist['ModelStorageLocation'],modeldist['ModelStorageRemote'])
 
             resultDict['ModelDesign']['ModelDists'].append(modeldist)
-
+        shutil.rmtree("catboost_info")
         return resultDict
 
     @classmethod
     def makeAutoMLByTrainPycaretDefultRegression(self, fvInfo, otherInfo):
+        import os , shutil
         from sklearn.model_selection import train_test_split
         from sklearn.metrics import explained_variance_score
         from sklearn.metrics import mean_absolute_error
@@ -339,7 +341,7 @@ class ModelUseFunction(CommonFunction):
             sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
 
             resultDict['ModelDesign']['ModelDists'].append(modeldist)
-
+        shutil.rmtree("catboost_info")
         return resultDict
 
     @classmethod
