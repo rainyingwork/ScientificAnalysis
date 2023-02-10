@@ -5,7 +5,7 @@ import OPSCommon as executeOPSCommon
 
 if __name__ == "__main__":
     basicInfo = {
-        "RunType": ["buildops"],
+        "RunType": ["BuildOPS"],
         "Product": ["Example"],
         "Project": ["P29RawData"],
     }

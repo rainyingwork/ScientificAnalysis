@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     for dateInfo in dateInfoArr :
         basicInfo = {
-            "RunType": ["runops"],
+            "RunType": ["RunOPS"],
             "Product": ["Example"],
             "Project": ["P29RawData"],
         }
@@ -18,7 +18,9 @@ if __name__ == "__main__":
         opsInfo["ParameterJson"] = {
             "R0_0_0": {
                 "FunctionType": "MakeTagText",
-                "Product" : "Example", "Project" : "P29RawData", "Version" : "R0_0_0",
+                "Product" : "Example",
+                "Project" : "P29RawData",
+                "Version" : "R0_0_0",
                 "DataTime" : dateInfo['DataTime'],
                 "FeatureType" : "General",
                 "FilePath" : "Example/P29RawData/file/TagText/TagR0_0_0.json",
