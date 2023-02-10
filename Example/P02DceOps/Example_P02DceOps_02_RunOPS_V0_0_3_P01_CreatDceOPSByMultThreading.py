@@ -18,9 +18,9 @@ if __name__ == "__main__":
     opsRecordIdArr = []
     for dateInfo in dateInfoArr :
         basicInfo = {
-            "RunType": ["creatdecops"],
+            "RunType": ["CreatDCEOPS"],
             "Product": ["Example"],
-            "Project": ["P02DECOPS"],
+            "Project": ["P02DceOps"],
         }
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_3"]

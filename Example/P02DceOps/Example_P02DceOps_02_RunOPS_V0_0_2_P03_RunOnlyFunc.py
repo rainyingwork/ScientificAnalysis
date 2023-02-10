@@ -8,13 +8,13 @@ if __name__ == "__main__":
     ]
     for dateInfo in dateInfoArr :
         basicInfo = {
-            "RunType": ["runfunc"],
+            "RunType": ["RunOnlyFunc"],
             "Product": ["Example"],
-            "Project": ["P02DECOPS"],
+            "Project": ["P02DceOps"],
         }
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_2"]
-        opsInfo["OPSRecordId"] = [923]
+        opsInfo["OPSRecordId"] = [53]
         opsInfo["RunFunctionArr"] = ["R0_0_1"]
         executeOPSCommon.main(opsInfo)
 

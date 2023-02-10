@@ -1,5 +1,4 @@
 import os , copy
-import Config
 import OPSCommon as executeOPSCommon
 
 if __name__ == "__main__":
@@ -8,13 +7,12 @@ if __name__ == "__main__":
     ]
     for dateInfo in dateInfoArr :
         basicInfo = {
-            "RunType": ["decops"],
+            "RunType": ["CreatDCEOPS"],
             "Product": ["Example"],
-            "Project": ["P02DECOPS"],
+            "Project": ["P02DceOps"],
         }
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_2"]
-        opsInfo["OPSRecordId"] = [924]
         opsInfo["OPSOrderJson"] = {
             "ExeFunctionArr": ["R0_0_1", "P0_0_1", "M0_0_1", "R0_0_2", "P0_0_2", "M0_0_2"],
             "OrdFunctionArr": [
@@ -25,12 +23,12 @@ if __name__ == "__main__":
                 {"Parent": "P0_0_2", "Child": "M0_0_2"},
             ],
             "FunctionMemo": {
-                "R0_0_1": "撈取相關資料",
-                "P0_0_1": "處理相關資料",
-                "M0_0_1": "參數過濾",
-                "R0_0_2": "根據參數過濾撈取相關資料",
-                "P0_0_2": "處理相關資料",
-                "M0_0_2": "訓練模型",
+                "R0_0_1": "測試方法",
+                "P0_0_1": "測試方法",
+                "M0_0_1": "測試方法",
+                "R0_0_2": "測試方法",
+                "P0_0_2": "測試方法",
+                "M0_0_2": "測試方法",
             },
         }
         opsInfo["ParameterJson"] = {}

@@ -8,13 +8,12 @@ import time
 
 if __name__ == "__main__":
 
-    opsRecordIdArr = [1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1026, 1027, 1028, 1029, 1030, 1031, 1032, 1033, 1034, 1035]
-    opsRecordIdArr = [ 1011, 1012, 1013]
+    opsRecordIdArr = [85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115]
     threadList = []
     basicInfo = {
-        "RunType": ["decops"],
+        "RunType": ["RunDCEOPS"],
         "Product": ["Example"],
-        "Project": ["P02DECOPS"],
+        "Project": ["P02DceOps"],
     }
     for opsRecordId in opsRecordIdArr:
         opsInfo = copy.deepcopy(basicInfo)
@@ -22,8 +21,14 @@ if __name__ == "__main__":
         opsInfo["OPSRecordId"] = [opsRecordId]
         thread = threading.Thread(target=executeOPSCommon.main, args=(opsInfo,))
         thread.daemon = True
-        thread.start(), time.sleep(10)
+        thread.start()
         threadList.append(thread)
+        threadAliveCount = 10
+        while threadAliveCount >= 10:
+            time.sleep(1)
+            threadAliveCount = 0
+            for thread in threadList:
+                threadAliveCount += 1 if thread.is_alive() else 0
     for thread in threadList:
         thread.join()
 
