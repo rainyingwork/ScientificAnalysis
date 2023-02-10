@@ -1,16 +1,14 @@
 import os , copy; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
-import Config
-import OPSCommonLocal as executeOPSCommon
+import OPSCommon as executeOPSCommon
 
 if __name__ == "__main__":
     basicInfo = {
-        "RunType": ["runops"]
+        "RunType": ["RunOPS"]
         , "Product": ["Example"]
         , "Project": ["P34PyTorch"]
     }
     opsInfo = copy.deepcopy(basicInfo)
     opsInfo["OPSVersion"] = ["V0_0_1"]
-    opsInfo["OPSRecordId"] = [9999]
     opsInfo["OPSOrderJson"] =  {
         "ExeFunctionArr": [
             "P0_0_1",
@@ -21,7 +19,7 @@ if __name__ == "__main__":
             "R0_0_6","P0_0_6","M0_0_6","UP0_0_6",
             "R0_0_7","P0_0_7","M0_0_7","UP0_0_7",
             "UP0_0_8",
-            "R0_0_9","P0_0_9","M0_0_9","UP0_0_9",
+            "P0_0_9","M0_0_9","UP0_0_9",
             "P0_0_10","M0_0_10","UP0_0_10",
             "P0_0_11","M0_0_11","UP0_0_11",
             "P0_0_12","M0_0_12","UP0_0_12",
@@ -34,7 +32,7 @@ if __name__ == "__main__":
         ],
         "RepOPSRecordId": 9999,
         "RepFunctionArr": [],
-        "RunFunctionArr": ["P0_0_12","M0_0_12","UP0_0_12"], #
+        "RunFunctionArr": ["M0_0_13",], #
         "OrdFunctionArr": [
             {"Parent": "P0_0_2", "Child": "M0_0_2"},
             {"Parent": "P0_0_3", "Child": "M0_0_3"},
@@ -57,10 +55,8 @@ if __name__ == "__main__":
             "M0_0_7":"使用CNN做手寫數字辨識，卷積、池化、全連接、Dropout",
             "M0_0_8":"使用訓練好的ResNet18進行圖片分類",
             "M0_0_9":"使用訓練好的ResNet18進行圖片分類",
-            "M0_0_10Train":"使用CNN進行圖片分類",
-            "M0_0_10Test":"使用訓練好的CNN進行圖片分類",
-            "M0_0_11Train":"使用Resnet18進行圖片分類",
-            "M0_0_11Test":"使用訓練好的Resnet18進行圖片分類",
+            "M0_0_10":"使用CNN進行圖片分類",
+            "M0_0_11":"使用Resnet18進行圖片分類",
             "M0_0_12":"使用RNN做時序預測",
             "M0_0_13":"使用LSTM作情感分析",
             "M0_0_14":"使用QLearning做路徑遊戲一",

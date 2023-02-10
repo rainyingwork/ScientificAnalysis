@@ -118,7 +118,7 @@ class PreProcess() :
         import copy
         import torch
         from sklearn.model_selection import train_test_split
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_4"])
         functionVersionInfo["Version"] = "P0_0_4"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -182,7 +182,7 @@ class PreProcess() :
         import copy
         import torch
         from sklearn.model_selection import train_test_split
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_5"])
         functionVersionInfo["Version"] = "P0_0_5"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -225,7 +225,7 @@ class PreProcess() :
         import torch
         from sklearn.model_selection import train_test_split
         from sklearn.preprocessing import LabelEncoder
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_6"])
         functionVersionInfo["Version"] = "P0_0_6"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -261,7 +261,7 @@ class PreProcess() :
     def P0_0_7(self, functionInfo):
         import copy
         from torch.utils.data import DataLoader
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_7"])
         functionVersionInfo["Version"] = "P0_0_7"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -279,7 +279,7 @@ class PreProcess() :
         import numpy
         import random
         import torch
-        from torchvision import datasets, models
+        from torchvision import datasets
         from torchvision import transforms
 
         # 隨機種子
@@ -362,9 +362,9 @@ class PreProcess() :
             )
         ])
 
-        trainData = datasets.CIFAR10('common/common/file/data/imgs/cifar10/train'
+        trainData = datasets.CIFAR10('common/common/file/data/imgs/cifar10'
                                      , train=True, download=True, transform=transform)
-        testData = datasets.CIFAR10('common/common/file/data/imgs/cifar10/test'
+        testData = datasets.CIFAR10('common/common/file/data/imgs/cifar10'
                                     , train=False, download=True, transform=transform)
 
         return {}, {"TrainData": trainData, "TestData": testData}
@@ -390,9 +390,9 @@ class PreProcess() :
                 std=(0.2470, 0.2435, 0.2616))
         ])
 
-        trainData = datasets.CIFAR10('Example/common/file/data/cifar10/train'
+        trainData = datasets.CIFAR10('common/common/file/data/imgs/cifar10'
                                      , train=True, download=True,transform=transform)
-        testData = datasets.CIFAR10('common/common/file/data/cifar10/test'
+        testData = datasets.CIFAR10('common/common/file/data/imgs/cifar10'
                                     , train=False, download=True, transform=transform)
 
         return {}, {"TrainData": trainData, "TestData": testData}
@@ -401,13 +401,12 @@ class PreProcess() :
     def P0_0_12(self, functionInfo):
         import pandas as pd
         import torch
-        from torch import nn, optim
         from sklearn.model_selection import train_test_split
 
         torch.manual_seed(10)  # 固定隨機種子
 
         # 讀取資料
-        mainDF = pd.read_csv('Example/P34PyTorch/file/data/Sales_Transactions_dataset_weekly.csv')
+        mainDF = pd.read_csv('common/common/file/data/csv/SalesTransactionsDatasetWeekly.csv')
         mainDF.head()
 
         # 資料前處理
@@ -433,7 +432,7 @@ class PreProcess() :
     @classmethod
     def P1_0_1(self, functionInfo):
         import copy
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P1_0_1"])
         functionVersionInfo["Version"] = "P1_0_1"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])

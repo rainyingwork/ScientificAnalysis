@@ -5,7 +5,7 @@ class UseProduct() :
     def UP0_0_4(self, functionInfo):
         import copy
         import torch
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_4"])
         functionVersionInfo["Version"] = "M0_0_4"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -30,7 +30,7 @@ class UseProduct() :
         import torch.nn as nn
         import torch.nn.functional as functional
         from sklearn.metrics import accuracy_score
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP0_0_5"])
         functionVersionInfo["Version"] = "UP0_0_5"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -71,7 +71,7 @@ class UseProduct() :
         import copy
         import torch
         import torch.nn as nn
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP0_0_6"])
         functionVersionInfo["Version"] = "UP0_0_6"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -111,7 +111,7 @@ class UseProduct() :
         import copy
         import torch
         import torch.nn as nn
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP0_0_7"])
         functionVersionInfo["Version"] = "UP0_0_7"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -222,11 +222,9 @@ class UseProduct() :
     def UP0_0_9(self, functionInfo):
         import torch
         import copy
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import torch.nn as nn
-        import torchvision
-        from torchvision import datasets, models
-        import numpy
+        from torchvision import models
 
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP0_0_9"])
         functionVersionInfo["Version"] = "UP0_0_9"
@@ -257,8 +255,7 @@ class UseProduct() :
 
     @classmethod
     def UP0_0_10(self, functionInfo):
-        import copy
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import torch
         from torch import nn
         from torch.utils.data import DataLoader
@@ -300,9 +297,9 @@ class UseProduct() :
     @classmethod
     def UP0_0_11(self, functionInfo):
         import copy
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import torch
-        from torch import nn, optim
+        from torch import nn
         from torch.utils.data import DataLoader
 
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_11"])
@@ -345,9 +342,9 @@ class UseProduct() :
     @classmethod
     def UP0_0_12(self, functionInfo):
         import copy
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import torch
-        from torch import nn, optim
+        from torch import nn
 
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_12"])
         functionVersionInfo["Version"] = "M0_0_11"
@@ -376,7 +373,7 @@ class UseProduct() :
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
         modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_12/model.pt"
-        model = RNN()
+        model = RNN(51, 100, 1)
         model.load_state_dict(torch.load(modelFile))
         model = model.to(device)
         lossfunc = nn.MSELoss()
@@ -396,7 +393,7 @@ class UseProduct() :
         import copy
         import torch
         from torch import nn
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["UP1_0_1"])
         functionVersionInfo["Version"] = "UP1_0_1"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])

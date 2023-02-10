@@ -4,7 +4,7 @@ class ModelUse():
     def M0_0_2(self, functionInfo):
         import copy
         import torch
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_2"])
         functionVersionInfo["Version"] = "M0_0_2"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -40,10 +40,9 @@ class ModelUse():
     @classmethod
     def M0_0_3(self, functionInfo):
         import copy
-        import torch
         import torch.nn as nn
         import torch.optim as optim
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_3"])
         functionVersionInfo["Version"] = "M0_0_3"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -84,7 +83,7 @@ class ModelUse():
         import copy
         import torch
         import torch.nn as nn
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_4"])
         functionVersionInfo["Version"] = "M0_0_4"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -141,10 +140,8 @@ class ModelUse():
 
     @classmethod
     def M0_0_5(self, functionInfo):
-        import copy
-        import torch
-        import torch.nn as nn
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        import os , copy
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         from sklearn.metrics import accuracy_score
         import torch as torch
         import torch.nn as nn
@@ -239,20 +236,20 @@ class ModelUse():
             model.eval()
             if epoch % 1 == 0:
                 print(f"Epoch:{epoch},TrainLoss:{trainLossValue:.3f},ValLoss:{devLossValue:.3f}" f"TrainAcc:{trainAccValue:.2f}%,ValAcc:{devAccValue:.2f}%")
-
+        modelPath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_5"
         modelFilePath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_5/UCICreditCard.pt"
+        os.makedirs(modelPath) if not os.path.isdir(modelPath) else None
         torch.save(model.state_dict(), modelFilePath)
 
         return {}, {"ModelFilePath":modelFilePath}
 
     @classmethod
     def M0_0_6(self, functionInfo):
-        import copy
+        import os, copy
         import torch
         import torch.nn as nn
         from torch.utils.data import Dataset, DataLoader
-        from sklearn.model_selection import train_test_split
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
 
         torch.manual_seed(10)  # 設定隨機種子
 
@@ -314,6 +311,8 @@ class ModelUse():
             if i % 50 == 0:
                 print(f"Epoch:{i:3d}, Loss:{loss:.3f}")
 
+        modelPath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_6"
+        os.makedirs(modelPath) if not os.path.isdir(modelPath) else None
         modelFilePath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_6/Iris.pt"
         torch.save(model.state_dict(), modelFilePath)
 
@@ -321,11 +320,11 @@ class ModelUse():
 
     @classmethod
     def M0_0_7(self, functionInfo):
-        import copy
+        import os,copy
         import torch
         import torch.nn as nn
         import torch.optim as optim
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
 
         torch.manual_seed(10)  # 設定隨機種子
 
@@ -396,7 +395,8 @@ class ModelUse():
         epochs = 1
         for epoch in range(epochs):
             train(model, device, trainDataLoader, lossfunc, optimizer, epoch)
-
+        modelPath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_7"
+        os.makedirs(modelPath) if not os.path.isdir(modelPath) else None
         modelFilePath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_7/MNIST.pt"
         torch.save(model.state_dict(), modelFilePath)
 
@@ -404,16 +404,14 @@ class ModelUse():
 
     @classmethod
     def M0_0_9(self, functionInfo):
-        import copy
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        import os,copy
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import numpy
         import random
         import torch
         import torch.nn as nn
         import torch.optim as optim
-        import torchvision
-        from torchvision import datasets, models
-        from torchvision import transforms
+        from torchvision import models
         from torch.optim.lr_scheduler import StepLR
 
         # 隨機種子
@@ -481,6 +479,8 @@ class ModelUse():
 
             print(f"Epoch: {epoch}, Train Loss: {trainLoss:.4f}, Acc:{trainAcc:.4f}, Val Loss: {verifyLoss:.4f}, Acc:{verifyAcc:.4f}")
 
+        modelPath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_9"
+        os.makedirs(modelPath) if not os.path.isdir(modelPath) else None
         torch.save(model.state_dict(), "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_9/model.pt")
 
         return {}, {}
@@ -488,12 +488,10 @@ class ModelUse():
     @classmethod
     def M0_0_10(self, functionInfo):
         import copy
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
-        import numpy , random
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        import numpy
         import torch
         from torch import nn, optim
-        from torchvision import datasets
-        from torchvision import transforms
         from torch.utils.data import DataLoader
         from torch.utils.data.sampler import SubsetRandomSampler
         import matplotlib.pyplot as plt
@@ -577,13 +575,10 @@ class ModelUse():
     @classmethod
     def M0_0_11(self, functionInfo):
         import copy
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import numpy as np
-        import random
         import torch
         from torch import nn, optim
-        from torchvision import datasets
-        import torchvision.transforms as transforms
         from torch.utils.data.sampler import SubsetRandomSampler
         from torch.utils.data import DataLoader
         import matplotlib.pyplot as plt
@@ -670,12 +665,10 @@ class ModelUse():
 
     @classmethod
     def M0_0_12(self, functionInfo):
-        import copy
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
-        import pandas as pd
+        import os,copy
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import torch
         from torch import nn, optim
-        from sklearn.model_selection import train_test_split
 
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_12"])
         functionVersionInfo["Version"] = "M0_0_11"
@@ -717,6 +710,8 @@ class ModelUse():
             if epoch % 1000 == 0:
                 print(f"Epoch:{epoch:5d}, Loss:{loss.item():.3f}")
 
+        modelPath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_12"
+        os.makedirs(modelPath) if not os.path.isdir(modelPath) else None
         modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_12/model.pt"
         torch.save(model.state_dict(), modelFile)
 
@@ -732,18 +727,18 @@ class ModelUse():
         from string import punctuation
         from collections import Counter
         from torch.utils.data import DataLoader, TensorDataset
+        from tqdm import tqdm
 
         torch.manual_seed(123)                                          # 固定隨機種子
 
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         # 資料前處理
-        with open('Example/P34PyTorch/file/data/imdb.pt', 'rb') as f:
+        with open('common/common/file/data/text/imdb.pt', 'rb') as f:
             dataDict = pickle.load(f)                                   # 載入新聞資料
 
         reviewList = dataDict["review"]                                 # 標題資料
         labelList = dataDict["label"]                                   # 標籤資料
-
         reviewPreProssList = [review.lower() for review in reviewList]
         reviewPreProssList = [''.join([letter for letter in review if letter not in punctuation]) for review in reviewPreProssList] # string.punctuation : 所有的標點字元
         reviewsStr = ' '.join(reviewPreProssList)                                                   # 將所有的標題合併成一個字串
@@ -823,7 +818,7 @@ class ModelUse():
         for epoch in range(epochs):
             model.train()
             trainLoss , trainAcc ,testLoss ,testAcc= 0 ,0 ,0 ,0
-            for x, y in (trainDataLoader):
+            for x, y in tqdm(trainDataLoader):
                 pred = model(x.T)
                 pred = pred.squeeze()
                 loss = lossfunc(pred, y)
@@ -834,7 +829,7 @@ class ModelUse():
 
             with torch.no_grad():
                 model.eval()
-                for x, y in (testDataLoader):
+                for x, y in tqdm(testDataLoader):
                     pred = model(x.T).squeeze()
                     loss = lossfunc(pred, y)
                     acc = accfunc(pred, y)
@@ -861,6 +856,7 @@ class ModelUse():
             pred = torch.round(pred, decimals=3)
             return pred.item()
 
+        print("ddddd")
         out1 = sentimentInference(model, 'This film is horrible')
         print(f"{out1:.3f}")
         out2 = sentimentInference(model, 'Director tried too hard but this film is bad')
@@ -944,7 +940,6 @@ class ModelUse():
     @classmethod
     def M0_0_15(self, functionInfo):
         import numpy as np
-        import matplotlib.pyplot as plt
 
         R = np.array([
             [-1, 0, 0, -1],     # state 0 (action1, action2, action3, action4)
@@ -1077,7 +1072,6 @@ class ModelUse():
     def M0_0_17(self, functionInfo):
         import gym
         import numpy as np
-        import matplotlib.pyplot as plt
 
         np.random.seed(10)  # 重現性固定隨機種子
 
@@ -1299,7 +1293,7 @@ class ModelUse():
 
         scores = []
         scoresWindow = deque(maxlen=100)
-        epochs = 5000                                                       # 學習週期
+        epochs = 100                                                        # 學習週期
         maxT = 5000                                                         # 最大時間步數
         epsStart = 1.0                                                      # 開始閥值
         epsEnd = 0.001                                                      # 結束閥值
@@ -1336,7 +1330,7 @@ class ModelUse():
             epoch = 0                                                                   # 遊戲次數
             done = False                                                                # 結束標記
             while done == False:
-                action = agent.act(state)
+                action = agent.action(state)
                 nextState, reward, terminated, truncated, info = gameEnv.step(action)   # 執行行為
                 done = terminated or truncated                                          # 結束條件
                 gameEnv.render()                                                        # 繪製畫面
@@ -1350,11 +1344,12 @@ class ModelUse():
 
     @classmethod
     def M1_0_1(self, functionInfo):
+        import os
         import copy
         import torch
         from torch import nn
         from torch.utils.data import DataLoader
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M1_0_1"])
         functionVersionInfo["Version"] = "M1_0_1"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
@@ -1456,9 +1451,11 @@ class ModelUse():
         print("模型訓練完成！")
 
         # 模型儲存位置
+        pytorchModelPath = "Example/P34PyTorch/file/result/V1_0_1/9999/M1_0_1"
         pytorchModelFilePath = "Example/P34PyTorch/file/result/V1_0_1/9999/M1_0_1/Model.pth"
 
         # 儲存模型參數
+        os.makedirs(pytorchModelPath) if not os.path.isdir(pytorchModelPath) else None
         torch.save(model.state_dict(), pytorchModelFilePath)
         # Accuracy: 65.6%, Avg loss: 1.069365
         return {}, {"PyTorchModelFilePath":pytorchModelFilePath}
