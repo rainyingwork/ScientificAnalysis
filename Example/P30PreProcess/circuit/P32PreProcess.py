@@ -1,6 +1,5 @@
 import copy
-import pprint
-from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
 
 class PreProcess() :
 

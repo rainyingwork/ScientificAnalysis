@@ -8,7 +8,7 @@ if __name__ == "__main__":
     ]
     for dateInfo in dateInfoArr :
         basicInfo = {
-            "RunType": ["runops"],
+            "RunType": ["RunOPS"],
             "Product": ["Example"],
             "Project": ["P30PreProcess"],
         }
