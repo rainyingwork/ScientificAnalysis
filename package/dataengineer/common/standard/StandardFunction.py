@@ -34,7 +34,7 @@ class StandardFunction(CommonFunction):
     @classmethod
     def insertOverwriteStandardData(self,product,project,tablename,dt,standardDataDF, useType= 'SQL') :
         from dotenv import load_dotenv
-        from package.common.database.PostgresCtrl import PostgresCtrl
+        from package.common.common.database.PostgresCtrl import PostgresCtrl
         load_dotenv(dotenv_path="env/postgresql.env")
         postgresCtrl = PostgresCtrl(
             host=os.getenv("POSTGRES_HOST")
@@ -61,7 +61,7 @@ class StandardFunction(CommonFunction):
     @classmethod
     def insertStandardData(self, product, project, tablename, dt, standardDataDF , useType):
         from dotenv import load_dotenv
-        from package.common.database.PostgresCtrl import PostgresCtrl
+        from package.common.common.database.PostgresCtrl import PostgresCtrl
 
         load_dotenv(dotenv_path="env/postgresql.env")
         postgresCtrl = PostgresCtrl(

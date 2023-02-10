@@ -1,5 +1,5 @@
-import os ,sys
-from package.common.database.PostgresCtrl import PostgresCtrl
+import os
+from package.common.common.database.PostgresCtrl import PostgresCtrl
 from dotenv import load_dotenv
 import pandas
 

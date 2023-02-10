@@ -1,8 +1,6 @@
-import os
 import json
 import datetime
-from package.common.osbasic.CommonException import CommonException
-from package.common.entity.EntityBase import EntityBase
+from package.common.common.entity.EntityBase import EntityBase
 
 
 class OPSRecordEntity (EntityBase) :

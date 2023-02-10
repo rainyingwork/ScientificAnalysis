@@ -1,7 +1,7 @@
 import os
 import datetime
 from dotenv import load_dotenv
-from package.common.database.PostgresCtrl import PostgresCtrl
+from package.common.common.database.PostgresCtrl import PostgresCtrl
 from package.artificialintelligence.common.common.AnalysisFunction import AnalysisFunction
 
 class CommonFunction(AnalysisFunction):

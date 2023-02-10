@@ -1,11 +1,9 @@
 import os
-import time , datetime
-import pprint
+import datetime
 import math, pandas
 import json
 from dotenv import load_dotenv
-from package.common.database.PostgresCtrl import PostgresCtrl
-from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+from package.common.common.database.PostgresCtrl import PostgresCtrl
 from package.artificialintelligence.common.common.CommonFunction import CommonFunction
 
 class PreProcessFunction(CommonFunction):

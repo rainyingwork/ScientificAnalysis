@@ -32,7 +32,7 @@ class SYSFunction():
     def runCmdStr(self, fvInfo, otherInfo):
         import os
         from dotenv import load_dotenv
-        from package.common.osbasic.SSHCtrl import SSHCtrl
+        from package.common.common.osbasic.SSHCtrl import SSHCtrl
         load_dotenv(dotenv_path="env/ssh.env")
         sshCtrl = SSHCtrl(
             host=os.getenv("SSH_IP")

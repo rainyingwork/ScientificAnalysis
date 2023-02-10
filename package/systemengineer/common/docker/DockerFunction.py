@@ -40,7 +40,7 @@ class DockerFunction():
     def runContainerByDockerComposeInfo(self, fvInfo, otherInfo):
         import os
         from dotenv import load_dotenv
-        from package.common.osbasic.SSHCtrl import SSHCtrl
+        from package.common.common.osbasic.SSHCtrl import SSHCtrl
         load_dotenv(dotenv_path="env/ssh.env")
         sshCtrl = SSHCtrl(
             host=os.getenv("SSH_IP")
@@ -55,7 +55,7 @@ class DockerFunction():
             serviceInfo = servicesInfo[key]
             sshCtrl.execSSHCommand("docker stop {}".format(containerName))
             sshCtrl.execSSHCommand("docker rm {}".format(containerName))
-            for volumeStr in serviceInfo["volumes"]:
+            for volumeStr in serviceInfo["volumes_clean"]:
                 storagePath = volumeStr.split(":")[0]
                 sshCtrl.execSSHCommand("rm -rf {}".format(storagePath))
                 sshCtrl.execSSHCommand("mkdir -p {}".format(storagePath))
@@ -66,6 +66,7 @@ class DockerFunction():
                 , "restart": "--restart"
                 , "environment": "-e"
                 , "volumes": "-v"
+                , "volumes_clean": "-v"
                 , "ports": "-p"
             }
             commandArr.append("--name {}".format(key))
@@ -92,7 +93,7 @@ class DockerFunction():
     def runDockerCmdStr(self, fvInfo, otherInfo):
         import os
         from dotenv import load_dotenv
-        from package.common.osbasic.SSHCtrl import SSHCtrl
+        from package.common.common.osbasic.SSHCtrl import SSHCtrl
         load_dotenv(dotenv_path="env/ssh.env")
         sshCtrl = SSHCtrl(
             host=os.getenv("SSH_IP")

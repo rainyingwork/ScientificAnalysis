@@ -7,7 +7,7 @@ class AnalysisFunction():
     @classmethod
     def insertOverwriteAnalysisData(self,product,project,version,dt,analysisDataDF, useType= 'SQL') :
         from dotenv import load_dotenv
-        from package.common.database.PostgresCtrl import PostgresCtrl
+        from package.common.common.database.PostgresCtrl import PostgresCtrl
         load_dotenv(dotenv_path="env/postgresql.env")
         postgresCtrl = PostgresCtrl(
             host=os.getenv("POSTGRES_HOST")
@@ -34,7 +34,7 @@ class AnalysisFunction():
     @classmethod
     def insertAnalysisData(self, product, project, version, dt, analysisDataDF , useType):
         from dotenv import load_dotenv
-        from package.common.database.PostgresCtrl import PostgresCtrl
+        from package.common.common.database.PostgresCtrl import PostgresCtrl
 
         load_dotenv(dotenv_path="env/postgresql.env")
         postgresCtrl = PostgresCtrl(

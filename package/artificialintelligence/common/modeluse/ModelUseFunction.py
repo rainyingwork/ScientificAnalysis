@@ -1,11 +1,8 @@
 import os , copy
-import time , datetime
+import datetime
 import numpy ,pandas
-import pprint
 from dotenv import load_dotenv
-from package.common.osbasic.SSHCtrl import SSHCtrl
-from package.common.database.PostgresCtrl import PostgresCtrl
-from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+from package.common.common.osbasic.SSHCtrl import SSHCtrl
 from package.artificialintelligence.common.common.CommonFunction import CommonFunction
 
 class ModelUseFunction(CommonFunction):

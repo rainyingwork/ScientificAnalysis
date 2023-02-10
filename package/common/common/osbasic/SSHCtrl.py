@@ -2,7 +2,7 @@ import os
 import paramiko
 import stat
 import traceback
-from package.common.osbasic.BaseFunction import timethis
+from package.common.common.osbasic.BaseFunction import timethis
 from dotenv import load_dotenv
 
 class SSHCtrl:
