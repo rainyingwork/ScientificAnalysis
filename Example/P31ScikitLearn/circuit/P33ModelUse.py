@@ -4,7 +4,7 @@ class ModelUse() :
     @classmethod
     def M0_0_1(self, functionInfo):
         import copy
-        from package.common.osbasic.GainObjectCtrl import GainObjectCtrl
+        from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         from package.artificialintelligence.common.modeluse.ModelUseFunction import ModelUseFunction
         modelUseFunction = ModelUseFunction()
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["M0_0_1"])
