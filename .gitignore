@@ -12,8 +12,8 @@ catboost_info
 venv
 venvpypy
 # 暫不上傳
-UnitTestLocal/*
+../ExerciseProject/UnitTestLocal/*
 Example/P35NetworkX
 OnlineExample
-UnitTestLocal/TagData
-Investment/old/*
+../ExerciseProject/UnitTestLocal/TagData
+../ExerciseProject/Investment/old/*
