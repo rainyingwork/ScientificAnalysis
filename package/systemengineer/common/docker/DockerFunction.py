@@ -55,18 +55,20 @@ class DockerFunction():
             serviceInfo = servicesInfo[key]
             sshCtrl.execSSHCommand("docker stop {}".format(containerName))
             sshCtrl.execSSHCommand("docker rm {}".format(containerName))
-            for volumeStr in serviceInfo["volumes_clean"]:
-                storagePath = volumeStr.split(":")[0]
-                sshCtrl.execSSHCommand("rm -rf {}".format(storagePath))
-                sshCtrl.execSSHCommand("mkdir -p {}".format(storagePath))
-                sshCtrl.execSSHCommand("chmod -R 777 {}".format(storagePath))
+            if "volumes_clean" in serviceInfo.keys():
+                for volumeStr in serviceInfo["volumes_clean"]:
+                    storagePath = volumeStr.split(":")[0]
+                    sshCtrl.execSSHCommand("rm -rf {}".format(storagePath))
+                    sshCtrl.execSSHCommand("mkdir -p {}".format(storagePath))
+                    sshCtrl.execSSHCommand("chmod -R 777 {}".format(storagePath))
 
             dockerRunParameterMap = {
                 "image": None # continue
                 , "restart": "--restart"
+                , "gpus": "--gpus"
                 , "environment": "-e"
                 , "volumes": "-v"
-                , "volumes_clean": "-v"
+                , "cleanvolumes": "-v"
                 , "ports": "-p"
             }
             commandArr.append("--name {}".format(key))

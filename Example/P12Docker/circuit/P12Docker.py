@@ -2,16 +2,12 @@
 class Docker():
 
     @classmethod
-    def D0_1_0(self, functionInfo):
-        return self.__DX_X_X(functionInfo, "D0_1_0")
+    def D1_1_0(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D1_1_0")
 
     @classmethod
-    def D0_1_1(self, functionInfo):
-        return self.__DX_X_X(functionInfo, "D0_1_1")
-
-    @classmethod
-    def D0_1_2(self, functionInfo):
-        return self.__DX_X_X(functionInfo, "D0_1_2")
+    def D1_1_1(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D1_1_1")
 
     @classmethod
     def __DX_X_X(self, functionInfo, functionVersion):

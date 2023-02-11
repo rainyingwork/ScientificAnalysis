@@ -32,7 +32,7 @@ if __name__ == "__main__":
         ],
         "RepOPSRecordId": 9999,
         "RepFunctionArr": [],
-        "RunFunctionArr": ["M0_0_13",], #
+        "RunFunctionArr": ["P0_0_10","M0_0_10","UP0_0_10",], #
         "OrdFunctionArr": [
             {"Parent": "P0_0_2", "Child": "M0_0_2"},
             {"Parent": "P0_0_3", "Child": "M0_0_3"},

@@ -487,7 +487,7 @@ class ModelUse():
 
     @classmethod
     def M0_0_10(self, functionInfo):
-        import copy
+        import os , copy
         from package.common.common.osbasic.GainObjectCtrl import GainObjectCtrl
         import numpy
         import torch
@@ -522,7 +522,7 @@ class ModelUse():
         print(f"deivce:{device}")
 
         import Example.P34PyTorch.package.cifar10_model as cifar10Model  # 匯入自訂模型
-        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"  # 模型儲存位置
+
         epochs = 1  # 訓練代數
         endLoss = 0.65  # 結束時損失函數 可以提早結束
         model = cifar10Model.CNN().to(device)
@@ -568,6 +568,10 @@ class ModelUse():
         plt.show()
 
         model = model.to("cpu")
+
+        modelPath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10"
+        os.makedirs(modelPath) if not os.path.isdir(modelPath) else None
+        modelFile = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10/cifar10_model.pt"  # 模型儲存位置
         torch.save(model.state_dict(), modelFile)
 
         return {}, {}
