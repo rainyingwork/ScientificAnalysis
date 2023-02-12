@@ -24,26 +24,6 @@ class OPSCtrl:
             , printLog=False
         )
 
-    def executeDCE(self, opsInfo):
-        product, project , opsVersion , opsRecordId = opsInfo["Product"] , opsInfo["Project"] , opsInfo["OPSVersion"] , opsInfo["OPSRecordId"]
-        print("Start DCE , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(product, project,opsVersion,opsRecordId))
-        opsOrderDict = self.makeCompleteOPSOrderDict(opsInfo['OPSOrderJson'])
-        for orderFunctionLayer in opsOrderDict["OrderLayerArr"]:
-            threadList = []
-            threadQueue = Queue()
-            for executeFunction in orderFunctionLayer:
-                thread = threading.Thread(target=self.dceExecuteFunction,args=(executeFunction, opsInfo,threadQueue))
-                thread.daemon = True
-                time.sleep(0.5), thread.start() , time.sleep(0.5)
-                threadList.append(thread)
-            for thread in threadList:
-                thread.join()
-            for _ in threadList:
-                functionDict = threadQueue.get()
-                executeFunction = functionDict["ExecuteFunction"]
-                opsInfo["ResultJson"][executeFunction] = functionDict["FunctionRestlt"]
-        print("End DCE , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(product, project,opsVersion,opsRecordId))
-
     def executeOPS(self, opsInfo):
         allGlobalObjectDict = {}
         opsInfo["GlobalObject"] = id(allGlobalObjectDict)
@@ -76,45 +56,36 @@ class OPSCtrl:
                 allGlobalObjectDict[executeFunction] = functionDict["GlobalObjectDict"]
         print("End OPS , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(product , project, opsVersion,opsRecordId))
 
+    def executeDCE(self, opsInfo):
+        product, project , opsVersion , opsRecordId = opsInfo["Product"] , opsInfo["Project"] , opsInfo["OPSVersion"] , opsInfo["OPSRecordId"]
+        print("Start DCE , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(product, project,opsVersion,opsRecordId))
+        opsOrderDict = self.makeCompleteOPSOrderDict(opsInfo['OPSOrderJson'])
+        for orderFunctionLayer in opsOrderDict["OrderLayerArr"]:
+            threadList = []
+            threadQueue = Queue()
+            for executeFunction in orderFunctionLayer:
+                thread = threading.Thread(target=self.dceExecuteFunction,args=(executeFunction, opsInfo,threadQueue))
+                thread.daemon = True
+                time.sleep(0.5), thread.start() , time.sleep(0.5)
+                threadList.append(thread)
+            for thread in threadList:
+                thread.join()
+            for _ in threadList:
+                functionDict = threadQueue.get()
+                executeFunction = functionDict["ExecuteFunction"]
+                opsInfo["ResultJson"][executeFunction] = functionDict["FunctionRestlt"]
+        print("End DCE , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(product, project,opsVersion,opsRecordId))
+
     def runExecuteFunction(self,executeFunction, opsInfo, threadQueue):
-        def makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt, globalObjectDict):
-            from package.opsmanagement.common.entity.OPSDetailEntity import OPSDetailEntity
-
-            sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"), passwd=os.getenv("SSH_PASSWD"))
-            product = opsInfo["Product"]
-            project = opsInfo["Project"]
-            opsVersion = opsInfo["OPSVersion"]
-            opsRecordId = opsInfo["OPSRecordId"]
-
-            functionRestlt["ExeFunctionLDir"] = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId),executeFunction)
-            functionRestlt["ExeFunctionRDir"] = "{}/{}/{}/{}/{}".format(product,project,opsVersion,str(opsRecordId),executeFunction)
-            os.makedirs(functionRestlt["ExeFunctionLDir"]) if not os.path.isdir(functionRestlt["ExeFunctionLDir"]) else None
-            with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "FunctionRestlt.pickle"), 'wb') as f:
-                pickle.dump(functionRestlt, f)
-            with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "GlobalObjectDict.pickle"), 'wb') as f:
-                pickle.dump(globalObjectDict, f)
-            sshCtrl_Storage.execCommand("mkdir -p /{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),functionRestlt["ExeFunctionRDir"]))
-            sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'],"FunctionRestlt.pickle"), "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),functionRestlt['ExeFunctionRDir'],"FunctionRestlt.pickle") )
-            sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'],"GlobalObjectDict.pickle"), "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),functionRestlt['ExeFunctionRDir'],"GlobalObjectDict.pickle") )
-
-            opsDetailEntityCtrl = OPSDetailEntity()
-            functionInfo = {}
-            functionInfo["OPSRecordId"] = opsInfo["OPSRecordId"]
-            functionInfo["ExeFunction"] = executeFunction
-            functionInfo["ParameterJson"] = opsInfo["ParameterJson"][executeFunction] if executeFunction in opsInfo["ParameterJson"].keys() else {}
-            functionInfo["ResultJson"] = functionRestlt
-            opsDetailEntityCtrl.setEntity(opsDetailEntityCtrl.makeOPSDetailEntityByFunctionInfo(functionInfo))
-            opsDetailEntityCtrl.insertEntity()
-
-            return opsDetailEntityCtrl.getEntityId()
-
         product = opsInfo["Product"]
         project = opsInfo["Project"]
         eval(f"exec('from {product}.{project}.circuit.CircuitMain import CircuitMain')")
         circuitMain = eval(f"CircuitMain()")
         print("  Start Function , Version is {}  ".format(executeFunction))
         functionRestlt, globalObjectDict = eval(f"circuitMain.{executeFunction}({opsInfo})")
-        opsDetailId = makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt,globalObjectDict)
+        functionRestlt, globalObjectDict = self.saveRestltObject(opsInfo, executeFunction, functionRestlt, globalObjectDict)
+        functionRestlt, globalObjectDict = self.uploadRestltObject(opsInfo, executeFunction, functionRestlt, globalObjectDict)
+        opsDetailId = self.makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt,globalObjectDict)
         threadQueue.put({
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
@@ -123,32 +94,10 @@ class OPSCtrl:
         print("  End Function , Version is {} , OPSDetailID is {} ".format(executeFunction,opsDetailId))
 
     def replyExecuteFunction(self,executeFunction, opsInfo , repOPSRecordId , threadQueue):
-        sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD"))
-        product = opsInfo["Product"]
-        project = opsInfo["Project"]
-        opsVersion = opsInfo["OPSVersion"]
-        opsRecordId = opsInfo["OPSRecordId"]
-
-        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId),executeFunction)
-        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId), executeFunction)
-        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
-        sshCtrl_Storage.downloadFile("/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,"FunctionRestlt.pickle"),"{}/{}".format(exeFunctionLDir, "FunctionRestlt.pickle"))
-        sshCtrl_Storage.downloadFile("/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,"GlobalObjectDict.pickle"),"{}/{}".format(exeFunctionLDir, "GlobalObjectDict.pickle"))
-        with open('{}/{}'.format(exeFunctionLDir, '/FunctionRestlt.pickle'), 'rb') as fr:
-            functionRestlt = pickle.load(fr)
-        with open('{}/{}'.format(exeFunctionLDir, '/GlobalObjectDict.pickle'), 'rb') as god:
-            globalObjectDict = pickle.load(god)
-        functionRestlt["ExeFunctionLDir"] = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion,str(opsRecordId), executeFunction)
-        functionRestlt["ExeFunctionRDir"] = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId),executeFunction)
-        os.makedirs(functionRestlt["ExeFunctionLDir"]) if not os.path.isdir(functionRestlt["ExeFunctionLDir"]) else None
-        if exeFunctionLDir != functionRestlt["ExeFunctionLDir"] :
-            shutil.copyfile("{}/{}".format(exeFunctionLDir, "FunctionRestlt.pickle"),"{}/{}".format(functionRestlt["ExeFunctionLDir"], "FunctionRestlt.pickle"))
-            shutil.copyfile("{}/{}".format(exeFunctionLDir, "GlobalObjectDict.pickle"),"{}/{}".format(functionRestlt["ExeFunctionLDir"], "GlobalObjectDict.pickle"))
-        if exeFunctionRDir != functionRestlt["ExeFunctionRDir"] :
-            sshCtrl_Storage.execCommand("mkdir -p /{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),functionRestlt["ExeFunctionRDir"]))
-            sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt["ExeFunctionLDir"], "FunctionRestlt.pickle"), "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),functionRestlt['ExeFunctionRDir'], "FunctionRestlt.pickle"))
-            sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt["ExeFunctionLDir"], "GlobalObjectDict.pickle"), "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),functionRestlt['ExeFunctionRDir'], "GlobalObjectDict.pickle"))
-
+        self.downloadRestltObject(opsInfo, executeFunction, repOPSRecordId, None, None)
+        functionRestlt, globalObjectDict = self.loadRestltObject(opsInfo, executeFunction, repOPSRecordId, None, None)
+        functionRestlt, globalObjectDict = self.saveRestltObject(opsInfo, executeFunction, functionRestlt,globalObjectDict)
+        functionRestlt, globalObjectDict = self.uploadRestltObject(opsInfo, executeFunction, functionRestlt,globalObjectDict)
         threadQueue.put({
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
@@ -169,17 +118,29 @@ class OPSCtrl:
             sshStr = "docker exec -it python39-cpu python3 /Data/ScientificAnalysis/OPSCommon.py --RunType RunOnlyFunc --Product {} --Project {} --OPSVersion {} --OPSRecordId {} --RunFunctionArr {}"
             sshStr = sshStr.format(product, project, opsVersion, opsRecordId, executeFunction)
             self.sshCtrl_DCE.execSSHCommandReturn(sshStr)
-        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId),executeFunction)
-        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId), executeFunction)
-        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
-        sshCtrl_Storage.downloadFile("/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,"FunctionRestlt.pickle"),"{}/{}".format(exeFunctionLDir, "FunctionRestlt.pickle"))
-        with open('{}/{}'.format(exeFunctionLDir, '/FunctionRestlt.pickle'), 'rb') as fr:
-            functionRestlt = pickle.load(fr)
+        self.downloadRestltObject(opsInfo, executeFunction, opsRecordId, None, None,isDownloadRestltObject=True, isDownloadGlobalObject=False)
+        functionRestlt , _ = self.loadRestltObject(opsInfo, executeFunction, opsRecordId, None, None,isLoadRestltObject=True, isLoadGlobalObject=False)
         threadQueue.put({
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
         })
         print("  End DCE Function , Function is {} ".format(executeFunction))
+
+    # ================================================== CompleteOPSOrderDict ==================================================
+    def makeExecuteFunctionInfo(self,opsInfo, executeFunction, functionRestlt, globalObjectDict):
+        from package.opsmanagement.common.entity.OPSDetailEntity import OPSDetailEntity
+        opsDetailEntityCtrl = OPSDetailEntity()
+        functionInfo = {}
+        functionInfo["OPSRecordId"] = opsInfo["OPSRecordId"]
+        functionInfo["ExeFunction"] = executeFunction
+        functionInfo["ParameterJson"] = opsInfo["ParameterJson"][executeFunction] if executeFunction in opsInfo[
+            "ParameterJson"].keys() else {}
+        functionInfo["ResultJson"] = functionRestlt
+        opsDetailEntityCtrl.setEntity(opsDetailEntityCtrl.makeOPSDetailEntityByFunctionInfo(functionInfo))
+        opsDetailEntityCtrl.insertEntity()
+        return opsDetailEntityCtrl.getEntityId()
+
+    # ================================================== CompleteOPSOrderDict ==================================================
 
     def makeCompleteOPSOrderDict(self, opsOrderDict):
         opsOrderDict["RepOPSRecordId"] = opsOrderDict["RepOPSRecordId"] if "RepOPSRecordId" in opsOrderDict.keys() else 0
@@ -231,3 +192,71 @@ class OPSCtrl:
 
         return runFunctionArr, repFunctionArr
 
+    # ================================================== LoadRead ==================================================
+
+    def saveRestltObject(self, opsInfo, executeFunction, functionRestlt, globalObjectDict , isSaveRestltObject = True, isSaveGlobalObject = True):
+        product = opsInfo["Product"]
+        project = opsInfo["Project"]
+        opsVersion = opsInfo["OPSVersion"]
+        opsRecordId = opsInfo["OPSRecordId"]
+        functionRestlt["ExeFunctionLDir"] = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion,str(opsRecordId), executeFunction)
+        os.makedirs(functionRestlt["ExeFunctionLDir"]) if not os.path.isdir(functionRestlt["ExeFunctionLDir"]) else None
+        if isSaveRestltObject == True :
+            with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "FunctionRestlt.pickle"), 'wb') as f:
+                pickle.dump(functionRestlt, f)
+        if isSaveGlobalObject == True :
+            with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "GlobalObjectDict.pickle"), 'wb') as f:
+                pickle.dump(globalObjectDict, f)
+
+        return functionRestlt , globalObjectDict
+
+    def uploadRestltObject(self,opsInfo, executeFunction, functionRestlt, globalObjectDict , isUploadRestltObject = True, isUploadGlobalObject = True):
+        product = opsInfo["Product"]
+        project = opsInfo["Project"]
+        opsVersion = opsInfo["OPSVersion"]
+        opsRecordId = opsInfo["OPSRecordId"]
+
+        load_dotenv(dotenv_path="env/ssh.env")
+        sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD"))
+        functionRestlt["ExeFunctionRDir"] = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId),executeFunction)
+        sshCtrl_Storage.execCommand("mkdir -p /{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"), functionRestlt["ExeFunctionRDir"]))
+        if isUploadRestltObject == True:
+            sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'], "FunctionRestlt.pickle"),"/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),functionRestlt['ExeFunctionRDir'], "FunctionRestlt.pickle"))
+        if isUploadGlobalObject == True:
+            sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'], "GlobalObjectDict.pickle"),"/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),functionRestlt['ExeFunctionRDir'], "GlobalObjectDict.pickle"))
+        return functionRestlt , globalObjectDict
+
+    def loadRestltObject(self, opsInfo, executeFunction, repOPSRecordId , functionRestlt, globalObjectDict , isLoadRestltObject = True, isLoadGlobalObject = True):
+        product = opsInfo["Product"]
+        project = opsInfo["Project"]
+        opsVersion = opsInfo["OPSVersion"]
+        opsRecordId = opsInfo["OPSRecordId"]
+
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId),executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId), executeFunction)
+        if isLoadRestltObject == True:
+            with open('{}/{}'.format(exeFunctionLDir, '/FunctionRestlt.pickle'), 'rb') as fr:
+                functionRestlt = pickle.load(fr)
+        if isLoadGlobalObject == True:
+            with open('{}/{}'.format(exeFunctionLDir, '/GlobalObjectDict.pickle'), 'rb') as god:
+                globalObjectDict = pickle.load(god)
+        return functionRestlt, globalObjectDict
+
+    def downloadRestltObject(self, opsInfo, executeFunction, repOPSRecordId , functionRestlt, globalObjectDict , isDownloadRestltObject = True, isDownloadGlobalObject = True):
+        product = opsInfo["Product"]
+        project = opsInfo["Project"]
+        opsVersion = opsInfo["OPSVersion"]
+        opsRecordId = opsInfo["OPSRecordId"]
+
+        load_dotenv(dotenv_path="env/ssh.env")
+        sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD"))
+
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId), executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId), executeFunction)
+        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
+        if isDownloadRestltObject== True:
+            sshCtrl_Storage.downloadFile("/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"), exeFunctionRDir, "FunctionRestlt.pickle"),"{}/{}".format(exeFunctionLDir, "FunctionRestlt.pickle"))
+        if isDownloadGlobalObject == True:
+            sshCtrl_Storage.downloadFile("/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"), exeFunctionRDir, "GlobalObjectDict.pickle"),"{}/{}".format(exeFunctionLDir, "GlobalObjectDict.pickle"))
+
+        return functionRestlt, globalObjectDict
