@@ -23,15 +23,16 @@ class OPSCtrl:
             threadList = []
             threadQueue = Queue()
             for executeFunction in orderFunctionLayer :
-                if executeFunction in opsOrderDict["RepFunctionArr"] :
+                if executeFunction in opsOrderDict["RepFunctionArr"] and executeFunction not in opsOrderDict["NoSLFunctionArr"]:
                     thread = threading.Thread(target=self.replyExecuteFunction, args=(executeFunction,opsInfo,opsOrderDict["RepOPSRecordId"] ,threadQueue))
                     thread.daemon = True
-                    thread.start(), time.sleep(0.5)
+                    time.sleep(0.5), thread.start() , time.sleep(0.5)
                     threadList.append(thread)
-                if executeFunction in opsOrderDict["RunFunctionArr"] :
-                    thread = threading.Thread(target=self.runExecuteFunction, args=(executeFunction,opsInfo,threadQueue))
+                if executeFunction in opsOrderDict["RunFunctionArr"]:
+                    isSL = True if executeFunction not in opsOrderDict["NoSLFunctionArr"] else False
+                    thread = threading.Thread(target=self.runExecuteFunction, args=(executeFunction,opsInfo,threadQueue,isSL))
                     thread.daemon = True
-                    thread.start() , time.sleep(0.5)
+                    time.sleep(0.5), thread.start() , time.sleep(0.5)
                     threadList.append(thread)
             for thread in threadList:
                 thread.join()
@@ -43,15 +44,16 @@ class OPSCtrl:
         print("End OPS , Product is {} , Project is {} , Version is {} , OPSRecordID is {}".format(product , project, opsVersion,opsRecordId))
         pprint.pprint(opsInfo["ResultJson"])
 
-    def runExecuteFunction(self,executeFunction, opsInfo, threadQueue):
+    def runExecuteFunction(self,executeFunction, opsInfo, threadQueue,isSL=True):
         product = opsInfo["Product"]
         project = opsInfo["Project"]
         eval(f"exec('from {product}.{project}.circuit.CircuitMain import CircuitMain')")
         circuitMain = eval(f"CircuitMain()")
         print("  Start Function , Version is {}  ".format(executeFunction))
         functionRestlt, globalObjectDict = eval(f"circuitMain.{executeFunction}({opsInfo})")
-        functionRestlt, globalObjectDict = self.saveRestltObject(opsInfo, executeFunction, functionRestlt,globalObjectDict)
-        opsDetailId = self.makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt, globalObjectDict)
+        if isSL == True:
+            functionRestlt, globalObjectDict = self.saveRestltObject(opsInfo, executeFunction, functionRestlt, globalObjectDict)
+        opsDetailId = self.makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt,globalObjectDict)
         threadQueue.put({
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
@@ -87,7 +89,7 @@ class OPSCtrl:
     def makeCompleteOPSOrderDict(self, opsOrderDict):
         opsOrderDict["RepOPSRecordId"] = opsOrderDict["RepOPSRecordId"] if "RepOPSRecordId" in opsOrderDict.keys() else 0
         opsOrderDict["OrderLayerArr"] = self.makeOrderLayerArr(opsOrderDict)
-        opsOrderDict['RunFunctionArr'] , opsOrderDict['RepFunctionArr']  = self.makeRunAndRepFunctionArr(opsOrderDict)
+        opsOrderDict['RunFunctionArr'] , opsOrderDict['RepFunctionArr'] , opsOrderDict['NoSLFunctionArr']  = self.makeRunAndRepFunctionArr(opsOrderDict)
         return opsOrderDict
 
     def makeOrderLayerArr(self, opsOrderDict):
@@ -121,6 +123,7 @@ class OPSCtrl:
         exeFunctionArr = opsOrderDict['ExeFunctionArr']
         runFunctionArr = opsOrderDict['RunFunctionArr'] if 'RunFunctionArr' in opsOrderDict.keys() else exeFunctionArr
         repFunctionArr = opsOrderDict['RepFunctionArr'] if 'RepFunctionArr' in opsOrderDict.keys() else []
+        noSLFunctionArr = opsOrderDict['NoSLFunctionArr'] if 'NoSLFunctionArr' in opsOrderDict.keys() else []
         for exeFunction in repFunctionArr:
             runFunctionArr.remove(exeFunction) if exeFunction in runFunctionArr else None
 
@@ -133,7 +136,7 @@ class OPSCtrl:
                 if exeFunction in runFunctionArr:
                     repFunctionArr.remove(exeFunction)
 
-        return runFunctionArr, repFunctionArr
+        return runFunctionArr, repFunctionArr , noSLFunctionArr
 
     # ================================================== LoadRead ==================================================
 
