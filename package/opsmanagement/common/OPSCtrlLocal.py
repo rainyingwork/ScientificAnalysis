@@ -44,31 +44,14 @@ class OPSCtrl:
         pprint.pprint(opsInfo["ResultJson"])
 
     def runExecuteFunction(self,executeFunction, opsInfo, threadQueue):
-        def makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt, globalObjectDict):
-            product = opsInfo["Product"]
-            project = opsInfo["Project"]
-            opsVersion = opsInfo["OPSVersion"]
-            opsRecordId = opsInfo["OPSRecordId"]
-            functionRestlt["ExeFunctionLDir"] = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId),executeFunction)
-            functionRestlt["ExeFunctionRDir"] = "{}/{}/{}/{}/{}".format(product,project,opsVersion,str(opsRecordId),executeFunction)
-            os.makedirs(functionRestlt["ExeFunctionLDir"]) if not os.path.isdir(functionRestlt["ExeFunctionLDir"]) else None
-            with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "FunctionRestlt.pickle"), 'wb') as f:
-                pickle.dump(functionRestlt, f)
-            with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "GlobalObjectDict.pickle"), 'wb') as f:
-                pickle.dump(globalObjectDict, f)
-            functionInfo = {}
-            functionInfo["OPSRecordId"] = opsInfo["OPSRecordId"]
-            functionInfo["ExeFunction"] = executeFunction
-            functionInfo["ParameterJson"] = opsInfo["ParameterJson"][executeFunction] if executeFunction in opsInfo["ParameterJson"].keys() else {}
-            functionInfo["ResultJson"] = functionRestlt
-
         product = opsInfo["Product"]
         project = opsInfo["Project"]
         eval(f"exec('from {product}.{project}.circuit.CircuitMain import CircuitMain')")
         circuitMain = eval(f"CircuitMain()")
         print("  Start Function , Version is {}  ".format(executeFunction))
         functionRestlt, globalObjectDict = eval(f"circuitMain.{executeFunction}({opsInfo})")
-        opsDetailId = makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt,globalObjectDict)
+        functionRestlt, globalObjectDict = self.saveRestltObject(opsInfo, executeFunction, functionRestlt,globalObjectDict)
+        opsDetailId = self.makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt, globalObjectDict)
         threadQueue.put({
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
@@ -77,25 +60,29 @@ class OPSCtrl:
         print("  End Function , Version is {} , OPSDetailID is {} ".format(executeFunction,opsDetailId))
 
     def replyExecuteFunction(self,executeFunction, opsInfo , repOPSRecordId , threadQueue):
-        product = opsInfo["Product"]
-        project = opsInfo["Project"]
-        opsVersion = opsInfo["OPSVersion"]
-        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId),executeFunction)
-        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId), executeFunction)
-        with open('{}/{}'.format(exeFunctionLDir, '/FunctionRestlt.pickle'), 'rb') as fr:
-            functionRestlt = pickle.load(fr)
-        with open('{}/{}'.format(exeFunctionLDir, '/GlobalObjectDict.pickle'), 'rb') as god:
-            globalObjectDict = pickle.load(god)
-        opsRecordId = opsInfo["OPSRecordId"]
-        functionRestlt["ExeFunctionLDir"] = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion,str(opsRecordId), executeFunction)
-        functionRestlt["ExeFunctionRDir"] = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId),executeFunction)
-        os.makedirs(functionRestlt["ExeFunctionLDir"]) if not os.path.isdir(functionRestlt["ExeFunctionLDir"]) else None
+        functionRestlt, globalObjectDict = self.loadRestltObject(opsInfo, executeFunction, repOPSRecordId, None, None)
+        functionRestlt, globalObjectDict = self.saveRestltObject(opsInfo, executeFunction, functionRestlt, globalObjectDict)
         threadQueue.put({
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
             , "GlobalObjectDict": globalObjectDict
         })
         print("  Reply Function , Version is {} , ReplyOPSDetailID is {} ".format(executeFunction,str(repOPSRecordId)))
+
+    # ================================================== CompleteOPSOrderDict ==================================================
+    def makeExecuteFunctionInfo(self, opsInfo, executeFunction, functionRestlt, globalObjectDict):
+        from package.opsmanagement.common.entity.OPSDetailEntity import OPSDetailEntity
+        opsDetailEntityCtrl = OPSDetailEntity()
+        functionInfo = {}
+        functionInfo["OPSRecordId"] = opsInfo["OPSRecordId"]
+        functionInfo["ExeFunction"] = executeFunction
+        functionInfo["ParameterJson"] = opsInfo["ParameterJson"][executeFunction] if executeFunction in opsInfo["ParameterJson"].keys() else {}
+        functionInfo["ResultJson"] = functionRestlt
+        opsDetailEntityCtrl.setEntity(opsDetailEntityCtrl.makeOPSDetailEntityByFunctionInfo(functionInfo))
+        opsDetailEntityCtrl.insertEntity()
+        return opsDetailEntityCtrl.getEntityId()
+
+    # ================================================== CompleteOPSOrderDict ==================================================
 
     def makeCompleteOPSOrderDict(self, opsOrderDict):
         opsOrderDict["RepOPSRecordId"] = opsOrderDict["RepOPSRecordId"] if "RepOPSRecordId" in opsOrderDict.keys() else 0
@@ -148,3 +135,36 @@ class OPSCtrl:
 
         return runFunctionArr, repFunctionArr
 
+    # ================================================== LoadRead ==================================================
+
+    def saveRestltObject(self, opsInfo, executeFunction, functionRestlt, globalObjectDict , isSaveRestltObject = True, isSaveGlobalObject = True):
+        product = opsInfo["Product"]
+        project = opsInfo["Project"]
+        opsVersion = opsInfo["OPSVersion"]
+        opsRecordId = opsInfo["OPSRecordId"]
+        functionRestlt["ExeFunctionLDir"] = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion,str(opsRecordId), executeFunction)
+        os.makedirs(functionRestlt["ExeFunctionLDir"]) if not os.path.isdir(functionRestlt["ExeFunctionLDir"]) else None
+        if isSaveRestltObject == True :
+            with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "FunctionRestlt.pickle"), 'wb') as f:
+                pickle.dump(functionRestlt, f)
+        if isSaveGlobalObject == True :
+            with open("{}/{}".format(functionRestlt["ExeFunctionLDir"], "GlobalObjectDict.pickle"), 'wb') as f:
+                pickle.dump(globalObjectDict, f)
+
+        return functionRestlt , globalObjectDict
+
+    def loadRestltObject(self, opsInfo, executeFunction, repOPSRecordId , functionRestlt, globalObjectDict , isLoadRestltObject = True, isLoadGlobalObject = True):
+        product = opsInfo["Product"]
+        project = opsInfo["Project"]
+        opsVersion = opsInfo["OPSVersion"]
+        opsRecordId = opsInfo["OPSRecordId"]
+
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId),executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId), executeFunction)
+        if isLoadRestltObject == True:
+            with open('{}/{}'.format(exeFunctionLDir, '/FunctionRestlt.pickle'), 'rb') as fr:
+                functionRestlt = pickle.load(fr)
+        if isLoadGlobalObject == True:
+            with open('{}/{}'.format(exeFunctionLDir, '/GlobalObjectDict.pickle'), 'rb') as god:
+                globalObjectDict = pickle.load(god)
+        return functionRestlt, globalObjectDict
