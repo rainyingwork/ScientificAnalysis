@@ -4,6 +4,7 @@ from Example.P02DceOps.circuit.P23Standard import Standard
 from Example.P02DceOps.circuit.P31RawData import RawData
 from Example.P02DceOps.circuit.P32PreProcess import PreProcess
 from Example.P02DceOps.circuit.P33ModelUse import ModelUse
+from Example.P02DceOps.circuit.P90Other import Other
 
 class CircuitMain(
     Crawler
@@ -12,6 +13,7 @@ class CircuitMain(
     , RawData
     , PreProcess
     , ModelUse
+    , Other
     ) :
     pass
 
