@@ -9,6 +9,8 @@ from package.opsmanagement.common.tool.DceOPSTool import DceOPSTool
 dceOPSTool = DceOPSTool()
 dceOPSDF = dceOPSTool.getRunDCEOPSDF(runType = 'RunDCEOPS' , batchNumber = '202211292300')
 
+maxOPSThread = 30
+
 if __name__ == "__main__":
     threadList = []
     for index , row in dceOPSDF.iterrows() :
@@ -21,13 +23,15 @@ if __name__ == "__main__":
         }
         thread = threading.Thread(target=executeOPSCommon.main, args=(opsInfo,))
         thread.daemon = True
-        thread.start()
+        thread.start() ; time.sleep(1)
         threadList.append(thread)
-        threadAliveCount = 5
-        while threadAliveCount >= 5:
-            time.sleep(1)
+        threadAliveCount = maxOPSThread
+        while threadAliveCount >= maxOPSThread:
             threadAliveCount = 0
             for thread in threadList:
                 threadAliveCount += 1 if thread.is_alive() else 0
+            if threadAliveCount >= maxOPSThread :
+                print("Max OPSThread!! Wait 3 seconds...")
+                time.sleep(3)
     for thread in threadList:
          thread.join()

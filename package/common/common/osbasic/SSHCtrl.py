@@ -6,7 +6,8 @@ from package.common.common.osbasic.BaseFunction import timethis
 from dotenv import load_dotenv
 
 class SSHCtrl:
-    def __init__(self, host=None , port=None, user=None, passwd=None,pkey=None,env=None,timeout=30,printLog=True):
+    def __init__(self, host=None , port=None, user=None, passwd=None,pkey=None,env=None
+                 ,timeout=30,printLog=True,isConnectSSH=True,isConnectSFTP=True):
         if env == None :
             self.__host = host
             self.__port = port
@@ -24,12 +25,17 @@ class SSHCtrl:
         self.__ssh = None
         self.__sftp = None
         self.__printLog = printLog
-        self.connectSSH()
-        self.connectSFTP()
+        if isConnectSSH == True :
+            self.connectSSH()
+        if isConnectSFTP == True:
+            self.connectSFTP()
 
     def __del__(self):
-        if self.__ssh:
-            self.__ssh.close()
+        try:
+            if self.__ssh:
+                self.__ssh.close()
+        except :
+            pass
         try:
             if self.__sftp:
                 self.__sftp.close()

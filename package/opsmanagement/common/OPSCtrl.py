@@ -10,19 +10,7 @@ class OPSCtrl:
 
     def __init__(self):
         load_dotenv(dotenv_path="env/ssh.env")
-        self.sshCtrl = SSHCtrl(
-            host=os.getenv("SSH_IP")
-            , port=int(os.getenv("SSH_PORT"))
-            , user=os.getenv("SSH_USER")
-            , passwd=os.getenv("SSH_PASSWD")
-        )
-        self.sshCtrl_DCE =SSHCtrl(
-            host=os.getenv("SSH_IP")
-            , port=int(os.getenv("SSH_PORT"))
-            , user=os.getenv("SSH_USER")
-            , passwd=os.getenv("SSH_PASSWD")
-            , printLog=False
-        )
+        pass
 
     def executeOPS(self, opsInfo):
         allGlobalObjectDict = {}
@@ -108,7 +96,8 @@ class OPSCtrl:
         print("  Reply Function , Version is {} , ReplyOPSRecordID is {} ".format(executeFunction,str(repOPSRecordId)))
 
     def dceExecuteFunction(self,executeFunction, opsInfo,threadQueue):
-        sshCtrl_DCEByFunc = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD"))
+        sshCtrl_DCEByFunc = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD")
+                                    , printLog=False, isConnectSSH=True, isConnectSFTP=False)
         product, project, opsVersion, opsRecordId = opsInfo["Product"], opsInfo["Project"], opsInfo["OPSVersion"], opsInfo["OPSRecordId"]
         from package.opsmanagement.common.entity.OPSDetailEntity import OPSDetailEntity
         opsDetailEntityCtrl = OPSDetailEntity()
@@ -126,6 +115,7 @@ class OPSCtrl:
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
         })
+        del sshCtrl_DCEByFunc , opsDetailEntityCtrl
         print("  End DCE Function , Product is {} , Project is {} , Version is {} , OPSRecordID is {} , Function is {} ".format(product, project,opsVersion,opsRecordId,executeFunction))
 
     # ================================================== CompleteOPSOrderDict ==================================================
@@ -226,6 +216,7 @@ class OPSCtrl:
             sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'], "FunctionRestlt.pickle"),"/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),functionRestlt['ExeFunctionRDir'], "FunctionRestlt.pickle"))
         if isUploadGlobalObject == True:
             sshCtrl_Storage.uploadFile("{}/{}".format(functionRestlt['ExeFunctionLDir'], "GlobalObjectDict.pickle"),"/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),functionRestlt['ExeFunctionRDir'], "GlobalObjectDict.pickle"))
+        del sshCtrl_Storage
         return functionRestlt , globalObjectDict
 
     def loadRestltObject(self, opsInfo, executeFunction, repOPSRecordId , functionRestlt, globalObjectDict , isLoadRestltObject = True, isLoadGlobalObject = True):
@@ -260,5 +251,5 @@ class OPSCtrl:
             sshCtrl_Storage.downloadFile("/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"), exeFunctionRDir, "FunctionRestlt.pickle"),"{}/{}".format(exeFunctionLDir, "FunctionRestlt.pickle"))
         if isDownloadGlobalObject == True:
             sshCtrl_Storage.downloadFile("/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"), exeFunctionRDir, "GlobalObjectDict.pickle"),"{}/{}".format(exeFunctionLDir, "GlobalObjectDict.pickle"))
-
+        del sshCtrl_Storage
         return functionRestlt, globalObjectDict
