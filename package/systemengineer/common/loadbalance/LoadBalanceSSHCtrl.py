@@ -25,6 +25,7 @@ class LoadBalanceSSHCtrl:
         for commandStr in commandArr:
             massageArr.append(sshCtrl.execCommand(commandStr))
         return massageArr
+
     def getLowLoadSSHCtrl(self):
         lowLoadSSHCtrl = None
         lowLoadCPU = 0.80

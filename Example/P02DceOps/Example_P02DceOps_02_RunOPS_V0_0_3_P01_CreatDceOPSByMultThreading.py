@@ -25,6 +25,8 @@ if __name__ == "__main__":
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_3"]
         opsInfo["OPSOrderJson"] = {
+            "RunType": "RunDCEOPS",
+            "BatchNumber": 202211292300,
             "ExeFunctionArr": ["R0_1_1", "R0_1_2", "R0_1_3", "P0_1_1", "P0_1_2", "P0_1_3", "M0_1_1"],
             "OrdFunctionArr": [
                 {"Parent": "R0_1_1", "Child": "P0_1_1"},
@@ -43,7 +45,6 @@ if __name__ == "__main__":
                 "P0_1_3": "資料整合處理",
                 "M0_1_1": "訓練模型",
             },
-            "BatchNumber": 202211292300,
         }
         opsInfo["ParameterJson"] = {
             "R0_1_1": {"DataTime": dateInfo['DataTime']},

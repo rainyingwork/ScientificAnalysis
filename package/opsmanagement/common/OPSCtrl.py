@@ -108,25 +108,25 @@ class OPSCtrl:
         print("  Reply Function , Version is {} , ReplyOPSRecordID is {} ".format(executeFunction,str(repOPSRecordId)))
 
     def dceExecuteFunction(self,executeFunction, opsInfo,threadQueue):
-        sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD"))
+        sshCtrl_DCEByFunc = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD"))
         product, project, opsVersion, opsRecordId = opsInfo["Product"], opsInfo["Project"], opsInfo["OPSVersion"], opsInfo["OPSRecordId"]
         from package.opsmanagement.common.entity.OPSDetailEntity import OPSDetailEntity
         opsDetailEntityCtrl = OPSDetailEntity()
         isHaveOPSDetailEntity = opsDetailEntityCtrl.isHaveOPSDetailEntityByOPSRecordAndExeFunctionAndState(opsRecordId,executeFunction,state="FINISH")
         if isHaveOPSDetailEntity == True :
-            print("  Exist DCE Function , Function is {}  ".format(executeFunction))
+            print("  Exist DCE Function , Product is {} , Project is {} , Version is {} , OPSRecordID is {} , Function is {}  ".format(product, project,opsVersion,opsRecordId,executeFunction))
         else :
-            print("  Start DCE Function , Function is {}  ".format(executeFunction))
+            print("  Start DCE Function , Product is {} , Project is {} , Version is {} , OPSRecordID is {} , Function is {}  ".format(product, project,opsVersion,opsRecordId,executeFunction))
             sshStr = "docker exec -it python39-cpu python3 /Data/ScientificAnalysis/OPSCommon.py --RunType RunOnlyFunc --Product {} --Project {} --OPSVersion {} --OPSRecordId {} --RunFunctionArr {}"
             sshStr = sshStr.format(product, project, opsVersion, opsRecordId, executeFunction)
-            self.sshCtrl_DCE.execSSHCommandReturn(sshStr)
+            sshCtrl_DCEByFunc.execSSHCommandReturn(sshStr)
         self.downloadRestltObject(opsInfo, executeFunction, opsRecordId, None, None,isDownloadRestltObject=True, isDownloadGlobalObject=False)
         functionRestlt , _ = self.loadRestltObject(opsInfo, executeFunction, opsRecordId, None, None,isLoadRestltObject=True, isLoadGlobalObject=False)
         threadQueue.put({
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
         })
-        print("  End DCE Function , Function is {} ".format(executeFunction))
+        print("  End DCE Function , Product is {} , Project is {} , Version is {} , OPSRecordID is {} , Function is {} ".format(product, project,opsVersion,opsRecordId,executeFunction))
 
     # ================================================== CompleteOPSOrderDict ==================================================
     def makeExecuteFunctionInfo(self,opsInfo, executeFunction, functionRestlt, globalObjectDict):
