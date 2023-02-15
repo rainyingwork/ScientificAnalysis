@@ -58,5 +58,5 @@ class FuncResultFunction():
             sshCtrl_Storage.downloadFile("/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"), exeFunctionRDir, "GlobalObjectDict.pickle"),"{}/{}".format(exeFunctionLDir, "RepGlobalObjectDict.pickle"))
             with open('{}/{}'.format(exeFunctionLDir, 'RepGlobalObjectDict.pickle'), 'rb') as god:
                 repGlobalObjectDict = pickle.load(god)
-
+        del sshCtrl_Storage
         return repFunctionRestlt, repGlobalObjectDict

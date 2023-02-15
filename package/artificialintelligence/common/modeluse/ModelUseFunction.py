@@ -267,6 +267,7 @@ class ModelUseFunction(CommonFunction):
 
             resultDict['ModelDesign']['ModelDists'].append(modeldist)
         shutil.rmtree("catboost_info")
+        del sshCtrl
         return resultDict
 
     @classmethod
@@ -342,6 +343,7 @@ class ModelUseFunction(CommonFunction):
 
             resultDict['ModelDesign']['ModelDists'].append(modeldist)
         shutil.rmtree("catboost_info")
+        del sshCtrl
         return resultDict
 
     @classmethod
@@ -400,6 +402,7 @@ class ModelUseFunction(CommonFunction):
         sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
         resultDict = copy.deepcopy(fvInfo)
         resultDict["ResultArr"] = [resultDF]
+        del sshCtrl
         return resultDict
 
     @classmethod
@@ -463,5 +466,6 @@ class ModelUseFunction(CommonFunction):
         sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
         resultDict = copy.deepcopy(fvInfo)
         resultDict["ResultArr"] = [resultDF]
+        del sshCtrl
         return resultDict
 

@@ -25,22 +25,20 @@ class SSHCtrl:
         self.__ssh = None
         self.__sftp = None
         self.__printLog = printLog
-        if isConnectSSH == True :
+        self.__isConnectSSH = isConnectSSH
+        self.__isConnectSFTP = isConnectSFTP
+        if self.__isConnectSSH == True :
             self.connectSSH()
-        if isConnectSFTP == True:
+        if self.__isConnectSFTP == True:
             self.connectSFTP()
 
     def __del__(self):
-        try:
+        if self.__isConnectSSH == True:
             if self.__ssh:
                 self.__ssh.close()
-        except :
-            pass
-        try:
+        if self.__isConnectSFTP == True:
             if self.__sftp:
                 self.__sftp.close()
-        except :
-            pass
 
     def connectSFTP(self):
         try:

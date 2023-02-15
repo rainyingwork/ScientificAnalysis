@@ -97,7 +97,7 @@ class OPSCtrl:
 
     def dceExecuteFunction(self,executeFunction, opsInfo,threadQueue):
         sshCtrl_DCEByFunc = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD")
-                                    , printLog=False, isConnectSSH=True, isConnectSFTP=False)
+                                    ,timeout=60, printLog=False, isConnectSSH=True, isConnectSFTP=False)
         product, project, opsVersion, opsRecordId = opsInfo["Product"], opsInfo["Project"], opsInfo["OPSVersion"], opsInfo["OPSRecordId"]
         from package.opsmanagement.common.entity.OPSDetailEntity import OPSDetailEntity
         opsDetailEntityCtrl = OPSDetailEntity()
@@ -209,7 +209,8 @@ class OPSCtrl:
         opsRecordId = opsInfo["OPSRecordId"]
 
         load_dotenv(dotenv_path="env/ssh.env")
-        sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD"))
+        sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD")
+                                  , timeout=60, printLog=False, isConnectSSH=True, isConnectSFTP=True)
         functionRestlt["ExeFunctionRDir"] = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(opsRecordId),executeFunction)
         sshCtrl_Storage.execCommand("mkdir -p /{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"), functionRestlt["ExeFunctionRDir"]))
         if isUploadRestltObject == True:
@@ -242,8 +243,8 @@ class OPSCtrl:
         opsRecordId = opsInfo["OPSRecordId"]
 
         load_dotenv(dotenv_path="env/ssh.env")
-        sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD"))
-
+        sshCtrl_Storage = SSHCtrl(host=os.getenv("SSH_IP"), port=int(os.getenv("SSH_PORT")), user=os.getenv("SSH_USER"),passwd=os.getenv("SSH_PASSWD")
+                                  , timeout=60, printLog=False, isConnectSSH=True, isConnectSFTP=True)
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId), executeFunction)
         exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project, opsVersion, str(repOPSRecordId), executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None

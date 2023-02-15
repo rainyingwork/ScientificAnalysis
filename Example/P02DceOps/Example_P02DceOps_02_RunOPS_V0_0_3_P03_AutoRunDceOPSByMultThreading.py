@@ -9,7 +9,7 @@ from package.opsmanagement.common.tool.DceOPSTool import DceOPSTool
 dceOPSTool = DceOPSTool()
 dceOPSDF = dceOPSTool.getRunDCEOPSDF(runType = 'RunDCEOPS' , batchNumber = '202211292300')
 
-maxOPSThread = 30
+maxOPSThread = 5
 
 if __name__ == "__main__":
     threadList = []
