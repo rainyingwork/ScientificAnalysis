@@ -5,7 +5,9 @@ import ssl ; ssl._create_default_https_context = ssl._create_unverified_context
 # ==================================================      ==================================================
 import matplotlib ; matplotlib.use('Agg')
 # ==================================================      ==================================================
-# threading.excepthook = ThredingCtrl.stopThread
+import threading
+from package.common.common.osbasic.ThredingCtrl import ThredingCtrl
+threading.excepthook = ThredingCtrl.stopThread
 # ==================================================      ==================================================
 import pandas
 pandas.set_option('display.max_columns', None)
@@ -20,6 +22,8 @@ class Config () :
 os.environ["POSTGRES_OPSNABAGEMENT_DATABASE"] = "scientificanalysis"
 os.environ["POSTGRES_OPSNABAGEMENT_SCHEMA"] = "public"
 os.environ["STORAGE_RECORDSAVEPATH"] = "Storage/OPSData"
+
+import LocalConfig
 
 
 

@@ -8,6 +8,7 @@ env
 */*/file/old
 */*/UnitTest
 UnitTest/
+LocalConfig.py
 *.pyc
 catboost_info
 logs.log
