@@ -53,7 +53,7 @@ class OPSCtrl:
         functionRestlt, globalObjectDict = eval(f"circuitMain.{executeFunction}({opsInfo})")
         if isSL == True:
             functionRestlt, globalObjectDict = self.saveRestltObject(opsInfo, executeFunction, functionRestlt, globalObjectDict)
-        opsDetailId = self.makeExecuteFunctionInfo(opsInfo, executeFunction, functionRestlt,globalObjectDict)
+        opsDetailId = None
         threadQueue.put({
             "ExecuteFunction": executeFunction
             , "FunctionRestlt": functionRestlt
