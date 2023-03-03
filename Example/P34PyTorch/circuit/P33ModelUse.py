@@ -567,7 +567,7 @@ class ModelUse():
         plt.ylabel('Losses')
         plt.show()
 
-        model = model.to("cpu")
+        model = model.to(device)
 
         modelPath = "Example/P34PyTorch/file/result/V0_0_1/9999/M0_0_10"
         os.makedirs(modelPath) if not os.path.isdir(modelPath) else None
