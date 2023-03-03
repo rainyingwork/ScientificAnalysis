@@ -1,5 +1,5 @@
 import os , copy
-import OPSCommon as executeOPSCommon
+import OPSCommonLocal as executeOPSCommon
 
 if __name__ == "__main__":
     basicInfo = {
@@ -12,15 +12,15 @@ if __name__ == "__main__":
     opsInfo["OPSRecordId"] = [9999]
     opsInfo["OPSOrderJson"] = {
         # "ExeFunctionArr": ["D1_1_0", "D1_1_1", "D1_1_2", "D1_2_0", "D1_2_1", "D1_2_2", "D1_6_0", "D2_1_0", "D2_2_0"],
-        "ExeFunctionArr": ["D2_2_0"],
+        "ExeFunctionArr": ["D2_1_0","D2_2_0","D2_6_0","D2_8_0",],
         # "RepOPSRecordId": 9999,
         # "RepFunctionArr": [],
         # "RunFunctionArr": ["D1_2_1", "D1_2_2"],
         "OrdFunctionArr": [
             # {"Parent": "D1_1_0", "Child": "D1_1_1"},
-            {"Parent": "D1_1_1", "Child": "D1_1_2"},
+            # {"Parent": "D1_1_1", "Child": "D1_1_2"},
             # {"Parent": "D1_2_0", "Child": "D1_2_1"},
-            {"Parent": "D1_2_1", "Child": "D1_2_2"},
+            # {"Parent": "D1_2_1", "Child": "D1_2_2"},
         ],
         "FunctionMemo": {
             "D1_1_0": "安裝Python39-CPU基底",
@@ -33,6 +33,7 @@ if __name__ == "__main__":
             "D2_1_0": "部署並重開Python39-CPU",
             "D2_2_0": "部署並重開Python39-GPU",
             "D2_6_0": "部署並重開PostgreSQL",
+            "D2_8_0": "部署並重開Jenkins",
         },
     }
     opsInfo["ParameterJson"] = {
@@ -290,7 +291,29 @@ if __name__ == "__main__":
                 }
             }
         },
+        "D2_8_0": {
+            "FunctionType": "RunContainerByDockerComposeInfo"
+            , "DockerComposeInfo": {
+                "version": "3.7"
+                , "services": {
+                    "jenkins": {
+                        "image": "jenkins/jenkins:lts-jdk11"
+                        , "restart": "always"
+                        # , "volumes": [
+                        , "volumes_clean": [
+                            "/mfs/Docker/Jenkins/Volumes/jenkins_home:/var/jenkins_home",
+                        ]
+                        , "volumes": [
+                            "/var/run/docker.sock:/var/run/docker.sock",
+                        ]
+                        , "ports": [
+                            "8080:8080",
+                            "50000:50000",
+                        ]
+                    }
+                }
+            }
+        },
     }
     opsInfo["ResultJson"] = {}
     executeOPSCommon.main(opsInfo)
-

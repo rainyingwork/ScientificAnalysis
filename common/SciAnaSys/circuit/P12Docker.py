@@ -38,6 +38,14 @@ class Docker():
         return self.__DX_X_X(functionInfo, "D2_2_0")
 
     @classmethod
+    def D2_6_0(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D2_6_0")
+
+    @classmethod
+    def D2_8_0(self, functionInfo):
+        return self.__DX_X_X(functionInfo, "D2_8_0")
+
+    @classmethod
     def __DX_X_X(self, functionInfo, functionVersion):
         import copy
         from package.systemengineer.common.docker.DockerFunction import DockerFunction

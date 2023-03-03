@@ -68,7 +68,7 @@ class DockerFunction():
                 , "gpus": "--gpus"
                 , "environment": "-e"
                 , "volumes": "-v"
-                , "cleanvolumes": "-v"
+                , "volumes_clean": "-v"
                 , "ports": "-p"
             }
             commandArr.append("--name {}".format(key))
