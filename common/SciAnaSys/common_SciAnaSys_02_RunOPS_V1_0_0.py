@@ -1,5 +1,7 @@
 import os , copy
+from dotenv import load_dotenv
 import OPSCommonLocal as executeOPSCommon
+load_dotenv(dotenv_path="env/postgresql.env")
 
 if __name__ == "__main__":
     basicInfo = {
@@ -12,7 +14,7 @@ if __name__ == "__main__":
     opsInfo["OPSRecordId"] = [9999]
     opsInfo["OPSOrderJson"] = {
         # "ExeFunctionArr": ["D1_1_0", "D1_1_1", "D1_1_2", "D1_2_0", "D1_2_1", "D1_2_2", "D1_6_0", "D2_1_0", "D2_2_0"],
-        "ExeFunctionArr": ["D2_1_0","D2_2_0","D2_6_0","D2_8_0",],
+        "ExeFunctionArr": ["D2_3_0",],
         # "RepOPSRecordId": 9999,
         # "RepFunctionArr": [],
         # "RunFunctionArr": ["D1_2_1", "D1_2_2"],
@@ -203,36 +205,36 @@ if __name__ == "__main__":
             ],
         },
         "D1_6_0": {
-            "FunctionType": "RunContainerByDockerComposeInfo"
-            , "DockerComposeInfo": {
-                "version": "3.7"
-                , "services": {
+            "FunctionType": "RunContainerByDockerComposeInfo",
+            "DockerComposeInfo": {
+                "version": "3.7",
+                "services": {
                     "postgresql": {
-                        "image": "postgres:15.1"
-                        , "restart": "always"
-                        , "environment": {
-                            "POSTGRES_DB": "postgres"
-                            , "POSTGRES_USER": os.getenv("POSTGRES_USERNAME")
-                            , "POSTGRES_PASSWORD": os.getenv("POSTGRES_PASSWORD")
-                            , "PGDATA": "/lib/postgresql/data"
-                        }
-                        , "cleanvolumes": [
+                        "image": "postgres:15.1",
+                        "restart": "always",
+                        "environment": {
+                            "POSTGRES_DB": "postgres",
+                            "POSTGRES_USER": os.getenv("POSTGRES_USERNAME"),
+                            "POSTGRES_PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+                            "PGDATA": "/lib/postgresql/data",
+                        },
+                        "volumes_clean": [
                             "/Docker/PostgreSQL/Volumes/Data:/lib/postgresql/data"
                             # 本機位置 : 遠端位置
-                        ]
-                        , "ports": [
+                        ],
+                        "ports": [
                             "5432:5432"
-                        ]
-                    }
-                }
-            }
+                        ],
+                    },
+                },
+            },
         },
         "D2_1_0": {
             "FunctionType": "RunContainerByDockerComposeInfo",
             "DockerComposeInfo": {
                 "version": "3.7",
                 "services": {
-                    "python39-cpu": {
+                    "python39-dce-build": {
                         "image": "vicying/python:3.9.13-cpu-0.1.4",
                         "restart": "always",
                         "environment": {
@@ -251,7 +253,26 @@ if __name__ == "__main__":
             "DockerComposeInfo": {
                 "version": "3.7",
                 "services": {
-                    "python39-gpu": {
+                    "python39-dce-master": {
+                        "image": "vicying/python:3.9.13-cpu-0.1.4",
+                        "restart": "always",
+                        "environment": {
+                            "ACCEPT_EULA": "Y",
+                        },
+                        "volumes": [
+                            "/mfs/Docker/Python39/Volumes/Library:/Library",
+                            "/mfs/Docker/Python39/Volumes/Data:/Data",
+                        ],
+                    },
+                },
+            },
+        },
+        "D2_3_0": {
+            "FunctionType": "RunContainerByDockerComposeInfo",
+            "DockerComposeInfo": {
+                "version": "3.7",
+                "services": {
+                    "python39-dce-slave": {
                         "image": "vicying/python:3.9.13-gpu-0.1.4",
                         "restart": "always",
                         "gpus": "all",
@@ -267,53 +288,58 @@ if __name__ == "__main__":
             },
         },
         "D2_6_0": {
-            "FunctionType": "RunContainerByDockerComposeInfo"
-            , "DockerComposeInfo": {
-                "version": "3.7"
-                , "services": {
+            "FunctionType": "RunContainerByDockerComposeInfo",
+            "DockerComposeInfo": {
+                "version": "3.7",
+                "services": {
                     "postgresql": {
-                        "image": "postgres:15.1"
-                        , "restart": "always"
-                        , "environment": {
-                            "POSTGRES_DB": "postgres"
-                            , "POSTGRES_USER": os.getenv("POSTGRES_USERNAME")
-                            , "POSTGRES_PASSWORD": os.getenv("POSTGRES_PASSWORD")
-                            , "PGDATA": "/lib/postgresql/data"
-                        }
-                        , "volumes": [
-                            "/Docker/PostgreSQL/Volumes/Data:/lib/postgresql/data"
+                        "image": "postgres:15.1",
+                        "restart": "always",
+                        "environment": {
+                            "POSTGRES_DB": "postgres",
+                            "POSTGRES_USER": os.getenv("POSTGRES_USERNAME"),
+                            "POSTGRES_PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+                            "PGDATA": "/lib/postgresql/data",
+                        },
+                        "volumes": [
+                            "/Docker/PostgreSQL/Volumes/Data:/lib/postgresql/data",
                             # 本機位置 : 遠端位置
+                        ],
+                        "ports": [
+                            "5432:5432",
                         ]
-                        , "ports": [
-                            "5432:5432"
-                        ]
-                    }
-                }
-            }
+                    },
+                },
+            },
         },
         "D2_8_0": {
-            "FunctionType": "RunContainerByDockerComposeInfo"
-            , "DockerComposeInfo": {
-                "version": "3.7"
-                , "services": {
+            "FunctionType": "RunContainerByDockerComposeInfo",
+            "DockerComposeInfo": {
+                "version": "3.7",
+                "services": {
                     "jenkins": {
-                        "image": "jenkins/jenkins:lts-jdk11"
-                        , "restart": "always"
-                        # , "volumes": [
-                        , "volumes_clean": [
+                        "image": "jenkins/jenkins:lts-jdk11",
+                        "restart": "always",
+                        "privileged" : "true", # 要有root權限才可以安裝套件
+                        "environment": {
+                            "TZ":"Asia/Taipei" ,
+                            "JAVA_OPTS":"-Duser.timezone=Asia/Taipei" ,
+                        },
+                        "volumes_clean": [
                             "/mfs/Docker/Jenkins/Volumes/jenkins_home:/var/jenkins_home",
-                        ]
-                        , "volumes": [
+                        ],
+                        "volumes": [
+                            "/etc/localtime:/etc/localtime",
                             "/var/run/docker.sock:/var/run/docker.sock",
-                        ]
-                        , "ports": [
+                        ],
+                        "ports": [
                             "8080:8080",
                             "50000:50000",
-                        ]
-                    }
-                }
-            }
-        },
+                        ],
+                    },
+                },
+            },
+        }, #  "image": "jenkinsci/blueocean",
     }
     opsInfo["ResultJson"] = {}
     executeOPSCommon.main(opsInfo)

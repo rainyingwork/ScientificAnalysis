@@ -26,7 +26,7 @@ if __name__ == "__main__":
         opsInfo["OPSVersion"] = ["V0_0_3"]
         opsInfo["OPSOrderJson"] = {
             "RunType": "RunDCEOPS",
-            "BatchNumber": 202303040149,
+            "BatchNumber": "DCESystem",
             "ExeFunctionArr": ["R0_1_1", "R0_1_2", "R0_1_3", "P0_1_1", "P0_1_2", "P0_1_3", "M0_1_1"],
             "OrdFunctionArr": [
                 {"Parent": "R0_1_1", "Child": "P0_1_1"},

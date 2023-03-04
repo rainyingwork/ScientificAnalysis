@@ -21,7 +21,7 @@ class Config () :
 
 os.environ["POSTGRES_OPSNABAGEMENT_DATABASE"] = "scientificanalysis"
 os.environ["POSTGRES_OPSNABAGEMENT_SCHEMA"] = "public"
-os.environ["STORAGE_RECORDSAVEPATH"] = "Storage/OPSData"
+os.environ["STORAGE_RECORDSAVEPATH"] = "mfs/OPSData"
 
 import LocalConfig
 

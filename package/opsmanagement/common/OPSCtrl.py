@@ -106,7 +106,7 @@ class OPSCtrl:
             print("  Exist DCE Function , Product is {} , Project is {} , Version is {} , OPSRecordID is {} , Function is {}  ".format(product, project,opsVersion,opsRecordId,executeFunction))
         else :
             print("  Start DCE Function , Product is {} , Project is {} , Version is {} , OPSRecordID is {} , Function is {}  ".format(product, project,opsVersion,opsRecordId,executeFunction))
-            sshStr = "docker exec -it python39-cpu python3 /Data/ScientificAnalysis/OPSCommon.py --RunType RunOnlyFunc --Product {} --Project {} --OPSVersion {} --OPSRecordId {} --RunFunctionArr {}"
+            sshStr = "docker exec -it python39-dce-slave python3 /Data/ScientificAnalysis/OPSCommon.py --RunType RunOnlyFunc --Product {} --Project {} --OPSVersion {} --OPSRecordId {} --RunFunctionArr {}"
             sshStr = sshStr.format(product, project, opsVersion, opsRecordId, executeFunction)
             sshCtrl_DCEByFunc.execSSHCommandReturn(sshStr)
         self.downloadRestltObject(opsInfo, executeFunction, opsRecordId, None, None,isDownloadRestltObject=True, isDownloadGlobalObject=False)

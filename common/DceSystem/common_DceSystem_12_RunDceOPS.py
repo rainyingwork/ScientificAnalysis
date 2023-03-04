@@ -7,7 +7,7 @@ import time
 from package.opsmanagement.common.tool.DceOPSTool import DceOPSTool
 
 dceOPSTool = DceOPSTool()
-dceOPSDF = dceOPSTool.getRunDCEOPSDF(runType = 'RunDCEOPS' , batchNumber = '202303040149')
+dceOPSDF = dceOPSTool.getRunDCEOPSDF(runType = 'RunDCEOPS' , batchNumber = 'DCESystem')
 
 maxOPSThread = 5
 

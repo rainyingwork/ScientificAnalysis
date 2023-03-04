@@ -24,10 +24,10 @@ class DceOPSTool () :
             inner join opsmanagement.opsversion BB on 1 = 1
                 and AA.opsversion = BB.opsversionid 
             where 1 = 1 
-                and AA.opsorderjson::json->>'RunType' =  'RunDCEOPS'
-                and AA.opsorderjson::json->>'BatchNumber' =  '202211292300'
+                and AA.opsorderjson::json->>'RunType' =  '[:RunType]'
+                and AA.opsorderjson::json->>'BatchNumber' =  '[:BatchNumber]'
                 and AA.deletetime is null 
                 and AA.state = 'RUN'
-        """
+        """.replace("[:RunType]" , runType).replace("[:BatchNumber]" , batchNumber)
         df = self.postgresCtrl.searchSQL(sql)
         return df

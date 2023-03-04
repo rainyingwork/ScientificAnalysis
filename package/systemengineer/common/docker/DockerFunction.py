@@ -64,6 +64,7 @@ class DockerFunction():
 
             dockerRunParameterMap = {
                 "image": None # continue
+                , "privileged": "--privileged="
                 , "restart": "--restart"
                 , "gpus": "--gpus"
                 , "environment": "-e"
@@ -74,6 +75,9 @@ class DockerFunction():
             commandArr.append("--name {}".format(key))
             for infoKey in serviceInfo.keys():
                 if dockerRunParameterMap[infoKey] == None :
+                    continue
+                elif "=" in dockerRunParameterMap[infoKey]  :
+                    commandArr.append("{}{}".format(dockerRunParameterMap[infoKey], serviceInfo[infoKey]))
                     continue
                 if type(serviceInfo[infoKey]) == type(''):
                     commandArr.append("{} {}".format(dockerRunParameterMap[infoKey], serviceInfo[infoKey]))
