@@ -20,12 +20,12 @@ if __name__ == "__main__":
             {"Parent": "P0_0_2", "Child": "M0_0_2"},
         ],
         "FunctionMemo": {
-            "R0_0_1": "撈取XYData資料",
-            "P0_0_1": "預處理XYData資料",
-            "M0_0_1": "使用Lasso做參數過濾",
-            "R0_0_2": "撈取Lasso的XYData資料，使用M0_0_1的結果",
-            "P0_0_2": "預處理Lasso的XYData資料",
-            "M0_0_2": "使用AutoML做模型訓練",
+            "R0_0_1": "撈取資料，撈取XYData資料",
+            "P0_0_1": "處理資料，預處理XYData資料",
+            "M0_0_1": "模型訓練，使用Lasso做參數過濾",
+            "R0_0_2": "撈取資料，撈取Lasso的XYData資料，使用M0_0_1的結果",
+            "P0_0_2": "處理資料，預處理Lasso的XYData資料",
+            "M0_0_2": "模型訓練，使用AutoML做模型訓練",
         },
     }
     opsInfo["ParameterJson"] = {}
