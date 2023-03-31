@@ -182,7 +182,6 @@ class RawDataFunction(CommonFunction):
 
         makeDataDateStr = fvInfo["DataTime"]
         makeDataKeyArr = fvInfo["MakeDataKeys"]
-        makeMaxCloumnCount = fvInfo["MakeMaxColumnCount"] if "MakeMaxColumnCount" in fvInfo.keys() else 9999999999
         makeDataInfoArr = fvInfo["MakeDataInfo"]
         analysisDataInfoDF = otherInfo["AnalysisDataInfoDF"]
 
@@ -260,10 +259,6 @@ class RawDataFunction(CommonFunction):
                     sqlInfo["WheresSQL"] = wheresSQL
                     sqlInfo["GroupKeysSQL"] = groupKeysSQL
                     sqlInfo["HavingsSQL"] = havingsSQL
-
-                    if signleCloumnCount == makeMaxCloumnCount:
-                        signleCloumnCount = 0
-                        xColumnsSQL = ""
 
         dfArr = []
         for sqlInfo in sqlInfoArr :
