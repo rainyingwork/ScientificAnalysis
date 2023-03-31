@@ -1,6 +1,7 @@
 import os , copy
 from dotenv import load_dotenv
 import OPSCommonLocal as executeOPSCommon
+
 load_dotenv(dotenv_path="env/postgresql.env")
 
 if __name__ == "__main__":
@@ -234,13 +235,13 @@ if __name__ == "__main__":
             "DockerComposeInfo": {
                 "version": "3.7",
                 "services": {
-                    "python39-dce-build": {
+                    "python39-dce-basic": {
                         "image": "vicying/python:3.9.13-cpu-0.1.4",
                         "restart": "always",
                         "environment": {
                             "ACCEPT_EULA": "Y",
                         },
-                        "volumes": [
+                        "volumes_clean": [
                             "/mfs/Docker/Python39/Volumes/Library:/Library",
                             "/mfs/Docker/Python39/Volumes/Data:/Data",
                         ],
