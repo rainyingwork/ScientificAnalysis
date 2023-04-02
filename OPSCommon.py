@@ -137,7 +137,7 @@ def makeOPSInfoByRunOnlyFunc (runType, product, project, opsVersion,opsRecordId)
     return makeOPSInfoByRunDCEOPS (runType, product, project, opsVersion,opsRecordId)
 def makeOPSPipelinePNG(opsInfo,bgcolor="#FFFFFF",versionTextCount=10,functionTextCount=4):
     import pygraphviz
-    filePath = "{}/{}/file/pipelinediagram".format(opsInfo["Product"][0], opsInfo["Project"][0])
+    filePath = "{}/{}/file/PLD".format(opsInfo["Product"][0], opsInfo["Project"][0])
     fileName = "{}_{}_{}.png".format(opsInfo["Product"][0], opsInfo["Project"][0], opsInfo["OPSVersion"][0])
     opsGraph = pygraphviz.AGraph(directed=True, strict=True, rankdir="LR", bgcolor=bgcolor)
     nodeLabel = opsInfo["OPSVersion"][0]

@@ -62,7 +62,7 @@ def makeOPSInfoByRunOPS (runType, product, project, opsVersion,opsRecordId,opsOr
 
 def makeOPSPipelinePNG(opsInfo,bgcolor="#FFFFFF",versionTextCount=10,functionTextCount=4):
     import pygraphviz
-    filePath = "{}/{}".format(opsInfo["Product"][0], opsInfo["Project"][0])
+    filePath = "{}/{}/file/PLD".format(opsInfo["Product"][0], opsInfo["Project"][0])
     fileName = "{}_{}_{}.png".format(opsInfo["Product"][0], opsInfo["Project"][0], opsInfo["OPSVersion"][0])
     opsGraph = pygraphviz.AGraph(directed=True, strict=True, rankdir="LR", bgcolor=bgcolor)
     nodeLabel = opsInfo["OPSVersion"][0]
@@ -83,4 +83,5 @@ def makeOPSPipelinePNG(opsInfo,bgcolor="#FFFFFF",versionTextCount=10,functionTex
         opsGraph.add_edge(ordFunction["Parent"], ordFunction["Child"])
     opsGraph.graph_attr["epsilon"] = "0.001"
     opsGraph.layout("dot")
+    os.makedirs(filePath) if not os.path.isdir(filePath) else None
     opsGraph.draw("{}/{}".format(filePath, fileName))
