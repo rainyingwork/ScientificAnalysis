@@ -32,7 +32,8 @@ class AnalysisFunction():
         self.insertAnalysisData(product, project, version, dt, analysisDataDF , useType)
 
     @classmethod
-    def insertAnalysisData(self, product, project, version, dt, analysisDataDF , useType):
+
+    def insertAnalysisData(self, product, project, version, dt, analysisDataDF , overWrite=False ,  useType='IO'):
         from dotenv import load_dotenv
         from package.common.common.database.PostgresCtrl import PostgresCtrl
 
@@ -52,6 +53,20 @@ class AnalysisFunction():
         analysisDataDF['dt'] = dt
 
         tableFullName = "observationdata.analysisdata"
+
+        deleteSQL = """
+            DELETE FROM observationdata.analysisdata 
+            WHERE 1 = 1 
+                AND product = '[:Product]' 
+                AND project = '[:Project]' 
+                AND version = '[:Version]' 
+                AND dt = '[:DateNoLine]' 
+        """ .replace("[:Product]", product) \
+            .replace("[:Project]", project) \
+            .replace("[:Version]", version) \
+            .replace("[:DateNoLine]", dt)
+
+        postgresCtrl.executeSQL(deleteSQL)
 
         for column in AnalysisFunction.getAnalysisColumnNameArr():
             if column not in analysisDataDF.columns:

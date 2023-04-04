@@ -44,8 +44,18 @@ class RawDataFunction(CommonFunction):
     @classmethod
     def rdGetXYData(self, fvInfo):
         otherInfo = {}
-        otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo ,otherInfo)
-        otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo,otherInfo)
+        if "FunctionItemType" not in fvInfo.keys(): # 預設為ByDTDiff
+            fvInfo['FunctionItemType'] = "ByDTDiff"
+        if fvInfo['FunctionItemType'] == "ByDT":
+            otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
+            otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
+        elif fvInfo['FunctionItemType'] == "ByDTDiff":
+            otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
+            otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
+        elif fvInfo['FunctionItemType'] == "ByDTDiffFromDF":
+            otherInfo["DFArr"] = self.makeTagDataDFArrByDF(fvInfo, otherInfo)
+
+
         return otherInfo
 
     @classmethod
@@ -114,8 +124,12 @@ class RawDataFunction(CommonFunction):
         infoWheresSQL = ""
         for makeDataInfo in makeDataInfoArr:
             makeDataInfo["MakeDataDateStr"] = makeDataDateStr
-            infoWhereSQL = "\n                        OR (AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = to_char((date '{}' + integer '{}'),'yyyyMMdd'))"
-            infoWhereSQL = infoWhereSQL.format(makeDataInfo["Product"], makeDataInfo["Project"], makeDataInfo["Version"],makeDataInfo["MakeDataDateStr"], str(makeDataInfo["DTDiff"]))
+            if fvInfo['FunctionItemType'] == "ByDT":
+                dtStr = "'{}'".format(makeDataInfo["DT"].replace("-",""))
+            elif fvInfo['FunctionItemType'] == "ByDTDiff":
+                dtStr = "to_char((date '{}' + integer '{}'),'yyyyMMdd')".format(makeDataInfo["MakeDataDateStr"],str(makeDataInfo["DTDiff"]))
+            infoWhereSQL = "\n                        OR (AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = {} )"
+            infoWhereSQL = infoWhereSQL.format(makeDataInfo["Product"], makeDataInfo["Project"], makeDataInfo["Version"],dtStr)
             infoWheresSQL = infoWheresSQL + infoWhereSQL
 
         infoSQL = """
@@ -138,7 +152,6 @@ class RawDataFunction(CommonFunction):
         """.replace("[:ColumnsSQL]", infoColumnsSQL).replace("[:WheresSQL]", infoWheresSQL)
 
         analysisDataInfoDF = postgresCtrl.searchSQL(infoSQL)
-
         return analysisDataInfoDF
 
     @classmethod
@@ -199,16 +212,26 @@ class RawDataFunction(CommonFunction):
             groupKeysSQL = groupKeysSQL + groupKeySQL
 
         for makeDataInfo in makeDataInfoArr:
-            whereSQL = "\n                        OR (AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = to_char((date '{}' + integer '{}'),'yyyyMMdd'))"
-            whereSQL = whereSQL.format(makeDataInfo["Product"], makeDataInfo["Project"], makeDataInfo["Version"],makeDataInfo["MakeDataDateStr"], str(makeDataInfo["DTDiff"]))
+            makeDataInfo["MakeDataDateStr"] = makeDataDateStr
+            if fvInfo['FunctionItemType'] == "ByDT":
+                dtStr = "'{}'".format(makeDataInfo["DT"].replace("-", ""))
+            elif fvInfo['FunctionItemType'] == "ByDTDiff":
+                dtStr = "to_char((date '{}' + integer '{}'),'yyyyMMdd')".format(makeDataInfo["MakeDataDateStr"],str(makeDataInfo["DTDiff"]))
+            whereSQL = "\n                        OR (AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = {} )"
+            whereSQL = whereSQL.format(makeDataInfo["Product"], makeDataInfo["Project"],makeDataInfo["Version"], dtStr)
             wheresSQL = wheresSQL + whereSQL
 
         sqlInfo = {}
         sqlInfoArr = []
         signleCloumnCount = 0
+
+        sqlInfo = {}
         for makeDataInfo in makeDataInfoArr:
             for dataIndex, dataRow in analysisDataInfoDF.iterrows():
-                dtStr = (datetime.datetime.strptime(makeDataDateStr, "%Y-%m-%d") + datetime.timedelta(days=makeDataInfo["DTDiff"])).strftime("%Y%m%d")
+                if fvInfo['FunctionItemType'] == "ByDT":
+                    dtStr = "{}".format(makeDataInfo["DT"].replace("-", ""))
+                elif fvInfo['FunctionItemType'] == "ByDTDiff":
+                    dtStr = (datetime.datetime.strptime(makeDataDateStr, "%Y-%m-%d") + datetime.timedelta(days=makeDataInfo["DTDiff"])).strftime("%Y%m%d")
                 if (dataRow["product"] != makeDataInfo["Product"]) \
                     | (dataRow["project"] != makeDataInfo["Project"]) \
                     | (dataRow["dt"] != dtStr) \
@@ -216,8 +239,11 @@ class RawDataFunction(CommonFunction):
                     | ( dataRow["version"] != makeDataInfo["Version"]) :
                     continue
                 isNoneDrop = makeDataInfo["IsNoneDrop"] if "IsNoneDrop" in makeDataInfo.keys() else True
-                datatype = makeDataInfo["DataType"]
-                dtDiffStr = "p" + str(abs(makeDataInfo["DTDiff"])) if makeDataInfo["DTDiff"] >= 0 else "n" + str(abs(makeDataInfo["DTDiff"]))
+                datatype = makeDataInfo["DataType"] if "DataType" in makeDataInfo.keys() else "X"
+                if fvInfo['FunctionItemType'] == "ByDT":
+                    dtNameStr = "{}".format(makeDataInfo["DT"].replace("-", ""))
+                elif fvInfo['FunctionItemType'] == "ByDTDiff":
+                    dtNameStr = "p" + str(abs(makeDataInfo["DTDiff"])) if makeDataInfo["DTDiff"] >= 0 else "n" + str(abs(makeDataInfo["DTDiff"]))
                 columnNumberArr = makeDataInfo["ColumnNumbers"] if "ColumnNumbers" in makeDataInfo.keys() else []
                 for columnName in doubleColumnNameArr:
                     sumSQL = ""
@@ -229,7 +255,7 @@ class RawDataFunction(CommonFunction):
                     if columnNumberArr != [] and columnNumber not in columnNumberArr:
                         continue
                     if dataRow[columnName] > 0 or isNoneDrop == False:
-                        columnFullName = "{}_{}_{}_{}_{}".format(dataRow["product"], dataRow["project"], dtDiffStr, str(columnNumber),dataRow["version"])
+                        columnFullName = "{}_{}_{}_{}_{}".format(dataRow["product"], dataRow["project"], dtNameStr, str(columnNumber),dataRow["version"])
                         if haveDataindex :
                             sumSQL = "SUM(CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' AND AA.commondata_013 ='{}' then AA.{} else null end )"
                             sumSQL = sumSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], dataRow["dataindex"], columnName)
@@ -242,30 +268,53 @@ class RawDataFunction(CommonFunction):
                         if datatype == "Y":
                             yColumnsSQL = yColumnsSQL + columnSQL
                         elif datatype == "X":
-                            signleCloumnCount = signleCloumnCount + 1
                             xColumnsSQL = xColumnsSQL + columnSQL
                         elif datatype == "Filter":
                             havingSQLArr = makeDataInfo["HavingSQL"]
                             if columnNumber in columnNumberArr :
                                 havingsSQL += "\n                    AND {} {}".format(sumSQL, havingSQLArr[columnNumberArr.index(columnNumber)])
 
-                    if signleCloumnCount == 1:
-                        sqlInfo = {}
-                        sqlInfoArr.append(sqlInfo)
-
-                    sqlInfo["InfoKeysSQL"] = infoKeysSQL
-                    sqlInfo["YColumnsSQL"] = yColumnsSQL
-                    sqlInfo["XColumnsSQL"] = xColumnsSQL
-                    sqlInfo["WheresSQL"] = wheresSQL
-                    sqlInfo["GroupKeysSQL"] = groupKeysSQL
-                    sqlInfo["HavingsSQL"] = havingsSQL
-
+        sqlInfo["InfoKeysSQL"] = infoKeysSQL
+        sqlInfo["YColumnsSQL"] = yColumnsSQL
+        sqlInfo["XColumnsSQL"] = xColumnsSQL
+        sqlInfo["WheresSQL"] = wheresSQL
+        sqlInfo["GroupKeysSQL"] = groupKeysSQL
+        sqlInfo["HavingsSQL"] = havingsSQL
+        sqlInfoArr.append(sqlInfo)
         dfArr = []
         for sqlInfo in sqlInfoArr :
             sql = makeSingleTagDataSQL(fvInfo,sqlInfo)
             df = postgresCtrl.searchSQL(sql)
             dfArr.append(df)
         return dfArr
+
+    @classmethod
+    def makeTagDataDFArrByDF(self,fvInfo,otherInfo):
+        # 指定DF做相關的欄位分拆
+        import pandas
+
+        makeDataDateStr = fvInfo["DataTime"]
+        makeDataKeyArr = fvInfo["MakeDataKeys"]
+        makeDataInfoArr = fvInfo["MakeDataInfo"]
+
+        oriRawDataDFArr = fvInfo["ResultArr"]
+        rawDataDFArr = []
+
+        for oriRawDataDF in oriRawDataDFArr :
+            rawDataDF = pandas.DataFrame()
+            for makeDataKey in makeDataKeyArr:
+                rawDataDF[makeDataKey] = oriRawDataDF[makeDataKey]
+            for makeDataInfo in makeDataInfoArr:
+                columnNumberArr = makeDataInfo["ColumnNumbers"]
+                for columnNumber in columnNumberArr:
+                    oriDTStr = (datetime.datetime.strptime(makeDataDateStr, "%Y-%m-%d") + datetime.timedelta(days=makeDataInfo["DTDiff"])).strftime("%Y%m%d")
+                    newDTStr = "p" + str(abs(makeDataInfo["DTDiff"])) if makeDataInfo["DTDiff"] >= 0 else "n" + str(abs(makeDataInfo["DTDiff"]))
+                    oriColumnFullName = str.lower("{}_{}_{}_{}_{}".format(makeDataInfo["Product"], makeDataInfo["Project"], oriDTStr,str(columnNumber), makeDataInfo["Version"]))
+                    newColumnFullName = str.lower("{}_{}_{}_{}_{}".format(makeDataInfo["Product"], makeDataInfo["Project"], newDTStr,str(columnNumber), makeDataInfo["Version"]))
+                    rawDataDF[newColumnFullName] = oriRawDataDF[oriColumnFullName]
+            rawDataDFArr.append(rawDataDF)
+
+        return rawDataDFArr
 
     # ==================================================  ExeSQLStrs ==================================================
 

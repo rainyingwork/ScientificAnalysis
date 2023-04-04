@@ -47,14 +47,14 @@ class ModelUse() :
         predictions = (model.predict(testDF[xColumnNames]) >= 0.5).astype("int32")
         print(predictions)
         tn, fp, fn, tp = confusion_matrix(testDF[yColumnNames], predictions.T[0]).ravel()
-        modeldist = {}
-        modeldist['ModelResult'] = {}
-        modeldist['ModelResult']['TN'] = int(tn)
-        modeldist['ModelResult']['FP'] = int(fp)
-        modeldist['ModelResult']['FN'] = int(fn)
-        modeldist['ModelResult']['TP'] = int(tp)
-        modeldist['ModelResult']['Accuracy'] = tp / (tp + fp)
-        modeldist['ModelResult']['Precision'] = tp / (tp + fn)
-        modeldist['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn)
-        modeldist['ModelResult']['F1Score'] = 2 * modeldist['ModelResult']['Recall'] * modeldist['ModelResult']['Precision'] / (modeldist['ModelResult']['Recall'] + modeldist['ModelResult']['Precision'])
-        return {"ModelDist":modeldist}, {"Model":model}
+        modeldict = {}
+        modeldict['ModelResult'] = {}
+        modeldict['ModelResult']['TN'] = int(tn)
+        modeldict['ModelResult']['FP'] = int(fp)
+        modeldict['ModelResult']['FN'] = int(fn)
+        modeldict['ModelResult']['TP'] = int(tp)
+        modeldict['ModelResult']['Accuracy'] = tp / (tp + fp)
+        modeldict['ModelResult']['Precision'] = tp / (tp + fn)
+        modeldict['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn)
+        modeldict['ModelResult']['F1Score'] = 2 * modeldict['ModelResult']['Recall'] * modeldict['ModelResult']['Precision'] / (modeldict['ModelResult']['Recall'] + modeldict['ModelResult']['Precision'])
+        return {"ModelDict":modeldict}, {"Model":model}

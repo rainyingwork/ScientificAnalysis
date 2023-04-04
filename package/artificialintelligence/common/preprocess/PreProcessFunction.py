@@ -21,6 +21,9 @@ class PreProcessFunction(CommonFunction):
         if functionVersionInfo['FunctionType'] == "PPTagText":
             otherInfo = self.ppTagText(functionVersionInfo)
             globalObjectDict['ResultArr'] = otherInfo["DFArr"]
+        elif functionVersionInfo['FunctionType'] == "DataConcat":
+            otherInfo = self.ppDataConcat(functionVersionInfo)
+            globalObjectDict['ResultArr'] = otherInfo["DFArr"]
         elif functionVersionInfo['FunctionType'] == "ExeSQLStrs":
             otherInfo = self.ppExeSQLStrs(functionVersionInfo)
             resultDict["SQLStrs"] = ""
@@ -33,6 +36,12 @@ class PreProcessFunction(CommonFunction):
     def ppTagText(self, fvInfo):
         otherInfo = {}
         otherInfo["DFArr"] = self.makeDFByPPTagText(fvInfo, otherInfo)
+        return otherInfo
+
+    @classmethod
+    def ppDataConcat(self, fvInfo):
+        otherInfo = {}
+        otherInfo["DFArr"] = self.makeDFByPPDataConcat(fvInfo, otherInfo)
         return otherInfo
 
     @classmethod
@@ -54,32 +63,35 @@ class PreProcessFunction(CommonFunction):
             , database=os.environ["POSTGRES_OPSNABAGEMENT_DATABASE"]
             , schema=os.environ["POSTGRES_OPSNABAGEMENT_SCHEMA"]
         )
-
+        functionItemType = fvInfo['FunctionItemType'] if "FunctionItemType" in fvInfo.keys() else "ByDTDiff"
         makeDataInfoArr = fvInfo['MakeDataInfo']
 
         tagTextDF = pandas.DataFrame()
         for makeDataInfo in makeDataInfoArr:
             tagTextVersion = makeDataInfo['Version'].split("_")[0] + '_' + makeDataInfo['Version'].split("_")[1] + '_0'
+            makeDataInfo["DataType"] = makeDataInfo["DataType"] if "DataType" in makeDataInfo.keys() else "X"
+            if functionItemType == "ByDT" :
+                dtStr = makeDataInfo["DT"].replace("-", "")
+            else :
+                dtStr = (datetime.datetime.strptime(fvInfo["DataTime"], "%Y-%m-%d") + datetime.timedelta(days=makeDataInfo["DTDiff"])).strftime("%Y%m%d")
             tagTextSQL = """
-                        SELECT
-                            product , project , version as textversion , dt
-                            , '[:Version]' as version
-                            , [:DTDiff] as dtdiff
-                            , '[:DataType]' as datatype
-                            , common_013 as index
-                            , common_015 as jsonmessage
-                        FROM observationdata.analysisdata AA
-                        where 1 = 1
-                           AND AA.product = '[:Product]'
-                           AND AA.project='[:Project]'
-                           AND AA.version='[:TextVersion]'
-                           AND AA.dt = to_char((date '[:MakeDataDateStr]' + integer '[:DTDiff]'),'yyyyMMdd')
-                    """.replace("[:Product]", makeDataInfo['Product']) \
+                SELECT
+                    product , project , version as textversion , dt
+                    , '[:Version]' as version
+                    , '[:DataType]' as datatype
+                    , common_013 as index
+                    , common_015 as jsonmessage
+                FROM observationdata.analysisdata AA
+                where 1 = 1
+                   AND AA.product = '[:Product]'
+                   AND AA.project='[:Project]'
+                   AND AA.version='[:TextVersion]'
+                   AND AA.dt = '[:DTStr]'
+            """.replace("[:Product]", makeDataInfo['Product']) \
                 .replace("[:Project]", makeDataInfo['Project']) \
                 .replace("[:Version]", makeDataInfo['Version']) \
                 .replace("[:TextVersion]", tagTextVersion) \
-                .replace("[:MakeDataDateStr]", fvInfo["DataTime"]) \
-                .replace("[:DTDiff]", str(makeDataInfo["DTDiff"])) \
+                .replace("[:DTStr]", dtStr) \
                 .replace("[:DataType]", makeDataInfo["DataType"])
             tempTextDF = postgresCtrl.searchSQL(tagTextSQL)
             if 'ColumnNumbers' in makeDataInfo.keys():
@@ -97,6 +109,7 @@ class PreProcessFunction(CommonFunction):
     @classmethod
     def makeDFByPPTagText(self, fvInfo, otherInfo):
 
+        functionItemType = fvInfo['FunctionItemType'] if "FunctionItemType" in fvInfo.keys() else "ByDTDiff"
         preprossDFArr = fvInfo["ResultArr"]
 
         # -------------------------------------------------- tagTextDF--------------------------------------------------
@@ -108,11 +121,12 @@ class PreProcessFunction(CommonFunction):
 
         preprossDF = preprossDFArr[0]
         for _, tagTextRow in tagTextDF.iterrows():
-            dtDiffStr = "p" + str(abs(tagTextRow["dtdiff"])) if tagTextRow["dtdiff"] >= 0 else "n" + str(
-                abs(tagTextRow["dtdiff"]))
-            tagTextColumnName = str.lower(
-                "{}_{}_{}_{}_{}".format(tagTextRow["product"], tagTextRow["project"], dtDiffStr, tagTextRow["index"],
-                                        tagTextRow["version"]))
+            if functionItemType == "ByDT" :
+                dtStr = tagTextRow["dt"].replace("-", "")
+            else :
+                dtdiff = (datetime.datetime.strptime(tagTextRow["dt"], "%Y%m%d") - datetime.datetime.strptime(fvInfo["DataTime"], "%Y-%m-%d")).days
+                dtStr = "p" + str(abs(dtdiff)) if dtdiff >= 0 else "n" + str(abs(dtdiff))
+            tagTextColumnName = str.lower("{}_{}_{}_{}_{}".format(tagTextRow["product"], tagTextRow["project"], dtStr, tagTextRow["index"],tagTextRow["version"]))
             if tagTextColumnName not in preprossDF.columns:
                 preprossDF[tagTextColumnName] = None
             jsonMessage = json.loads(tagTextRow['jsonmessage'])
@@ -126,4 +140,14 @@ class PreProcessFunction(CommonFunction):
                     preprossDF[tagTextColumnName] = preprossDF[tagTextColumnName].apply(
                         lambda x: math.log(x, processingFunction['value']), axis=1)
         resultPreprossDFArr.append(preprossDF)
+        return preprossDFArr
+
+    @classmethod
+    def makeDFByPPDataConcat(self, fvInfo, otherInfo):
+        oriPreprossDFArr = fvInfo["ResultArr"]
+        preprossDFArr = []
+        preprossDF = pandas.DataFrame()
+        for oriPreprossDF in oriPreprossDFArr :
+            preprossDF = pandas.concat([preprossDF, oriPreprossDF],ignore_index=True)
+        preprossDFArr.append(preprossDF)
         return preprossDFArr

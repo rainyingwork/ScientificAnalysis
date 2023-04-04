@@ -56,15 +56,15 @@ class ModelUseFunction(CommonFunction):
     @classmethod
     def muAutoMLByUsePycaretModelByDatabaseRusult(self, fvInfo):
         otherInfo = {}
-        databaseResultJson = self.getDatabaseResultJson(fvInfo)
-        fvInfo["MakeDataKeys"] = databaseResultJson["MakeDataKeys"]
-        fvInfo["MakeDataInfo"] = databaseResultJson["MakeDataInfo"]
-        fvInfo["ModelParameter"] = databaseResultJson["ModelParameter"]
-        fvInfo["ModelDesign"] = databaseResultJson["ModelDesign"]
-        for modelDist in databaseResultJson["ModelDesign"]["ModelDists"] :
-            if modelDist["ModelName"] != fvInfo["DatabaseModelName"] :
-                continue
-            fvInfo["ModelDesign"]["ModelDists"] = [modelDist]
+        # databaseResultJson = self.getDatabaseResultJson(fvInfo)
+        # fvInfo["MakeDataKeys"] = databaseResultJson["MakeDataKeys"]
+        # fvInfo["MakeDataInfo"] = databaseResultJson["MakeDataInfo"]
+        # fvInfo["ModelParameter"] = databaseResultJson["ModelParameter"]
+        # fvInfo["ModelDesign"] = databaseResultJson["ModelDesign"]
+        # for modelDict in databaseResultJson["ModelDesign"]["ModelDicts"] :
+        #     if modelDict["ModelName"] != fvInfo["DatabaseModelName"] :
+        #         continue
+        #     fvInfo["ModelDesign"]["ModelDicts"] = [modelDict]
         if fvInfo["ModelParameter"]["TaskType"] == "Classification":
             otherInfo["ResultInfo"] = self.makeAutoMLByUsePycaretModelClassification(fvInfo, otherInfo)
         elif fvInfo["ModelParameter"]["TaskType"] == "Regression":
@@ -83,6 +83,7 @@ class ModelUseFunction(CommonFunction):
     def makeXYDataInfoAndColumnNames (self , fvInfo, otherInfo) :
 
         modeluseDFArr = fvInfo["ResultArr"]
+
         makeDataKeys = fvInfo['MakeDataKeys']
         makeDataInfoArr = fvInfo['MakeDataInfo']
         df = pandas.DataFrame()
@@ -90,8 +91,7 @@ class ModelUseFunction(CommonFunction):
         commonColumnNames, yColumnNames, xColumnNames = makeDataKeys, [], []
         for modeluseDF in modeluseDFArr:
             for makeDataInfo in makeDataInfoArr:
-                yMakeDataInfoArr.append(makeDataInfo) if makeDataInfo["DataType"] == "Y" else xMakeDataInfoArr.append(
-                    makeDataInfo)
+                yMakeDataInfoArr.append(makeDataInfo) if makeDataInfo["DataType"] == "Y" else xMakeDataInfoArr.append(makeDataInfo)
             for modeluseColumn in modeluseDF.columns:
                 if modeluseColumn in makeDataKeys:
                     continue
@@ -223,10 +223,12 @@ class ModelUseFunction(CommonFunction):
             self.makeXYDataInfoAndColumnNames(fvInfo, otherInfo)
 
         # -------------------------------------------------- MakeModel--------------------------------------------------
-
+        includeModel = fvInfo["ModelParameter"]["IncludeModel"] if "IncludeModel" in fvInfo["ModelParameter"].keys() else None
+        excludeModel = fvInfo["ModelParameter"]["ExcludeModel"] if "ExcludeModel" in fvInfo["ModelParameter"].keys() and includeModel ==None else None
+        topModelCount = fvInfo["ModelParameter"]["TopModelCount"] if "TopModelCount" in fvInfo["ModelParameter"].keys() else 10
         trainDF, testDF = train_test_split(df, test_size=0.2)
         setup(data=trainDF, target=yColumnNames[0], use_gpu=False)
-        bestmodels = compare_models(sort='F1', n_select=10)
+        bestmodels = compare_models(sort='F1', n_select=topModelCount ,include=includeModel, exclude=excludeModel)
 
         resultDict = {}
         resultDict['MakeDataKeys'] = fvInfo['MakeDataKeys']
@@ -234,39 +236,41 @@ class ModelUseFunction(CommonFunction):
         resultDict['ModelDesign'] = {}
         resultDict['ModelDesign']['ModelType'] = "AutoML"
         resultDict['ModelDesign']['ModelFunction'] = "UsePycaretDefult"
-        resultDict['ModelDesign']['ModelDists'] = []
+        resultDict['ModelDesign']['ModelDicts'] = []
         product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
         exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
         for bestmodel in bestmodels:
             predictions = predict_model(bestmodel, data=testDF)
-            tn, fp, fn, tp = confusion_matrix(predictions[yColumnNames[0]], predictions['Label']).ravel()
-            modeldist = {}
-            modeldist['ModelFullName'] = "{}.{}".format(bestmodel.__class__.__module__, bestmodel.__class__.__name__)
-            modeldist['ModelPackage'] = bestmodel.__class__.__module__
-            modeldist['ModelName'] = bestmodel.__class__.__name__
-            modeldist['ModelFileName'] = modeldist['ModelName'] + ".pkl"
-            modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
-            modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir,modeldist['ModelFileName'])
-            modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
-            modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir, modeldist['ModelFileName'])
-            modeldist['ModelResult'] = {}
-            modeldist['ModelResult']['TN'] = int(tn)
-            modeldist['ModelResult']['FP'] = int(fp)
-            modeldist['ModelResult']['FN'] = int(fn)
-            modeldist['ModelResult']['TP'] = int(tp)
-            modeldist['ModelResult']['Accuracy'] = tp / (tp + fp)
-            modeldist['ModelResult']['Precision'] = tp / (tp + fn)
-            modeldist['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn)
-            modeldist['ModelResult']['F1Score'] = 2 * modeldist['ModelResult']['Recall'] * modeldist['ModelResult']['Precision'] / (modeldist['ModelResult']['Recall'] + modeldist['ModelResult']['Precision'])
-            save_model(bestmodel, "{}/{}".format(modeldist['ModelStorageLocationPath'], modeldist['ModelName']))
+            tp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Label'] != 0)).sum())
+            fp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Label'] == 0)).sum())
+            tn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Label'] == 0)).sum())
+            fn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Label'] != 0)).sum())
+            modeldict = {}
+            modeldict['ModelFullName'] = "{}.{}".format(bestmodel.__class__.__module__, bestmodel.__class__.__name__)
+            modeldict['ModelPackage'] = bestmodel.__class__.__module__
+            modeldict['ModelName'] = bestmodel.__class__.__name__
+            modeldict['ModelFileName'] = modeldict['ModelName'] + ".pkl"
+            modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+            modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir,modeldict['ModelFileName'])
+            modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+            modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir, modeldict['ModelFileName'])
+            modeldict['ModelResult'] = {}
+            modeldict['ModelResult']['TN'] = int(tn)
+            modeldict['ModelResult']['FP'] = int(fp)
+            modeldict['ModelResult']['FN'] = int(fn)
+            modeldict['ModelResult']['TP'] = int(tp)
+            modeldict['ModelResult']['Accuracy'] = tp / (tp + fp) if (tp + fp) != 0 else 0
+            modeldict['ModelResult']['Precision'] = tp / (tp + fn) if (tp + fn) != 0 else 0
+            modeldict['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) != 0 else 0
+            modeldict['ModelResult']['F1Score'] = 2 * modeldict['ModelResult']['Recall'] * modeldict['ModelResult']['Precision'] / (modeldict['ModelResult']['Recall'] + modeldict['ModelResult']['Precision'])
+            save_model(bestmodel, "{}/{}".format(modeldict['ModelStorageLocationPath'], modeldict['ModelName']))
 
-            sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
-            sshCtrl.uploadFile(modeldist['ModelStorageLocation'],modeldist['ModelStorageRemote'])
+            sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
+            sshCtrl.uploadFile(modeldict['ModelStorageLocation'],modeldict['ModelStorageRemote'])
 
-            resultDict['ModelDesign']['ModelDists'].append(modeldist)
-        shutil.rmtree("catboost_info")
+            resultDict['ModelDesign']['ModelDicts'].append(modeldict)
         del sshCtrl
         return resultDict
 
@@ -297,10 +301,13 @@ class ModelUseFunction(CommonFunction):
             self.makeXYDataInfoAndColumnNames(fvInfo, otherInfo)
 
         # -------------------------------------------------- MakeModel--------------------------------------------------
+        includeModel = fvInfo["ModelParameter"]["IncludeModel"] if "IncludeModel" in fvInfo["ModelParameter"].keys() else None
+        excludeModel = fvInfo["ModelParameter"]["ExcludeModel"] if "ExcludeModel" in fvInfo["ModelParameter"].keys() and includeModel ==None else None
+        topModelCount = fvInfo["ModelParameter"]["TopModelCount"] if "TopModelCount" in fvInfo["ModelParameter"].keys() else 10
 
         trainDF, testDF = train_test_split(df, test_size=0.2)
         setup(data=trainDF, target=yColumnNames[0], use_gpu=False)
-        bestmodels = compare_models(sort='R2', n_select=10)
+        bestmodels = compare_models(sort='R2', n_select=topModelCount ,include=includeModel, exclude=excludeModel)
 
         resultDict = {}
         resultDict['MakeDataKeys'] = fvInfo['MakeDataKeys']
@@ -308,7 +315,7 @@ class ModelUseFunction(CommonFunction):
         resultDict['ModelDesign'] = {}
         resultDict['ModelDesign']['ModelType'] = "AutoML"
         resultDict['ModelDesign']['ModelFunction'] = "UsePycaretDefult"
-        resultDict['ModelDesign']['ModelDists'] = []
+        resultDict['ModelDesign']['ModelDicts'] = []
         product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
         exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
@@ -320,37 +327,37 @@ class ModelUseFunction(CommonFunction):
             RMSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'], squared=False)
             R2 = r2_score(predictions[yColumnNames[0]], predictions['Label'])
             EVS = explained_variance_score(predictions[yColumnNames[0]], predictions['Label'])
-            modeldist = {}
-            modeldist['ModelFullName'] = "{}.{}".format(bestmodel.__class__.__module__, bestmodel.__class__.__name__)
-            modeldist['ModelPackage'] = bestmodel.__class__.__module__
-            modeldist['ModelName'] = bestmodel.__class__.__name__
-            modeldist['ModelFileName'] = modeldist['ModelName'] + ".pkl"
-            modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
-            modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldist['ModelFileName'])
-            modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
-            modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldist['ModelFileName'])
-            modeldist['ModelResult'] = {}
-            modeldist['ModelResult']['MAE'] = float(MAE)
-            modeldist['ModelResult']['MSE'] = float(MSE)
-            modeldist['ModelResult']['RMSE'] = float(RMSE)
-            modeldist['ModelResult']['R2'] = float(R2)
-            modeldist['ModelResult']['EVS'] = float(EVS)
+            modeldict = {}
+            modeldict['ModelFullName'] = "{}.{}".format(bestmodel.__class__.__module__, bestmodel.__class__.__name__)
+            modeldict['ModelPackage'] = bestmodel.__class__.__module__
+            modeldict['ModelName'] = bestmodel.__class__.__name__
+            modeldict['ModelFileName'] = modeldict['ModelName'] + ".pkl"
+            modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+            modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldict['ModelFileName'])
+            modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+            modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldict['ModelFileName'])
+            modeldict['ModelResult'] = {}
+            modeldict['ModelResult']['MAE'] = float(MAE)
+            modeldict['ModelResult']['MSE'] = float(MSE)
+            modeldict['ModelResult']['RMSE'] = float(RMSE)
+            modeldict['ModelResult']['R2'] = float(R2)
+            modeldict['ModelResult']['EVS'] = float(EVS)
 
-            save_model(bestmodel, "{}/{}".format(modeldist['ModelStorageLocationPath'], modeldist['ModelName']))
+            save_model(bestmodel, "{}/{}".format(modeldict['ModelStorageLocationPath'], modeldict['ModelName']))
 
-            sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
-            sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
+            sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
+            sshCtrl.uploadFile(modeldict['ModelStorageLocation'], modeldict['ModelStorageRemote'])
 
-            resultDict['ModelDesign']['ModelDists'].append(modeldist)
-        shutil.rmtree("catboost_info")
+            resultDict['ModelDesign']['ModelDicts'].append(modeldict)
+
         del sshCtrl
         return resultDict
 
     @classmethod
     def makeAutoMLByUsePycaretModelClassification(self, fvInfo, otherInfo):
         from sklearn.metrics import confusion_matrix
-        from pycaret.regression import predict_model
-        from pycaret.regression import load_model
+        from pycaret.classification import predict_model
+        from pycaret.classification import load_model
         load_dotenv(dotenv_path="env/ssh.env")
         sshCtrl = SSHCtrl(
             host=os.getenv("SSH_IP")
@@ -365,17 +372,16 @@ class ModelUseFunction(CommonFunction):
             self.makeXYDataInfoAndColumnNames(fvInfo, otherInfo)
 
         # -------------------------------------------------- MakeModel--------------------------------------------------
-        modeldist = fvInfo["ModelDesign"]['ModelDists'][0]
-
+        modeldict = fvInfo["ModelDesign"]['ModelDicts'][0]
         product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
         exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
-        modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
-        modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldist['ModelFileName'])
+        modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+        modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldict['ModelFileName'])
 
-        sshCtrl.downloadFile(modeldist['ModelStorageRemote'], modeldist['ModelStorageLocation'])
-        bestmodel = load_model(modeldist['ModelStorageLocation'].replace(".pkl", ""))
+        sshCtrl.downloadFile(modeldict['ModelStorageRemote'], modeldict['ModelStorageLocation'])
+        bestmodel = load_model(modeldict['ModelStorageLocation'].replace(".pkl", ""))
 
         predictions = predict_model(bestmodel, data=df)
 
@@ -384,24 +390,28 @@ class ModelUseFunction(CommonFunction):
         resultDF[self.getDoubleColumnArr()[0]] = predictions[yColumnNames[0]]
         resultDF[self.getDoubleColumnArr()[1]] = predictions['Label']
 
-        tn, fp, fn, tp = confusion_matrix(predictions[yColumnNames[0]], predictions['Label']).ravel()
+        tp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Label'] != 0)).sum())
+        fp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Label'] == 0)).sum())
+        tn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Label'] == 0)).sum())
+        fn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Label'] != 0)).sum())
 
-        modeldist['ModelResult']['TN'] = int(tn)
-        modeldist['ModelResult']['FP'] = int(fp)
-        modeldist['ModelResult']['FN'] = int(fn)
-        modeldist['ModelResult']['TP'] = int(tp)
-        modeldist['ModelResult']['Accuracy'] = tp / (tp + fp)
-        modeldist['ModelResult']['Precision'] = tp / (tp + fn)
-        modeldist['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn)
-        modeldist['ModelResult']['F1Score'] = 2 * modeldist['ModelResult']['Recall'] * modeldist['ModelResult']['Precision'] / (modeldist['ModelResult']['Recall'] + modeldist['ModelResult']['Precision'])
+        modeldict['ModelResult']['TN'] = int(tn)
+        modeldict['ModelResult']['FP'] = int(fp)
+        modeldict['ModelResult']['FN'] = int(fn)
+        modeldict['ModelResult']['TP'] = int(tp)
+        modeldict['ModelResult']['Accuracy'] = tp / (tp + fp) if (tp + fp) != 0 else 0
+        modeldict['ModelResult']['Precision'] = tp / (tp + fn) if (tp + fn) != 0 else 0
+        modeldict['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) != 0 else 0
+        modeldict['ModelResult']['F1Score'] = 2 * modeldict['ModelResult']['Recall'] * modeldict['ModelResult']['Precision'] / (modeldict['ModelResult']['Recall'] + modeldict['ModelResult']['Precision'])
 
-        modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
-        modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldist['ModelFileName'])
+        modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+        modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldict['ModelFileName'])
 
-        sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
-        sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
+        sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
+        sshCtrl.uploadFile(modeldict['ModelStorageLocation'], modeldict['ModelStorageRemote'])
         resultDict = copy.deepcopy(fvInfo)
         resultDict["ResultArr"] = [resultDF]
+        resultDict["ModelDict"] = modeldict
         del sshCtrl
         return resultDict
 
@@ -429,17 +439,17 @@ class ModelUseFunction(CommonFunction):
 
         # -------------------------------------------------- MakeModel--------------------------------------------------
 
-        modeldist = fvInfo["ModelDesign"]['ModelDists'][0]
+        modeldict = fvInfo["ModelDesign"]['ModelDicts'][0]
 
         product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
         exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
         exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
-        modeldist['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
-        modeldist['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldist['ModelFileName'])
+        modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+        modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldict['ModelFileName'])
 
-        sshCtrl.downloadFile(modeldist['ModelStorageRemote'], modeldist['ModelStorageLocation'])
-        bestmodel = load_model(modeldist['ModelStorageLocation'].replace(".pkl",""))
+        sshCtrl.downloadFile(modeldict['ModelStorageRemote'], modeldict['ModelStorageLocation'])
+        bestmodel = load_model(modeldict['ModelStorageLocation'].replace(".pkl",""))
 
         predictions = predict_model(bestmodel, data=df)
 
@@ -453,17 +463,17 @@ class ModelUseFunction(CommonFunction):
         RMSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'], squared=False)
         R2 = r2_score(predictions[yColumnNames[0]], predictions['Label'])
         EVS = explained_variance_score(predictions[yColumnNames[0]], predictions['Label'])
-        modeldist['ModelResult']['MAE'] = float(MAE)
-        modeldist['ModelResult']['MSE'] = float(MSE)
-        modeldist['ModelResult']['RMSE'] = float(RMSE)
-        modeldist['ModelResult']['R2'] = float(R2)
-        modeldist['ModelResult']['EVS'] = float(EVS)
+        modeldict['ModelResult']['MAE'] = float(MAE)
+        modeldict['ModelResult']['MSE'] = float(MSE)
+        modeldict['ModelResult']['RMSE'] = float(RMSE)
+        modeldict['ModelResult']['R2'] = float(R2)
+        modeldict['ModelResult']['EVS'] = float(EVS)
 
-        modeldist['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
-        modeldist['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldist['ModelFileName'])
+        modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+        modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldict['ModelFileName'])
 
-        sshCtrl.execCommand("mkdir -p {}".format(modeldist['ModelStorageRemotePath']))
-        sshCtrl.uploadFile(modeldist['ModelStorageLocation'], modeldist['ModelStorageRemote'])
+        sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
+        sshCtrl.uploadFile(modeldict['ModelStorageLocation'], modeldict['ModelStorageRemote'])
         resultDict = copy.deepcopy(fvInfo)
         resultDict["ResultArr"] = [resultDF]
         del sshCtrl
