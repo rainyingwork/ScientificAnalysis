@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-import telegram
+import requests
 
 class TelegramCtrl:
 
@@ -14,14 +14,28 @@ class TelegramCtrl:
             self._bottoken = os.getenv("TELEGRAM_BOT_TOKEN")
         self._allbottoken = self._botuserid + ":" + self._bottoken
 
-    def sendMessage(self, chatid=None, massage=None):
-        telegramBot = telegram.Bot(token=self._allbottoken)
-        telegramBot.send_message(chat_id=chatid, text=massage)
+    def sendMessage(self, chatID=None, message=None):
+        apiURL = 'https://api.telegram.org/bot{}/sendMessage'.format(self._allbottoken)
+        try:
+            response = requests.post(apiURL, json={'chat_id': chatID, 'text': message})
+            return response.text
+        except Exception as e:
+            print(e)
 
-    def sendPhoto(self, chatid=None, photo=None):
-        telegramBot = telegram.Bot(token=self._allbottoken)
-        telegramBot.send_photo(chat_id=chatid, photo=open(photo, 'rb'))
+    def sendPhoto(self, chatID=None, photo=None):
+        apiURL = 'https://api.telegram.org/bot{}/sendPhoto'.format(self._allbottoken)
+        try:
+            response = requests.post(apiURL, {'chat_id': chatID}, files={'photo': open(photo, 'rb')})
+            return response.text
+        except Exception as e:
+            print(e)
 
     def findMessage(self, offset=None,limit=100):
-        telegramBot = telegram.Bot(token=self._allbottoken)
-        return telegramBot.get_updates(offset=offset,limit=limit)
+        api_url = 'https://api.telegram.org/bot{}/getUpdates'.format(self._allbottoken)
+        try:
+            response = requests.post(api_url)
+            return response.text
+        except Exception as e:
+            print(e)
+
+
