@@ -248,6 +248,7 @@ class RawDataFunction(CommonFunction):
                     "AVG":"avg({})",
                 }
                 gFuncSQL = gFuncDict[gFunc] if gFunc in gFuncDict.keys() else gFunc
+                # 相關gFunc的Aggregate Functions用法可以參閱 https://www.postgresql.org/docs/15/functions-aggregate.html 這個網址
                 datatype = makeDataInfo["DataType"] if "DataType" in makeDataInfo.keys() else "X"
                 dtNameStr = ""
                 if fvInfo['FunctionItemType'] == "ByDT":
