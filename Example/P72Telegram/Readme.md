@@ -8,7 +8,7 @@
 
 @SE : 透過 StableDiffusion 產生與關鍵字相關的圖片
 
-<img decoding = "async" src = "http://static.runoob.com/images/runoob-logo.png" width = "50%" > 
+<img decoding = "async" src = "https://github.com/rainyingwork/ScientificAnalysis/blob/main/Example/P72Telegram/file/common/Examlp.PNG" width = "50%" > 
 
 
 
