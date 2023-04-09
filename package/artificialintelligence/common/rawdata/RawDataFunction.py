@@ -239,7 +239,17 @@ class RawDataFunction(CommonFunction):
                     | ( dataRow["version"] != makeDataInfo["Version"]) :
                     continue
                 isNoneDrop = makeDataInfo["IsNoneDrop"] if "IsNoneDrop" in makeDataInfo.keys() else True
+                gFunc = makeDataInfo["GFunc"] if "GFunc" in makeDataInfo.keys() else "SUM"
+                gFuncDict = {
+                    "SUM" : "sum({})",
+                    "COUNT":"count({})",
+                    "MAX":"max({})",
+                    "MIN":"min({})",
+                    "AVG":"avg({})",
+                }
+                gFuncSQL = gFuncDict[gFunc] if gFunc in gFuncDict.keys() else gFunc
                 datatype = makeDataInfo["DataType"] if "DataType" in makeDataInfo.keys() else "X"
+                dtNameStr = ""
                 if fvInfo['FunctionItemType'] == "ByDT":
                     dtNameStr = "{}".format(makeDataInfo["DT"].replace("-", ""))
                 elif fvInfo['FunctionItemType'] == "ByDTDiff":
@@ -257,14 +267,12 @@ class RawDataFunction(CommonFunction):
                     if dataRow[columnName] > 0 or isNoneDrop == False:
                         columnFullName = "{}_{}_{}_{}_{}".format(dataRow["product"], dataRow["project"], dtNameStr, str(columnNumber),dataRow["version"])
                         if haveDataindex :
-                            sumSQL = "SUM(CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' AND AA.commondata_013 ='{}' then AA.{} else null end )"
-                            sumSQL = sumSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], dataRow["dataindex"], columnName)
-                            columnSQL = "\n                    , {} as {}".format(sumSQL, columnFullName)
+                            gFuncSQL = gFuncSQL.format("CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' AND AA.commondata_013 ='{}' then AA.{} else null end")
+                            gFuncSQL = gFuncSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], dataRow["dataindex"], columnName)
                         else :
-                            sumSQL = "SUM(CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' then AA.{} else null end )"
-                            sumSQL = sumSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], columnName)
-                            columnSQL = "\n                    , {} as {}".format(sumSQL, columnFullName)
-
+                            gFuncSQL = gFuncSQL.format("CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' then AA.{} else null end")
+                            gFuncSQL = gFuncSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], columnName)
+                        columnSQL = "\n                    , {} as {}".format(gFuncSQL, columnFullName)
                         if datatype == "Y":
                             yColumnsSQL = yColumnsSQL + columnSQL
                         elif datatype == "X":
@@ -285,6 +293,7 @@ class RawDataFunction(CommonFunction):
         for sqlInfo in sqlInfoArr :
             sql = makeSingleTagDataSQL(fvInfo,sqlInfo)
             df = postgresCtrl.searchSQL(sql)
+            print(sql)
             dfArr.append(df)
         return dfArr
 
