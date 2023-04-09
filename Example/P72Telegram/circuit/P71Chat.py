@@ -98,27 +98,7 @@ class Chat():
 
         for resultJsonStr in updateDF['resultjson'] :
             resultJson = json.loads(resultJsonStr)
-            if '@GPT' in resultJson["MessageText"] :
-                import openai
-                from dotenv import load_dotenv
-                # ======================================== 產生AI的對話 ========================================
-                messages = resultJson["MessageText"].replace('@GPT', '')
-                load_dotenv(dotenv_path="env/openai.env")
-                openai.api_key = os.getenv("API_KEY")
-                response = openai.Completion.create(
-                    model=os.getenv("API_MODEL"),
-                    prompt=messages,
-                    max_tokens=2048,
-                    temperature=0.5
-                )
-                aiMessages = response['choices'][0]['text']
-                # ======================================== 回傳給Telegram ========================================
-                telegramCtrl.sendMessage(chatID=os.getenv("SYSTEM_USERID"), message=aiMessages)
-                # ======================================== 回存訊息到本地端 ========================================
-                globalObjectDict = {}
-                globalObjectDict["ResponseText"] = aiMessages
-                return resultJson, globalObjectDict
-            elif '@SD' in resultJson["MessageText"]:
+            if '@SD' in resultJson["MessageText"]:
                 import torch
                 from diffusers import StableDiffusionPipeline
                 messages = resultJson["MessageText"].replace('@SD', '')
@@ -157,6 +137,26 @@ class Chat():
                 globalObjectDict = {}
                 globalObjectDict["ResponseImage"] = []
                 return resultJson, {}
+            elif '@GPT' in resultJson["MessageText"] :
+                import openai
+                from dotenv import load_dotenv
+                # ======================================== 產生AI的對話 ========================================
+                messages = resultJson["MessageText"].replace('@GPT', '')
+                load_dotenv(dotenv_path="env/openai.env")
+                openai.api_key = os.getenv("API_KEY")
+                response = openai.Completion.create(
+                    model=os.getenv("API_MODEL"),
+                    prompt=messages,
+                    max_tokens=2048,
+                    temperature=0.5
+                )
+                aiMessages = response['choices'][0]['text']
+                # ======================================== 回傳給Telegram ========================================
+                telegramCtrl.sendMessage(chatID=os.getenv("SYSTEM_USERID"), message=aiMessages)
+                # ======================================== 回存訊息到本地端 ========================================
+                globalObjectDict = {}
+                globalObjectDict["ResponseText"] = aiMessages
+                return resultJson, globalObjectDict
             else :
                 # ======================================== 回傳給Telegram ========================================
                 responseText = "沒有相關的@的指令，請確認指令內容"
