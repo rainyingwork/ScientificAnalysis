@@ -34,7 +34,7 @@ class Chat():
         for messageDict in messageJson['result']:
             if messageDict['update_id'] <= updateId:
                 continue
-            if messageDict['message']['from']['id'] != int(os.getenv("SYSTEM_USERID")):
+            if str(messageDict['message']['from']['id']) not in os.getenv("BOT_ALLOW_USERID"):
                 continue
             resultObject = {
                 "UpdateID": messageDict['update_id'],
@@ -102,7 +102,7 @@ class Chat():
                 import torch
                 from diffusers import StableDiffusionPipeline
                 messages = resultJson["MessageText"].replace('@SD', '')
-                telegramCtrl.sendMessage(chatID=os.getenv("SYSTEM_USERID"), message="準備產生相關圖像，請稍後")
+                telegramCtrl.sendMessage(chatID=resultJson["FromID"], message="準備產生相關圖像，請稍後")
                 # ======================================== 產生圖片集 ========================================
                 pipe = StableDiffusionPipeline.from_pretrained(
                     pretrained_model_name_or_path="UnitTest/StableDiffusion/file/model/orangechillmix_v70",  # 模型路徑
@@ -130,9 +130,9 @@ class Chat():
                     fileName = "{}.png".format(str(time.time_ns()))
                     filePathName = "Example/P72Telegram/file/out/{}".format(fileName)
                     image.save(filePathName)
-                    telegramCtrl.sendPhoto(chatID=os.getenv("SYSTEM_USERID"), photo=filePathName)
+                    telegramCtrl.sendPhoto(chatID=resultJson["FromID"], photo=filePathName)
 
-                telegramCtrl.sendMessage(chatID=os.getenv("SYSTEM_USERID"), message="已產生SD相關圖像")
+                telegramCtrl.sendMessage(chatID=resultJson["FromID"], message="已產生SD相關圖像")
                 # ======================================== 回存訊息到本地端 ========================================
                 globalObjectDict = {}
                 globalObjectDict["ResponseImage"] = []
@@ -152,15 +152,15 @@ class Chat():
                 )
                 aiMessages = response['choices'][0]['text']
                 # ======================================== 回傳給Telegram ========================================
-                telegramCtrl.sendMessage(chatID=os.getenv("SYSTEM_USERID"), message=aiMessages)
+                telegramCtrl.sendMessage(chatID=resultJson["FromID"], message=aiMessages)
                 # ======================================== 回存訊息到本地端 ========================================
                 globalObjectDict = {}
                 globalObjectDict["ResponseText"] = aiMessages
                 return resultJson, globalObjectDict
             else :
                 # ======================================== 回傳給Telegram ========================================
-                responseText = "沒有相關的@的指令，請確認指令內容"
-                telegramCtrl.sendMessage(chatID=os.getenv("SYSTEM_USERID"), message=responseText)
+                responseText = "沒有相關的@的指令，請確認指令內容 請@GPT或@SD"
+                telegramCtrl.sendMessage(chatID=resultJson["FromID"], message=responseText)
                 # ======================================== 回存訊息到本地端 ========================================
                 globalObjectDict = {}
                 globalObjectDict["ResponseText"] = responseText
