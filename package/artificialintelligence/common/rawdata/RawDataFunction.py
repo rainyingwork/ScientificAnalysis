@@ -16,16 +16,17 @@ class RawDataFunction(CommonFunction):
         for key in functionVersionInfo.keys():
             if key not in ["ResultArr"] :
                 resultDict[key] = functionVersionInfo[key]
-        if functionVersionInfo['FunctionType'] == "GetXYData":
-            otherInfo = self.rdGetXYData(functionVersionInfo)
+        if "GetXYData" in functionVersionInfo['FunctionType']:
+            if functionVersionInfo['FunctionType'] == "GetXYData":
+                otherInfo = self.rdGetXYData(functionVersionInfo)
+            elif functionVersionInfo['FunctionType'] == "GetXYDataByFunctionRusult":
+                otherInfo = self.rdGetXYDataByFunctionRusult(functionVersionInfo)
+            elif functionVersionInfo['FunctionType'] == "GetXYDataByDatabaseRusult":
+                otherInfo = self.rdGetXYDataByDatabaseRusult(functionVersionInfo)
+            resultDict['FunctionItemType'] = otherInfo["FunctionItemType"]
+            resultDict['MakeDataKeys'] = otherInfo['MakeDataKeys']
+            resultDict['MakeDataInfo'] = otherInfo['MakeDataInfo']
             globalObjectDict['ResultArr'] = otherInfo["DFArr"]
-        elif functionVersionInfo['FunctionType'] == "GetXYDataByFunctionRusult":
-            otherInfo = self.rdGetXYDataByFunctionRusult(functionVersionInfo)
-            globalObjectDict['ResultArr'] = otherInfo["DFArr"]
-        elif functionVersionInfo['FunctionType'] == "GetXYDataByDatabaseRusult":
-            otherInfo = self.rdGetXYDataByDatabaseRusult(functionVersionInfo)
-            globalObjectDict['ResultArr'] = otherInfo["DFArr"]
-            resultDict['MakeDataKeys'], resultDict['MakeDataInfo'] = otherInfo['MakeDataKeys'], otherInfo["MakeDataInfo"]
         elif functionVersionInfo['FunctionType'] == "GetSQLData":
             otherInfo = self.rdGetSQLData(functionVersionInfo)
             globalObjectDict['ResultArr'] = otherInfo["DFArr"]
@@ -39,13 +40,13 @@ class RawDataFunction(CommonFunction):
         return resultDict , globalObjectDict
 
     # ================================================== MainFunction ==================================================
+
     # fvInfo -- functionVersionInfo
 
     @classmethod
     def rdGetXYData(self, fvInfo):
         otherInfo = {}
-        if "FunctionItemType" not in fvInfo.keys(): # 預設為ByDTDiff
-            fvInfo['FunctionItemType'] = "ByDTDiff"
+        fvInfo = self.makeIntactFVInfoByXYData(fvInfo)
         if fvInfo['FunctionItemType'] == "ByDT":
             otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
             otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
@@ -54,26 +55,38 @@ class RawDataFunction(CommonFunction):
             otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
         elif fvInfo['FunctionItemType'] == "ByDTDiffFromDF":
             otherInfo["DFArr"] = self.makeTagDataDFArrByDF(fvInfo, otherInfo)
-
-
+        fvInfo = self.makeClearFVInfoByXYData(fvInfo)
+        otherInfo['FunctionItemType'] = fvInfo["FunctionItemType"]
+        otherInfo['MakeDataKeys'] = fvInfo['MakeDataKeys']
+        otherInfo['MakeDataInfo'] = fvInfo['MakeDataInfo']
         return otherInfo
 
     @classmethod
     def rdGetXYDataByFunctionRusult(self, fvInfo):
         otherInfo = {}
+        fvInfo = self.makeIntactFVInfoByXYData(fvInfo)
         otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
         otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
+        fvInfo = self.makeClearFVInfoByXYData(fvInfo)
+        otherInfo['FunctionItemType'] = fvInfo["FunctionItemType"]
+        otherInfo['MakeDataKeys'] = fvInfo['MakeDataKeys']
+        otherInfo['MakeDataInfo'] = fvInfo['MakeDataInfo']
         return otherInfo
 
     @classmethod
     def rdGetXYDataByDatabaseRusult(self, fvInfo):
         otherInfo = {}
         databaseResultJson = self.getDatabaseResultJson(fvInfo)
+        fvInfo["FunctionItemType"] = databaseResultJson["FunctionItemType"]
         fvInfo["MakeDataKeys"] = databaseResultJson["MakeDataKeys"]
         fvInfo["MakeDataInfo"] = databaseResultJson["MakeDataInfo"]
+        fvInfo = self.makeIntactFVInfoByXYData(fvInfo)
         otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
         otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
-        otherInfo["MakeDataKeys"], otherInfo["MakeDataInfo"] = fvInfo["MakeDataKeys"] , fvInfo["MakeDataInfo"]
+        fvInfo = self.makeClearFVInfoByXYData(fvInfo)
+        otherInfo['FunctionItemType'] = fvInfo["FunctionItemType"]
+        otherInfo['MakeDataKeys'] = fvInfo['MakeDataKeys']
+        otherInfo['MakeDataInfo'] = fvInfo['MakeDataInfo']
         return otherInfo
 
     @classmethod
@@ -95,6 +108,62 @@ class RawDataFunction(CommonFunction):
         return otherInfo
 
     # ==================================================   getXYData  ==================================================
+
+    @classmethod
+    def makeIntactFVInfoByXYData(self, fvInfo):
+        import re
+        def getGFuncDict (): # ,"avg":"avg({})",
+            # 相關gFunc的Aggregate Functions用法可以參閱 https://www.postgresql.org/docs/15/functions-aggregate.html 這個網址
+            return {"sum" : "sum({})","count":"count({})","max":"max({})","min":"min({})"}
+
+        fvInfo['FunctionType'] = "GetXYData" if "FunctionType" not in fvInfo.keys() else fvInfo['FunctionType']
+        fvInfo['FunctionItemType'] = "ByDTDiff" if "FunctionItemType" not in fvInfo.keys() else fvInfo['FunctionItemType']
+        fvInfo['MakeDataKeys'] = ["common_001"] if "MakeDataKeys" not in fvInfo.keys() else fvInfo['MakeDataKeys']
+        if "DataTime" not in fvInfo.keys() and "DTDiff" in fvInfo['FunctionItemType'] :
+            raise Exception("DataTime is not in fvInfo")
+        for makeDataInfo in fvInfo['MakeDataInfo']:
+            makeDataInfo['DataType'] = 'X' if 'DataType' not in makeDataInfo.keys() else makeDataInfo['DataType']
+            if 'Product' not in makeDataInfo.keys() :
+                raise Exception("Product is not in MakeDataInfo")
+            if 'Project' not in makeDataInfo.keys() :
+                raise Exception("Project is not in MakeDataInfo")
+            if 'Version' not in makeDataInfo.keys() :
+                raise Exception("Version is not in MakeDataInfo")
+            if 'ColumnNumbers' not in makeDataInfo.keys():
+                raise Exception("ColumnNumbers is not in MakeDataInfo")
+            if fvInfo['FunctionItemType'] == "ByDT":
+                if 'DT' not in makeDataInfo.keys():
+                    raise Exception("DT is not in MakeDataInfo")
+                makeDataInfo['DTStr']  = "{}".format(makeDataInfo["DT"].replace("-", ""))
+                makeDataInfo['DTSQL']  = "'{}'".format(makeDataInfo["DT"].replace("-", ""))
+                makeDataInfo['DTNameStr'] = "{}".format(makeDataInfo["DT"].replace("-", ""))
+            elif fvInfo['FunctionItemType'] == "ByDTDiff" or fvInfo['FunctionItemType'] == "ByDTDiffFromDF":
+                if 'DTDiff' not in makeDataInfo.keys():
+                    raise Exception("DTDiff is not in MakeDataInfo")
+                makeDataInfo['DTStr'] = (datetime.datetime.strptime(fvInfo["DataTime"], "%Y-%m-%d") + datetime.timedelta(days=makeDataInfo["DTDiff"])).strftime("%Y%m%d")
+                makeDataInfo['DTSQL'] = "to_char((date '{}' + integer '{}'),'yyyyMMdd')".format(fvInfo["DataTime"],str(makeDataInfo["DTDiff"]))
+                makeDataInfo['DTNameStr'] = "p" + str(abs(makeDataInfo["DTDiff"])) if makeDataInfo["DTDiff"] >= 0 else "n" + str(abs(makeDataInfo["DTDiff"]))
+            if 'GFunc' not in makeDataInfo.keys() and 'GFuncSQL' not in makeDataInfo.keys():
+                makeDataInfo['GFunc'] = "sum"
+                makeDataInfo['GFuncSQL'] = getGFuncDict()[makeDataInfo['GFunc']]
+            elif 'GFuncSQL' in makeDataInfo.keys() :
+                makeDataInfo['GFunc'] = str.lower(re.sub(r'[^a-zA-Z0-9_]', '', makeDataInfo['GFuncSQL']))
+            elif makeDataInfo['GFunc'] in getGFuncDict().keys() :
+                makeDataInfo['GFuncSQL'] = getGFuncDict()[makeDataInfo['GFunc']]
+            else :
+                raise Exception("GFunc or GFuncSQL is Error")
+        return fvInfo
+
+    @classmethod
+    def makeClearFVInfoByXYData(self, fvInfo):
+        for makeDataInfo in fvInfo['MakeDataInfo']:
+            # if 'DTStr' in makeDataInfo.keys():
+            #     del makeDataInfo['DTSQL']
+            if 'DTSQL' in makeDataInfo.keys():
+                del makeDataInfo['DTSQL']
+            # if 'DTNameStr' in makeDataInfo.keys():
+            #     del makeDataInfo['DTNameStr']
+        return fvInfo
 
     @classmethod
     def makeAnalysisDataInfoDFByDataInfo(self,fvInfo,otherInfo):
@@ -123,13 +192,8 @@ class RawDataFunction(CommonFunction):
 
         infoWheresSQL = ""
         for makeDataInfo in makeDataInfoArr:
-            makeDataInfo["MakeDataDateStr"] = makeDataDateStr
-            if fvInfo['FunctionItemType'] == "ByDT":
-                dtStr = "'{}'".format(makeDataInfo["DT"].replace("-",""))
-            elif fvInfo['FunctionItemType'] == "ByDTDiff":
-                dtStr = "to_char((date '{}' + integer '{}'),'yyyyMMdd')".format(makeDataInfo["MakeDataDateStr"],str(makeDataInfo["DTDiff"]))
             infoWhereSQL = "\n                        OR (AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = {} )"
-            infoWhereSQL = infoWhereSQL.format(makeDataInfo["Product"], makeDataInfo["Project"], makeDataInfo["Version"],dtStr)
+            infoWhereSQL = infoWhereSQL.format(makeDataInfo["Product"], makeDataInfo["Project"], makeDataInfo["Version"],makeDataInfo["DTSQL"])
             infoWheresSQL = infoWheresSQL + infoWhereSQL
 
         infoSQL = """
@@ -213,75 +277,46 @@ class RawDataFunction(CommonFunction):
 
         for makeDataInfo in makeDataInfoArr:
             makeDataInfo["MakeDataDateStr"] = makeDataDateStr
-            if fvInfo['FunctionItemType'] == "ByDT":
-                dtStr = "'{}'".format(makeDataInfo["DT"].replace("-", ""))
-            elif fvInfo['FunctionItemType'] == "ByDTDiff":
-                dtStr = "to_char((date '{}' + integer '{}'),'yyyyMMdd')".format(makeDataInfo["MakeDataDateStr"],str(makeDataInfo["DTDiff"]))
             whereSQL = "\n                        OR (AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = {} )"
-            whereSQL = whereSQL.format(makeDataInfo["Product"], makeDataInfo["Project"],makeDataInfo["Version"], dtStr)
+            whereSQL = whereSQL.format(makeDataInfo["Product"], makeDataInfo["Project"],makeDataInfo["Version"], makeDataInfo["DTSQL"])
             wheresSQL = wheresSQL + whereSQL
 
-        sqlInfo = {}
         sqlInfoArr = []
-        signleCloumnCount = 0
 
         sqlInfo = {}
         for makeDataInfo in makeDataInfoArr:
             for dataIndex, dataRow in analysisDataInfoDF.iterrows():
-                if fvInfo['FunctionItemType'] == "ByDT":
-                    dtStr = "{}".format(makeDataInfo["DT"].replace("-", ""))
-                elif fvInfo['FunctionItemType'] == "ByDTDiff":
-                    dtStr = (datetime.datetime.strptime(makeDataDateStr, "%Y-%m-%d") + datetime.timedelta(days=makeDataInfo["DTDiff"])).strftime("%Y%m%d")
                 if (dataRow["product"] != makeDataInfo["Product"]) \
                     | (dataRow["project"] != makeDataInfo["Project"]) \
-                    | (dataRow["dt"] != dtStr) \
+                    | (dataRow["dt"] != makeDataInfo["DTStr"]) \
                     | (dataRow["project"] != makeDataInfo["Project"]) \
                     | ( dataRow["version"] != makeDataInfo["Version"]) :
                     continue
-                isNoneDrop = makeDataInfo["IsNoneDrop"] if "IsNoneDrop" in makeDataInfo.keys() else True
-                gFunc = makeDataInfo["GFunc"] if "GFunc" in makeDataInfo.keys() else "SUM"
-                gFuncDict = {
-                    "SUM" : "sum({})",
-                    "COUNT":"count({})",
-                    "MAX":"max({})",
-                    "MIN":"min({})",
-                    "AVG":"avg({})",
-                }
-                gFuncSQL = gFuncDict[gFunc] if gFunc in gFuncDict.keys() else gFunc
-                # 相關gFunc的Aggregate Functions用法可以參閱 https://www.postgresql.org/docs/15/functions-aggregate.html 這個網址
-                datatype = makeDataInfo["DataType"] if "DataType" in makeDataInfo.keys() else "X"
-                dtNameStr = ""
-                if fvInfo['FunctionItemType'] == "ByDT":
-                    dtNameStr = "{}".format(makeDataInfo["DT"].replace("-", ""))
-                elif fvInfo['FunctionItemType'] == "ByDTDiff":
-                    dtNameStr = "p" + str(abs(makeDataInfo["DTDiff"])) if makeDataInfo["DTDiff"] >= 0 else "n" + str(abs(makeDataInfo["DTDiff"]))
                 columnNumberArr = makeDataInfo["ColumnNumbers"] if "ColumnNumbers" in makeDataInfo.keys() else []
                 for columnName in doubleColumnNameArr:
-                    sumSQL = ""
-                    columnSQL = ""
                     haveDataindex = True if dataRow["dataindex"] != None else False
                     dataindex = int(dataRow["dataindex"]) if dataRow["dataindex"] != None else 1
                     columnindex = int(columnName.split("_")[1])
                     columnNumber = (dataindex - 1) * 200 + columnindex
                     if columnNumberArr != [] and columnNumber not in columnNumberArr:
                         continue
-                    if dataRow[columnName] > 0 or isNoneDrop == False:
-                        columnFullName = "{}_{}_{}_{}_{}".format(dataRow["product"], dataRow["project"], dtNameStr, str(columnNumber),dataRow["version"])
+                    if dataRow[columnName] > 0 :
+                        columnFullName = str.lower("{}_{}_{}_{}_{}_{}".format(dataRow["product"], dataRow["project"], makeDataInfo['DTNameStr'], str(columnNumber), makeDataInfo['GFunc'],dataRow["version"]))
                         if haveDataindex :
-                            gFuncSQL = gFuncSQL.format("CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' AND AA.commondata_013 ='{}' then AA.{} else null end")
+                            gFuncSQL = makeDataInfo['GFuncSQL'].format("CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' AND AA.commondata_013 ='{}' then AA.{} else null end")
                             gFuncSQL = gFuncSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], dataRow["dataindex"], columnName)
                         else :
-                            gFuncSQL = gFuncSQL.format("CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' then AA.{} else null end")
+                            gFuncSQL = makeDataInfo['GFuncSQL'].format("CASE WHEN AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = '{}' then AA.{} else null end")
                             gFuncSQL = gFuncSQL.format(dataRow["product"], dataRow["project"], dataRow["version"],dataRow["dt"], columnName)
                         columnSQL = "\n                    , {} as {}".format(gFuncSQL, columnFullName)
-                        if datatype == "Y":
+                        if makeDataInfo['DataType'] == "Y":
                             yColumnsSQL = yColumnsSQL + columnSQL
-                        elif datatype == "X":
+                        elif makeDataInfo['DataType'] == "X":
                             xColumnsSQL = xColumnsSQL + columnSQL
-                        elif datatype == "Filter":
+                        elif makeDataInfo['DataType'] == "Filter":
                             havingSQLArr = makeDataInfo["HavingSQL"]
                             if columnNumber in columnNumberArr :
-                                havingsSQL += "\n                    AND {} {}".format(sumSQL, havingSQLArr[columnNumberArr.index(columnNumber)])
+                                havingsSQL += "\n                    AND {} {}".format(gFuncSQL, havingSQLArr[columnNumberArr.index(columnNumber)])
 
         sqlInfo["InfoKeysSQL"] = infoKeysSQL
         sqlInfo["YColumnsSQL"] = yColumnsSQL
@@ -319,8 +354,8 @@ class RawDataFunction(CommonFunction):
                 for columnNumber in columnNumberArr:
                     oriDTStr = (datetime.datetime.strptime(makeDataDateStr, "%Y-%m-%d") + datetime.timedelta(days=makeDataInfo["DTDiff"])).strftime("%Y%m%d")
                     newDTStr = "p" + str(abs(makeDataInfo["DTDiff"])) if makeDataInfo["DTDiff"] >= 0 else "n" + str(abs(makeDataInfo["DTDiff"]))
-                    oriColumnFullName = str.lower("{}_{}_{}_{}_{}".format(makeDataInfo["Product"], makeDataInfo["Project"], oriDTStr,str(columnNumber), makeDataInfo["Version"]))
-                    newColumnFullName = str.lower("{}_{}_{}_{}_{}".format(makeDataInfo["Product"], makeDataInfo["Project"], newDTStr,str(columnNumber), makeDataInfo["Version"]))
+                    oriColumnFullName = str.lower("{}_{}_{}_{}_{}_{}".format(makeDataInfo["Product"], makeDataInfo["Project"], oriDTStr,str(columnNumber),makeDataInfo["GFunc"], makeDataInfo["Version"]))
+                    newColumnFullName = str.lower("{}_{}_{}_{}_{}_{}".format(makeDataInfo["Product"], makeDataInfo["Project"], newDTStr,str(columnNumber),makeDataInfo["GFunc"], makeDataInfo["Version"]))
                     rawDataDF[newColumnFullName] = oriRawDataDF[oriColumnFullName]
             rawDataDFArr.append(rawDataDF)
 

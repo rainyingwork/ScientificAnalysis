@@ -63,17 +63,11 @@ class PreProcessFunction(CommonFunction):
             , database=os.environ["POSTGRES_OPSNABAGEMENT_DATABASE"]
             , schema=os.environ["POSTGRES_OPSNABAGEMENT_SCHEMA"]
         )
-        functionItemType = fvInfo['FunctionItemType'] if "FunctionItemType" in fvInfo.keys() else "ByDTDiff"
         makeDataInfoArr = fvInfo['MakeDataInfo']
 
         tagTextDF = pandas.DataFrame()
         for makeDataInfo in makeDataInfoArr:
             tagTextVersion = makeDataInfo['Version'].split("_")[0] + '_' + makeDataInfo['Version'].split("_")[1] + '_0'
-            makeDataInfo["DataType"] = makeDataInfo["DataType"] if "DataType" in makeDataInfo.keys() else "X"
-            if functionItemType == "ByDT" :
-                dtStr = makeDataInfo["DT"].replace("-", "")
-            else :
-                dtStr = (datetime.datetime.strptime(fvInfo["DataTime"], "%Y-%m-%d") + datetime.timedelta(days=makeDataInfo["DTDiff"])).strftime("%Y%m%d")
             tagTextSQL = """
                 SELECT
                     product , project , version as textversion , dt
@@ -91,8 +85,9 @@ class PreProcessFunction(CommonFunction):
                 .replace("[:Project]", makeDataInfo['Project']) \
                 .replace("[:Version]", makeDataInfo['Version']) \
                 .replace("[:TextVersion]", tagTextVersion) \
-                .replace("[:DTStr]", dtStr) \
+                .replace("[:DTStr]", makeDataInfo['DTStr']) \
                 .replace("[:DataType]", makeDataInfo["DataType"])
+
             tempTextDF = postgresCtrl.searchSQL(tagTextSQL)
             if 'ColumnNumbers' in makeDataInfo.keys():
                 stColumnNumbers = []
@@ -100,6 +95,7 @@ class PreProcessFunction(CommonFunction):
                     stColumnNumbers.append(str(columnNumbers))
                 tempTextDF = tempTextDF[tempTextDF['index'].isin(stColumnNumbers)]
             tagTextDF = pandas.concat([tagTextDF, tempTextDF])
+        tagTextDF.drop_duplicates()
         return tagTextDF
 
 
@@ -109,36 +105,39 @@ class PreProcessFunction(CommonFunction):
     @classmethod
     def makeDFByPPTagText(self, fvInfo, otherInfo):
 
-        functionItemType = fvInfo['FunctionItemType'] if "FunctionItemType" in fvInfo.keys() else "ByDTDiff"
         preprossDFArr = fvInfo["ResultArr"]
 
         # -------------------------------------------------- tagTextDF--------------------------------------------------
         tagTextDF = self.makeTagTextDF(fvInfo)
+
 
         # --------------------------------------------------preprossDF--------------------------------------------------
 
         resultPreprossDFArr = []
 
         preprossDF = preprossDFArr[0]
-        for _, tagTextRow in tagTextDF.iterrows():
-            if functionItemType == "ByDT" :
-                dtStr = tagTextRow["dt"].replace("-", "")
-            else :
-                dtdiff = (datetime.datetime.strptime(tagTextRow["dt"], "%Y%m%d") - datetime.datetime.strptime(fvInfo["DataTime"], "%Y-%m-%d")).days
-                dtStr = "p" + str(abs(dtdiff)) if dtdiff >= 0 else "n" + str(abs(dtdiff))
-            tagTextColumnName = str.lower("{}_{}_{}_{}_{}".format(tagTextRow["product"], tagTextRow["project"], dtStr, tagTextRow["index"],tagTextRow["version"]))
-            if tagTextColumnName not in preprossDF.columns:
-                preprossDF[tagTextColumnName] = None
-            jsonMessage = json.loads(tagTextRow['jsonmessage'])
-            processingOrderArr = jsonMessage['DataPreProcess']['ProcessingOrder']
-            processingFunctions = jsonMessage['DataPreProcess']['ProcessingFunction']
-            for processingFunctionName in processingOrderArr:
-                processingFunction = processingFunctions[processingFunctionName]
-                if processingFunctionName == "fillna":
-                    preprossDF[tagTextColumnName] = preprossDF[tagTextColumnName].fillna(processingFunction['value'])
-                elif processingFunctionName == "log":
-                    preprossDF[tagTextColumnName] = preprossDF[tagTextColumnName].apply(
-                        lambda x: math.log(x, processingFunction['value']), axis=1)
+
+        for mdInfo in fvInfo['MakeDataInfo']:
+            for columnNumber in mdInfo['ColumnNumbers']:
+                columnFullName = str.lower("{}_{}_{}_{}_{}_{}".format(mdInfo["Product"], mdInfo["Project"],mdInfo['DTNameStr'], str(columnNumber),mdInfo['GFunc'], mdInfo["Version"]))
+                for _, tagTextRow in tagTextDF.iterrows():
+                    if (tagTextRow["product"] != mdInfo["Product"]) \
+                        | (tagTextRow["project"] != mdInfo["Project"]) \
+                        | (tagTextRow["dt"] != mdInfo["DTStr"]) \
+                        | (tagTextRow["project"] != mdInfo["Project"]) \
+                        | (tagTextRow["version"] != mdInfo["Version"]):
+                        continue
+                    if columnFullName not in preprossDF.columns:
+                        preprossDF[columnFullName] = None
+                    jsonMessage = json.loads(tagTextRow['jsonmessage'])
+                    processingOrderArr = jsonMessage['DataPreProcess']['ProcessingOrder']
+                    processingFunctions = jsonMessage['DataPreProcess']['ProcessingFunction']
+                    for processingFunctionName in processingOrderArr:
+                        processingFunction = processingFunctions[processingFunctionName]
+                        if processingFunctionName == "fillna":
+                            preprossDF[columnFullName] = preprossDF[columnFullName].fillna(processingFunction['value'])
+                        elif processingFunctionName == "log":
+                            preprossDF[columnFullName] = preprossDF[columnFullName].apply(lambda x: math.log(x, processingFunction['value']), axis=1)
         resultPreprossDFArr.append(preprossDF)
         return preprossDFArr
 

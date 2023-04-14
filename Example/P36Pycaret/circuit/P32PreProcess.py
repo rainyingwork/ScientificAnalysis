@@ -10,9 +10,9 @@ class PreProcess() :
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_1"])
         functionVersionInfo["Version"] = "P0_0_1"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
-        functionVersionInfo["ResultArr"] = globalObject[functionInfo["ParameterJson"]["P0_0_1"]["DataVersion"]]["ResultArr"]
-        functionVersionInfo["MakeDataKeys"] = functionInfo["ResultJson"][functionInfo["ParameterJson"]["P0_0_1"]["DataVersion"]]["MakeDataKeys"]
-        functionVersionInfo["MakeDataInfo"] = functionInfo["ResultJson"][functionInfo["ParameterJson"]["P0_0_1"]["DataVersion"]]["MakeDataInfo"]
+        functionVersionInfo["ResultArr"] = globalObject[functionVersionInfo["DataVersion"]]["ResultArr"]
+        for dictKey in ["FunctionItemType", "MakeDataKeys", "MakeDataInfo"]:
+            functionVersionInfo[dictKey] = functionInfo["ResultJson"][functionVersionInfo["DataVersion"]][dictKey]
         resultObject, globalObjectDict = preProcessFunction.executionFunctionByFunctionType(functionVersionInfo)
         return resultObject , globalObjectDict
 
@@ -25,8 +25,8 @@ class PreProcess() :
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["P0_0_2"])
         functionVersionInfo["Version"] = "P0_0_2"
         globalObject = GainObjectCtrl.getObjectsById(functionInfo["GlobalObject"])
-        functionVersionInfo["ResultArr"] = globalObject[functionInfo["ParameterJson"]["P0_0_2"]["DataVersion"]]["ResultArr"]
-        functionVersionInfo["MakeDataKeys"] = functionInfo["ResultJson"][functionInfo["ParameterJson"]["P0_0_2"]["DataVersion"]]["MakeDataKeys"]
-        functionVersionInfo["MakeDataInfo"] = functionInfo["ResultJson"][functionInfo["ParameterJson"]["P0_0_2"]["DataVersion"]]["MakeDataInfo"]
+        functionVersionInfo["ResultArr"] = globalObject[functionVersionInfo["DataVersion"]]["ResultArr"]
+        for dictKey in ["FunctionItemType", "MakeDataKeys", "MakeDataInfo"]:
+            functionVersionInfo[dictKey] = functionInfo["ResultJson"][functionVersionInfo["DataVersion"]][dictKey]
         resultObject, globalObjectDict = preProcessFunction.executionFunctionByFunctionType(functionVersionInfo)
         return resultObject , globalObjectDict

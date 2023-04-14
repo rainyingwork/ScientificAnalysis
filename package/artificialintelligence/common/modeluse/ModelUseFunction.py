@@ -96,12 +96,13 @@ class ModelUseFunction(CommonFunction):
                 if modeluseColumn in makeDataKeys:
                     continue
                 keyArr = modeluseColumn.split("_")
-                product, project, version, dtdiffstr, columnNumber = keyArr[0], keyArr[1], keyArr[4] + '_' + keyArr[5] + '_' + keyArr[6], keyArr[2], int(keyArr[3])
+                product, project, version, dtdiffstr, gfunc , columnNumber = keyArr[0], keyArr[1], keyArr[5] + '_' + keyArr[6] + '_' + keyArr[7], keyArr[2], keyArr[4], int(keyArr[3])
                 dtfiff = int(dtdiffstr[1:]) if dtdiffstr[0] == str.lower("P") else int(dtdiffstr[1:]) * -1
                 for yInfo in yMakeDataInfoArr:
                     if product == str.lower(yInfo['Product']) and \
                             project == str.lower(yInfo['Project']) and \
                             version == str.lower(yInfo['Version']) and \
+                            gfunc == str.lower(yInfo['GFunc']) and \
                             dtfiff == yInfo['DTDiff'] and \
                             (columnNumber in yInfo['ColumnNumbers'] or yInfo['ColumnNumbers'] == []):
                         yColumnNames.append(modeluseColumn)
@@ -110,13 +111,13 @@ class ModelUseFunction(CommonFunction):
                     if product == str.lower(xInfo['Product']) and \
                             project == str.lower(xInfo['Project']) and \
                             version == str.lower(xInfo['Version']) and \
+                            gfunc == str.lower(xInfo['GFunc']) and \
                             dtfiff == xInfo['DTDiff'] and \
                             (columnNumber in xInfo['ColumnNumbers'] or xInfo['ColumnNumbers'] == []):
                         xColumnNames.append(modeluseColumn)
                         df[modeluseColumn] = modeluseDF[modeluseColumn]
                 yColumnNames = list(set(yColumnNames))
                 xColumnNames = list(set(xColumnNames))
-
         return df , yMakeDataInfoArr, xMakeDataInfoArr , commonColumnNames, yColumnNames, xColumnNames
 
     # ==================================================     Lasso    ==================================================
@@ -137,9 +138,9 @@ class ModelUseFunction(CommonFunction):
             self.makeXYDataInfoAndColumnNames(fvInfo, otherInfo)
 
         # -------------------------------------------------- MakeLasso--------------------------------------------------
-
         trainY = df[yColumnNames]
         trainX = df[xColumnNames]
+
         lrcv = LassoCV(alphas=numpy.linspace(0.005, 1, 100), cv=3)
         lrcv.fit(trainX, trainY)
         corf = pandas.Series(lrcv.coef_, index=trainX.columns)
@@ -154,14 +155,15 @@ class ModelUseFunction(CommonFunction):
         # --------------------------------------------------MakeResult--------------------------------------------------
 
         resultInfo = {}
-        resultInfo['MakeDataKeys'] = makeDataKeys
+        resultInfo['FunctionItemType'] = fvInfo['FunctionItemType']
+        resultInfo['MakeDataKeys'] = fvInfo['MakeDataKeys']
         resultInfo['MakeDataInfo'] = []
         for makeDataInfo in makeDataInfoArr :
             resultInfo['MakeDataInfo'].append(makeDataInfo) if makeDataInfo["DataType"] == "Y" else None
 
         for lcvrIndex, lcvrRow in lassoCVRusultDF.iterrows():
             keyArr = lcvrRow['columnname'].split("_")
-            product, project, version, dtdiffstr, columnNumber = keyArr[0], keyArr[1], keyArr[4] + '_' + keyArr[5] + '_' + keyArr[6], keyArr[2], int(keyArr[3])
+            product, project, version, dtdiffstr, gfunc , columnNumber = keyArr[0], keyArr[1], keyArr[5] + '_' + keyArr[6] + '_' + keyArr[7], keyArr[2], keyArr[4], int(keyArr[3])
             columnValue = lcvrRow['columnvalue']
             dtfiff = int(dtdiffstr[1:]) if dtdiffstr[0] == "P" else int(dtdiffstr[1:]) * -1
             dt = (datetime.datetime.strptime(fvInfo["DataTime"], "%Y-%m-%d") + datetime.timedelta(days=dtfiff)).strftime("%Y%m%d")
@@ -170,7 +172,9 @@ class ModelUseFunction(CommonFunction):
                 if product != str.lower(makeDataInfo['Product']) or \
                         project != str.lower(makeDataInfo['Project']) or \
                         version != str.lower(makeDataInfo['Version']) or \
+                        gfunc != str.lower(makeDataInfo['GFunc']) and \
                         dtfiff != makeDataInfo['DTDiff'] or \
+                        columnNumber not in makeDataInfo['ColumnNumbers'] or \
                         'X' != makeDataInfo['DataType'] :
                     continue
                 if 'ColumnNumbers' not in makeDataInfo.keys():
@@ -184,7 +188,9 @@ class ModelUseFunction(CommonFunction):
                     if product != str.lower(makeDataInfo['Product']) or \
                             project != str.lower(makeDataInfo['Project']) or \
                             version != str.lower(makeDataInfo['Version']) or \
+                            gfunc != str.lower(makeDataInfo['GFunc']) and \
                             dtfiff != makeDataInfo['DTDiff'] or \
+                            columnNumber not in makeDataInfo['ColumnNumbers'] or \
                             'X' != makeDataInfo['DataType'] :
                         continue
                     tempMakeDataInfo = copy.deepcopy(makeDataInfo)

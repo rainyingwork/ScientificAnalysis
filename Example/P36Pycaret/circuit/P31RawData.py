@@ -18,8 +18,8 @@ class RawData() :
         rawDataFunction = RawDataFunction()
         functionVersionInfo = copy.deepcopy(functionInfo["ParameterJson"]["R0_0_2"])
         functionVersionInfo["Version"] = "R0_0_2"
-        functionVersionInfo["MakeDataKeys"] = functionInfo["ResultJson"][functionInfo["ParameterJson"]["R0_0_2"]["DataVersion"]]["MakeDataKeys"]
-        functionVersionInfo["MakeDataInfo"] = functionInfo["ResultJson"][functionInfo["ParameterJson"]["R0_0_2"]["DataVersion"]]["MakeDataInfo"]
+        for dictKey in ["FunctionItemType", "MakeDataKeys", "MakeDataInfo"]:
+            functionVersionInfo[dictKey] = functionInfo["ResultJson"][functionVersionInfo["DataVersion"]][dictKey]
         resultObject, globalObjectDict = rawDataFunction.executionFunctionByFunctionType(functionVersionInfo)
         return resultObject, globalObjectDict
 
