@@ -20,7 +20,6 @@ postgresCtrl = PostgresCtrl(
 while True:
     try:
         isRunOPS = False
-
         # ================================================== 檢查有沒有新的訊息 ==================================================
 
         messageJsonStr = telegramCtrl.findMessage()
@@ -108,6 +107,7 @@ while True:
         else :
             print("isRunOPS is False {}".format(datetime.now()))
         time.sleep(10)
-    except :
+    except Exception as e:
+        print("Error {}".format(e))
         print("Error {}".format(datetime.now()))
         time.sleep(10)
