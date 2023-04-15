@@ -5,8 +5,9 @@ import json
 from dotenv import load_dotenv
 from package.common.common.database.PostgresCtrl import PostgresCtrl
 from package.artificialintelligence.common.common.CommonFunction import CommonFunction
+from package.artificialintelligence.common.preprocess.PreProcessTool import PreProcessTool
 
-class PreProcessFunction(CommonFunction):
+class PreProcessFunction(PreProcessTool,CommonFunction):
 
     def __init__(self):
         pass
@@ -99,7 +100,6 @@ class PreProcessFunction(CommonFunction):
         return tagTextDF
 
 
-
     # ==================================================   PPTagText  ==================================================
 
     @classmethod
@@ -108,8 +108,8 @@ class PreProcessFunction(CommonFunction):
         preprossDFArr = fvInfo["ResultArr"]
 
         # -------------------------------------------------- tagTextDF--------------------------------------------------
-        tagTextDF = self.makeTagTextDF(fvInfo)
 
+        tagTextDF = self.makeTagTextDF(fvInfo)
 
         # --------------------------------------------------preprossDF--------------------------------------------------
 

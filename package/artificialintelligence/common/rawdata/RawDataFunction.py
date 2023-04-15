@@ -329,7 +329,6 @@ class RawDataFunction(CommonFunction):
         for sqlInfo in sqlInfoArr :
             sql = makeSingleTagDataSQL(fvInfo,sqlInfo)
             df = postgresCtrl.searchSQL(sql)
-            print(sql)
             dfArr.append(df)
         return dfArr
 

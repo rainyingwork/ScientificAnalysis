@@ -160,19 +160,17 @@ class ModelUseFunction(CommonFunction):
         resultInfo['MakeDataInfo'] = []
         for makeDataInfo in makeDataInfoArr :
             resultInfo['MakeDataInfo'].append(makeDataInfo) if makeDataInfo["DataType"] == "Y" else None
-
         for lcvrIndex, lcvrRow in lassoCVRusultDF.iterrows():
             keyArr = lcvrRow['columnname'].split("_")
             product, project, version, dtdiffstr, gfunc , columnNumber = keyArr[0], keyArr[1], keyArr[5] + '_' + keyArr[6] + '_' + keyArr[7], keyArr[2], keyArr[4], int(keyArr[3])
             columnValue = lcvrRow['columnvalue']
-            dtfiff = int(dtdiffstr[1:]) if dtdiffstr[0] == "P" else int(dtdiffstr[1:]) * -1
-            dt = (datetime.datetime.strptime(fvInfo["DataTime"], "%Y-%m-%d") + datetime.timedelta(days=dtfiff)).strftime("%Y%m%d")
+            dtfiff = int(dtdiffstr[1:]) if dtdiffstr[0] == "p" else int(dtdiffstr[1:]) * -1
             isInNewMakeDataInfo = False
             for makeDataInfo in resultInfo['MakeDataInfo'] :
                 if product != str.lower(makeDataInfo['Product']) or \
                         project != str.lower(makeDataInfo['Project']) or \
                         version != str.lower(makeDataInfo['Version']) or \
-                        gfunc != str.lower(makeDataInfo['GFunc']) and \
+                        gfunc != str.lower(makeDataInfo['GFunc']) or \
                         dtfiff != makeDataInfo['DTDiff'] or \
                         columnNumber not in makeDataInfo['ColumnNumbers'] or \
                         'X' != makeDataInfo['DataType'] :
@@ -188,14 +186,13 @@ class ModelUseFunction(CommonFunction):
                     if product != str.lower(makeDataInfo['Product']) or \
                             project != str.lower(makeDataInfo['Project']) or \
                             version != str.lower(makeDataInfo['Version']) or \
-                            gfunc != str.lower(makeDataInfo['GFunc']) and \
+                            gfunc != str.lower(makeDataInfo['GFunc']) or \
                             dtfiff != makeDataInfo['DTDiff'] or \
                             columnNumber not in makeDataInfo['ColumnNumbers'] or \
                             'X' != makeDataInfo['DataType'] :
                         continue
                     tempMakeDataInfo = copy.deepcopy(makeDataInfo)
                     resultInfo["MakeDataInfo"].append(tempMakeDataInfo)
-                    tempMakeDataInfo['DT'] = dt
                     tempMakeDataInfo['ColumnNumbers'] = []
                     tempMakeDataInfo['ColumnValues'] = []
                     tempMakeDataInfo['ColumnNumbers'].append(columnNumber)
@@ -267,12 +264,11 @@ class ModelUseFunction(CommonFunction):
             modeldict['ModelResult']['FP'] = int(fp)
             modeldict['ModelResult']['FN'] = int(fn)
             modeldict['ModelResult']['TP'] = int(tp)
-            modeldict['ModelResult']['Accuracy'] = tp / (tp + fp) if (tp + fp) != 0 else 0
-            modeldict['ModelResult']['Precision'] = tp / (tp + fn) if (tp + fn) != 0 else 0
-            modeldict['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) != 0 else 0
-            modeldict['ModelResult']['F1Score'] = 2 * modeldict['ModelResult']['Recall'] * modeldict['ModelResult']['Precision'] / (modeldict['ModelResult']['Recall'] + modeldict['ModelResult']['Precision'])
+            modeldict['ModelResult']['Accuracy'] = ((tp + tn) / (tp + tn + fp + fn)) if (tp + tn + fp + fn) != 0 else 0
+            modeldict['ModelResult']['Precision'] = (tp / (tp + fp)) if (tp + fp) != 0 else 0
+            modeldict['ModelResult']['Recall'] = (tp / (tp + fn)) if (tp + fn) != 0 else 0
+            modeldict['ModelResult']['F1Score'] = ((2 * modeldict['ModelResult']['Precision'] * modeldict['ModelResult']['Recall']) /(modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) )if (modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) != 0 else 0
             save_model(bestmodel, "{}/{}".format(modeldict['ModelStorageLocationPath'], modeldict['ModelName']))
-
             sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
             sshCtrl.uploadFile(modeldict['ModelStorageLocation'],modeldict['ModelStorageRemote'])
 
@@ -405,10 +401,10 @@ class ModelUseFunction(CommonFunction):
         modeldict['ModelResult']['FP'] = int(fp)
         modeldict['ModelResult']['FN'] = int(fn)
         modeldict['ModelResult']['TP'] = int(tp)
-        modeldict['ModelResult']['Accuracy'] = tp / (tp + fp) if (tp + fp) != 0 else 0
-        modeldict['ModelResult']['Precision'] = tp / (tp + fn) if (tp + fn) != 0 else 0
-        modeldict['ModelResult']['Recall'] = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) != 0 else 0
-        modeldict['ModelResult']['F1Score'] = 2 * modeldict['ModelResult']['Recall'] * modeldict['ModelResult']['Precision'] / (modeldict['ModelResult']['Recall'] + modeldict['ModelResult']['Precision'])
+        modeldict['ModelResult']['Accuracy'] = ((tp + tn) / (tp + tn + fp + fn)) if (tp + tn + fp + fn) != 0 else 0
+        modeldict['ModelResult']['Precision'] = (tp / (tp + fp)) if (tp + fp) != 0 else 0
+        modeldict['ModelResult']['Recall'] = (tp / (tp + fn)) if (tp + fn) != 0 else 0
+        modeldict['ModelResult']['F1Score'] = ((2 * modeldict['ModelResult']['Precision'] * modeldict['ModelResult']['Recall']) /(modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) )if (modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) != 0 else 0
 
         modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
         modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldict['ModelFileName'])
