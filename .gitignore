@@ -8,7 +8,7 @@ env
 */*/file/old
 */*/file/PLD
 */*/file/out
-*/*/UnitTest
+*/*/.
 UnitTest/
 LocalConfig.py
 *.pyc
