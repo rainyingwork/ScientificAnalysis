@@ -6,9 +6,9 @@ class RawDataInfo(RawDataFunction) :
     def getInfo_R0_0_1(self, makeInfo=None):
 
         tableInfo = {
-            "Project": "P08DataCheck"
+            "Project": "P81DataPerception"
             , "TableName": "R0_0_1"
-            , "Memo": "P08DataCheck"
+            , "Memo": "P81DataPerception"
             , "DataType": "RawData"
             , "StartDate": "2023-01-01"
             , "EndDate": "2023-01-31"

@@ -20,10 +20,13 @@ if __name__ == "__main__":
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_1"]
         opsInfo["OPSOrderJson"] = {
-            "ExeFunctionArr": ["S0_0_1", "R0_0_0", "R0_0_1"],
+            "ExeFunctionArr": [
+                "S0_0_1",
+                #"R0_0_0", "R0_0_1"
+            ],
             "OrdFunctionArr": [
-                {"Parent": "S0_0_1", "Child": "R0_0_0"},
-                {"Parent": "S0_0_1", "Child": "R0_0_1"},
+                # {"Parent": "S0_0_1", "Child": "R0_0_0"},
+                # {"Parent": "S0_0_1", "Child": "R0_0_1"},
             ],
             "FunctionMemo": {
                 "S0_0_1": "Juice資料塞入正規資料庫",
@@ -33,19 +36,23 @@ if __name__ == "__main__":
         }
         opsInfo["ParameterJson"] = {
             "S0_0_1": {},
-            "R0_0_0": {
-                "FunctionType": "MakeTagText",
-                "Product" : "Example",
-                "Project" : "P29RawData",
-                "Version" : "R0_0_0",
-                "DataTime" : dateInfo["DataTime"],
-                "FeatureType" : "General",
-                "FilePath" : "Example/P29RawData/file/TagText/TagR0_0_0.json",
-            },
-            "R0_0_1": {
-                "FunctionType": "ExeSQLStrs",
-                "DataTime": dateInfo["DataTime"],
-            },
+            # "R0_0_0": {
+            #     "FunctionType": "MakeTagText",
+            #     "Product" : "Example",
+            #     "Project" : "P81DataPerception",
+            #     "Version" : "R0_0_0",
+            #     "DataTime" : dateInfo["DataTime"],
+            #     "FeatureType" : "General",
+            #     "FilePath" : "Example/P81DataPerception/file/TagText/TagR0_0_0.json",
+            # },
+            # "R0_0_1": {
+            #     "FunctionType": "ExeSQLStrs",
+            #     "DataTime": dateInfo["DataTime"],
+            # },
         }
         opsInfo["ResultJson"] = {}
         executeOPSCommon.main(opsInfo)
+
+
+
+

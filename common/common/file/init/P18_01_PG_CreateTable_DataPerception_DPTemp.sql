@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS dataperception.dpmain  ;
+DROP TABLE IF EXISTS dataperception.dptemp  ;
 
 CREATE TABLE IF NOT EXISTS dataperception.dptemp (
 	createtime timestamp NULL,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS dataperception.dptemp (
 	columnvalue text NULL,
 	percepfunc text NULL,
     percepcycle text NULL,
-    percepvalue text NULL,
+    percepvalue double precision NULL,
     percepstate text NULL,
 	percepmemojson text NULL
 ) ;

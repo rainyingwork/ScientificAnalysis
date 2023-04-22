@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS dataperception.dpmain (
 	columnvalue text NULL,
 	percepfunc text NULL,
     percepcycle text NULL,
-    percepvalue text NULL,
+    percepvalue double precision NULL,
     percepstate text NULL,
 	percepmemojson text NULL
 ) ;
