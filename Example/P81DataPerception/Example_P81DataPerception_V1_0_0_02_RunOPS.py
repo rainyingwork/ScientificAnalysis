@@ -10,6 +10,10 @@ if __name__ == "__main__":
         # {"DataTime": "2023-01-21"},{"DataTime": "2023-01-22"},{"DataTime": "2023-01-23"},{"DataTime": "2023-01-24"},{"DataTime": "2023-01-25"},
         # {"DataTime": "2023-01-26"},{"DataTime": "2023-01-27"},{"DataTime": "2023-01-28"},{"DataTime": "2023-01-29"},{"DataTime": "2023-01-30"},
     ]
+
+    dateInfoArr = [
+        {"DataTime": "2023-01-16"}
+    ]
     for dateInfo in dateInfoArr :
         print(dateInfo["DataTime"])
         basicInfo = {
@@ -18,33 +22,50 @@ if __name__ == "__main__":
             "Project": ["P81DataPerception"],
         }
         opsInfo = copy.deepcopy(basicInfo)
-        opsInfo["OPSVersion"] = ["V0_0_1"]
+        opsInfo["OPSVersion"] = ["V1_0_0"]
         opsInfo["OPSOrderJson"] = {
-            "ExeFunctionArr": ["S0_0_1", "R0_0_0", "R0_0_1"],
+            "ExeFunctionArr": ["DP0_0_1","DP0_1_1","DP0_1_2"],
             "OrdFunctionArr": [
-                {"Parent": "S0_0_1", "Child": "R0_0_0"},
-                {"Parent": "S0_0_1", "Child": "R0_0_1"},
+                {"Parent": "DP0_0_1", "Child": "DP0_1_1"},
+                {"Parent": "DP0_1_1", "Child": "DP0_1_2"},
             ],
             "FunctionMemo": {
-                "S0_0_1": "Juice資料塞入正規資料庫",
-                "R0_0_0": "Juice資料文本製作",
-                "R0_0_1": "Juice資料塞入分析資料庫",
             },
         }
         opsInfo["ParameterJson"] = {
-            "S0_0_1": {},
-            "R0_0_0": {
-                "FunctionType": "MakeTagText",
-                "Product" : "Example",
-                "Project" : "P29RawData",
-                "Version" : "R0_0_0",
-                "DataTime" : dateInfo["DataTime"],
-                "FeatureType" : "General",
-                "FilePath" : "Example/P29RawData/file/TagText/TagR0_0_0.json",
-            },
-            "R0_0_1": {
-                "FunctionType": "ExeSQLStrs",
+            "DP0_0_1": {
+                "FunctionType": "MakeDataPercoption",
+                "RealTableName": "observationdata.standarddata",
+                "Product": "Example",
+                "Project": "P81DataPerception",
+                "TableName": ["S0_0_1","S0_0_11","S0_0_12",],
                 "DataTime": dateInfo["DataTime"],
+                "PercopColumnName": None,
+                "PercopColumnValse": False,
+                "PercepCycle": "1D",
+            },
+            "DP0_1_1": {
+                "FunctionType": "CompareDataPercoptionByDT",
+                "RealTableName": "observationdata.standarddata",
+                "Product": "Example",
+                "Project": "P81DataPerception",
+                "Tablename": "S0_0_1",
+                "DataTime": dateInfo["DataTime"],
+                "PercopColumnName": None,
+                "PercopColumnValse": False,
+                "PercepCycle": "1D",
+            },
+            "DP0_1_2": {
+                "FunctionType": "CompareDataPercoptionByTableName",
+                "RealTableName": "observationdata.standarddata",
+                "Product": "Example",
+                "Project": "P81DataPerception",
+                "MainTablename": "S0_0_1",
+                "CompareTablenames": ['S0_0_11', 'S0_0_12'],
+                "DataTime": dateInfo["DataTime"],
+                "PercopColumnName": None,
+                "PercopColumnValse": False,
+                "PercepCycle": "1D",
             },
         }
         opsInfo["ResultJson"] = {}
