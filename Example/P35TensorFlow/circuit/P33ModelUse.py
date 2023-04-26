@@ -45,7 +45,6 @@ class ModelUse() :
         model.fit(trainDF[xColumnNames], trainDF[yColumnNames], epochs=100)
         model.summary()
         predictions = (model.predict(testDF[xColumnNames]) >= 0.5).astype("int32")
-        print(predictions)
         tn, fp, fn, tp = confusion_matrix(testDF[yColumnNames], predictions.T[0]).ravel()
         modeldict = {}
         modeldict['ModelResult'] = {}
