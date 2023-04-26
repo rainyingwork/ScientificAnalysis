@@ -13,4 +13,6 @@ __pipFunction = ("pip install --no-index --find-links=venv/pip" if isLocalDir ==
 # os.system('{} -m {} --global-option=build_ext --global-option="-IC:\Program Files\Graphviz\include" --global-option="-LC:\Program Files\Graphviz\lib" pygraphviz==1.10'.format(__pythonexePath,__pipFunction))
 
 # os.system("{} -m {} diffusers==0.14.0".format(__pythonexePath,__pipFunction))          # diffusers
-os.system("{} -m {} transformers==4.27.4".format(__pythonexePath,__pipFunction))          # diffusers
+# os.system("{} -m {} transformers==4.27.4".format(__pythonexePath,__pipFunction))          # diffusers
+
+os.system("{} -m {} pivottablejs==0.9.0".format(__pythonexePath,__pipFunction))          # OpenAI GPT-3
