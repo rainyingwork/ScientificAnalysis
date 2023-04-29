@@ -1,5 +1,6 @@
 # 主要不上傳
 .idea
+.vscode
 env
 */*/file/data
 */*/file/doc
