@@ -15,9 +15,9 @@ if __name__ == "__main__":
         opsInfo["OPSVersion"] = ["V0_0_1"]
         opsInfo["OPSOrderJson"] = {
             "ExeFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2","M0_0_2"],
-            # "RepOPSRecordId": 1098,
-            # "RepFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2"],
-            # "RunFunctionArr": ["M0_0_2"],
+            # "RepOPSRecordId": 2583,
+            # "RepFunctionArr": ["R0_0_1","P0_0_1",],
+            # "RunFunctionArr": ["M0_0_1","R0_0_2","P0_0_2","M0_0_2"],
             "OrdFunctionArr": [
                 {"Parent": "R0_0_1", "Child": "P0_0_1"},
                 {"Parent": "P0_0_1", "Child": "M0_0_1"},
@@ -43,11 +43,11 @@ if __name__ == "__main__":
                     {"DataType": "Filter", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "max({})", "ColumnNumbers": [3], "HavingSQL":["> 0"]},
                     {"DataType": "Y", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "sum({})", "ColumnNumbers": [1]},
                     {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "sum({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
-                    {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "avg({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
-                    {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "max({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
-                    {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "min({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
-                    {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "count({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
-                    {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "count(distinct {})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
+                    # {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "avg({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
+                    # {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "max({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
+                    # {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "min({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
+                    # {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "count({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
+                    # {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "count(distinct {})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
                 ]
             },
             "P0_0_1": {
@@ -61,7 +61,7 @@ if __name__ == "__main__":
                 "DataVersion": "P0_0_1",
                 "ModelFunction":"Lasso",
                 "ModelParameter":{
-                    "TopK": 10,
+                    "TopK": 20,
                     "Filter":0.000000001,
                 },
             },

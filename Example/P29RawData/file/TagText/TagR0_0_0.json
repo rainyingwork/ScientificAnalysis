@@ -9,15 +9,11 @@
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"002": {
     "enname": "Purchase MM",
@@ -29,15 +25,11 @@
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"003": {
     "enname": "Store7 Yes",
@@ -49,15 +41,11 @@
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"004": {
     "enname": "WeekofPurchase",
@@ -67,17 +55,15 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","log","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "log": {"value": 10} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"005": {
     "enname": "StoreID",
@@ -87,17 +73,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"006": {
     "enname": "SpecialCH",
@@ -107,17 +90,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"007": {
     "enname": "SpecialMM",
@@ -127,17 +107,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"008": {
     "enname": "STORE",
@@ -147,17 +124,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"009": {
     "enname": "PriceCH",
@@ -167,17 +141,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"010": {
     "enname": "PriceMM",
@@ -187,17 +158,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"011": {
     "enname": "DiscCH",
@@ -207,17 +175,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"012": {
     "enname": "DiscMM",
@@ -227,17 +192,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"013": {
     "enname": "LoyalCH",
@@ -247,17 +209,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"014": {
     "enname": "SalePriceMM",
@@ -267,17 +226,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"015": {
     "enname": "SalePriceMM",
@@ -287,17 +243,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"016": {
     "enname": "PriceDiff",
@@ -307,17 +260,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"017": {
     "enname": "PctDiscMM",
@@ -327,17 +277,14 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
   ,"018": {
     "enname": "PctDiscCH",
@@ -347,16 +294,13 @@
     "jsonmessage": {
       "DataVersion":"R0_0_0",
       "DataPreProcess": {
-        "ProcessingOrder": ["fillna"],
+        "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
-          "fillna": {
-            "value": 0
-          }
+          "fillna": {"value": 0} ,
+          "normbyzscore": {}
         }
       }
     },
-    "tagshape": [
-      0
-    ]
+    "tagshape": [0]
   }
 }
