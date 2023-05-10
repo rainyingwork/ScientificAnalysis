@@ -68,6 +68,8 @@ class PreProcessFunction(PreProcessTool,CommonFunction):
 
         tagTextDF = pandas.DataFrame()
         for makeDataInfo in makeDataInfoArr:
+            if makeDataInfo["DataType"] not in ['X','Y']:
+                continue
             tagTextVersion = makeDataInfo['Version'].split("_")[0] + '_' + makeDataInfo['Version'].split("_")[1] + '_0'
             tagTextSQL = """
                 SELECT
@@ -113,8 +115,6 @@ class PreProcessFunction(PreProcessTool,CommonFunction):
 
         # --------------------------------------------------preprossDF--------------------------------------------------
 
-        resultPreprossDFArr = []
-
         preprossDF = preprossDFArr[0]
 
         for mdInfo in fvInfo['MakeDataInfo']:
@@ -125,7 +125,8 @@ class PreProcessFunction(PreProcessTool,CommonFunction):
                         | (tagTextRow["project"] != mdInfo["Project"]) \
                         | (tagTextRow["dt"] != mdInfo["DTStr"]) \
                         | (tagTextRow["project"] != mdInfo["Project"]) \
-                        | (tagTextRow["version"] != mdInfo["Version"]):
+                        | (tagTextRow["version"] != mdInfo["Version"]) \
+                        | (tagTextRow["index"] != columnNumber ) :
                         continue
                     if columnFullName not in preprossDF.columns:
                         preprossDF[columnFullName] = None
@@ -137,8 +138,13 @@ class PreProcessFunction(PreProcessTool,CommonFunction):
                         if processingFunctionName == "fillna":
                             preprossDF[columnFullName] = preprossDF[columnFullName].fillna(processingFunction['value'])
                         elif processingFunctionName == "log":
-                            preprossDF[columnFullName] = preprossDF[columnFullName].apply(lambda x: math.log(x, processingFunction['value']), axis=1)
-        resultPreprossDFArr.append(preprossDF)
+                            preprossDF[columnFullName] = preprossDF[columnFullName].apply(lambda x: (math.log(x, processingFunction['value']) if x > 0 else 0 ))
+                        elif processingFunctionName == "rank":
+                            preprossDF[columnFullName] = preprossDF[columnFullName].rank()
+                        elif processingFunctionName == "normbymaxmin":
+                            preprossDF[columnFullName] = preprossDF[columnFullName].apply(lambda x: (x - preprossDF[columnFullName].min()) / (preprossDF[columnFullName].max() - preprossDF[columnFullName].min()))
+                        elif processingFunctionName == "normbyzscore":
+                            preprossDF[columnFullName] = preprossDF[columnFullName].apply(lambda x: (x - preprossDF[columnFullName].mean()) / preprossDF[columnFullName].std())
         return preprossDFArr
 
     @classmethod
