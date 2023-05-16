@@ -9,15 +9,15 @@ if __name__ == "__main__":
         basicInfo = {
             "RunType": ["RunOPS"],
             "Product": ["Example"],
-            "Project": ["P36Pycaret"],
+            "Project": ["P37AutoKeras"],
         }
         opsInfo = copy.deepcopy(basicInfo)
         opsInfo["OPSVersion"] = ["V0_0_1"]
         opsInfo["OPSOrderJson"] = {
             "ExeFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2","M0_0_2"],
-            # "RepOPSRecordId": 2583,
-            # "RepFunctionArr": ["R0_0_1","P0_0_1",],
-            # "RunFunctionArr": ["M0_0_1","R0_0_2","P0_0_2","M0_0_2"],
+            # "RepOPSRecordId": 2607,
+            # "RepFunctionArr": ["R0_0_1","P0_0_1","M0_0_1","R0_0_2","P0_0_2",],
+            # "RunFunctionArr": ["M0_0_2"],
             "OrdFunctionArr": [
                 {"Parent": "R0_0_1", "Child": "P0_0_1"},
                 {"Parent": "P0_0_1", "Child": "M0_0_1"},
@@ -31,7 +31,7 @@ if __name__ == "__main__":
                 "M0_0_1": "使用Lasso做參數過濾",
                 "R0_0_2": "撈取Lasso的XYData資料，使用M0_0_1的結果",
                 "P0_0_2": "預處理Lasso的XYData資料",
-                "M0_0_2": "使用AutoML做模型訓練",
+                "M0_0_2": "使用AutoDL做模型訓練",
             },
         }
         opsInfo["ParameterJson"] = {
@@ -76,15 +76,18 @@ if __name__ == "__main__":
                 "DataVersion": "R0_0_2",
             },
             "M0_0_2": {
-                "FunctionType": "AutoML",
+                "FunctionType": "AutoDL",
                 "DataTime": dateInfo['DataTime'],
                 "DataVersion": "P0_0_2",
-                "ModelFunction": "TrainPycaretDefult",
+                "ModelFunction": "TrainAutoKerasDefult",
                 "ModelParameter": {
                     "TaskType": "Classification",
+                    "MaxTrials": 20,
+                    "TrainEpochs": 30,
                 },
             },
         }
+
         opsInfo["ResultJson"] = {}
         executeOPSCommon.main(opsInfo)
 

@@ -29,6 +29,15 @@ class ModelUseFunction(CommonFunction):
                 otherInfo = self.muAutoMLByUsePycaretModelByDatabaseRusult(functionVersionInfo)
                 resultDict = otherInfo['ResultInfo']
                 globalObjectDict["ResultArr"] = resultDict["ResultArr"] ; resultDict.pop("ResultArr")
+        elif functionVersionInfo['FunctionType'] == "AutoDL":
+            if functionVersionInfo['ModelFunction'] == "TrainAutoKerasDefult":
+                otherInfo = self.muAutoDLByTrainAutoKerasDefult(functionVersionInfo)
+                resultDict = otherInfo['ResultInfo']
+            elif functionVersionInfo['ModelFunction'] == "UseAKerasModelByDatabaseRusult":
+                otherInfo = self.muAutoMLByUseAutoKerasModelByDatabaseRusult(functionVersionInfo)
+                resultDict = otherInfo['ResultInfo']
+                globalObjectDict["ResultArr"] = resultDict["ResultArr"];
+                resultDict.pop("ResultArr")
         elif functionVersionInfo['FunctionType'] == "ExeSQLStrs":
             otherInfo = self.muExeSQLStrs(functionVersionInfo)
             resultDict["SQLStrs"] = ""
@@ -56,19 +65,47 @@ class ModelUseFunction(CommonFunction):
     @classmethod
     def muAutoMLByUsePycaretModelByDatabaseRusult(self, fvInfo):
         otherInfo = {}
-        # databaseResultJson = self.getDatabaseResultJson(fvInfo)
-        # fvInfo["MakeDataKeys"] = databaseResultJson["MakeDataKeys"]
-        # fvInfo["MakeDataInfo"] = databaseResultJson["MakeDataInfo"]
-        # fvInfo["ModelParameter"] = databaseResultJson["ModelParameter"]
-        # fvInfo["ModelDesign"] = databaseResultJson["ModelDesign"]
-        # for modelDict in databaseResultJson["ModelDesign"]["ModelDicts"] :
-        #     if modelDict["ModelName"] != fvInfo["DatabaseModelName"] :
-        #         continue
-        #     fvInfo["ModelDesign"]["ModelDicts"] = [modelDict]
+        databaseResultJson = self.getDatabaseResultJson(fvInfo)
+        fvInfo["MakeDataKeys"] = databaseResultJson["MakeDataKeys"]
+        fvInfo["MakeDataInfo"] = databaseResultJson["MakeDataInfo"]
+        fvInfo["ModelParameter"] = databaseResultJson["ModelParameter"]
+        fvInfo["ModelDesign"] = databaseResultJson["ModelDesign"]
+        for modelDict in databaseResultJson["ModelDesign"]["ModelDicts"] :
+            if modelDict["ModelName"] != fvInfo["DatabaseModelName"] :
+                continue
+            fvInfo["ModelDesign"]["ModelDicts"] = [modelDict]
         if fvInfo["ModelParameter"]["TaskType"] == "Classification":
             otherInfo["ResultInfo"] = self.makeAutoMLByUsePycaretModelClassification(fvInfo, otherInfo)
         elif fvInfo["ModelParameter"]["TaskType"] == "Regression":
             otherInfo["ResultInfo"] = self.makeAutoMLByUsePycaretModelRegression(fvInfo, otherInfo)
+        return otherInfo
+
+    @classmethod
+    def muAutoDLByTrainAutoKerasDefult (self, fvInfo):
+        otherInfo = {}
+        if fvInfo["ModelParameter"]["TaskType"] == "Classification" :
+            otherInfo["ResultInfo"] = self.makeAutoMLByTrainAKerasDefultClassification(fvInfo, otherInfo)
+        elif fvInfo["ModelParameter"]["TaskType"] == "Regression" :
+            otherInfo["ResultInfo"] = self.makeAutoMLByTrainAKerasDefultRegression(fvInfo, otherInfo)
+        otherInfo["ResultInfo"]['ModelParameter'] = fvInfo['ModelParameter']
+        return otherInfo
+
+    @classmethod
+    def muAutoMLByUseAutoKerasModelByDatabaseRusult(self, fvInfo):
+        otherInfo = {}
+        databaseResultJson = self.getDatabaseResultJson(fvInfo)
+        fvInfo["MakeDataKeys"] = databaseResultJson["MakeDataKeys"]
+        fvInfo["MakeDataInfo"] = databaseResultJson["MakeDataInfo"]
+        fvInfo["ModelParameter"] = databaseResultJson["ModelParameter"]
+        fvInfo["ModelDesign"] = databaseResultJson["ModelDesign"]
+        for modelDict in databaseResultJson["ModelDesign"]["ModelDicts"]:
+            if modelDict["ModelName"] != fvInfo["DatabaseModelName"]:
+                continue
+            fvInfo["ModelDesign"]["ModelDicts"] = [modelDict]
+        if fvInfo["ModelParameter"]["TaskType"] == "Classification":
+            otherInfo["ResultInfo"] = self.makeAutoMLByUseAKerasModelClassification(fvInfo, otherInfo)
+        elif fvInfo["ModelParameter"]["TaskType"] == "Regression":
+            otherInfo["ResultInfo"] = self.makeAutoMLByUseAKerasModelRegression(fvInfo, otherInfo)
         return otherInfo
 
     @classmethod
@@ -481,3 +518,301 @@ class ModelUseFunction(CommonFunction):
         del sshCtrl
         return resultDict
 
+
+    # =================================================UseAKerasDefult=================================================
+
+    @classmethod
+    def makeAutoMLByTrainAKerasDefultClassification(self, fvInfo, otherInfo):
+        import autokeras as ak
+        from sklearn.model_selection import train_test_split
+
+        # Load the iris dataset
+
+        load_dotenv(dotenv_path="env/ssh.env")
+        sshCtrl = SSHCtrl(
+            host=os.getenv("SSH_IP")
+            , port=int(os.getenv("SSH_PORT"))
+            , user=os.getenv("SSH_USER")
+            , passwd=os.getenv("SSH_PASSWD")
+        )
+
+        # -------------------------------------------------- XYColumn --------------------------------------------------
+
+        df, yMakeDataInfoArr, xMakeDataInfoArr, commonColumnNames, yColumnNames, xColumnNames = \
+            self.makeXYDataInfoAndColumnNames(fvInfo, otherInfo)
+
+        # -------------------------------------------------- MakeModel--------------------------------------------------
+        maxTrials = fvInfo["ModelParameter"]["MaxTrials"] if "MaxTrials" in fvInfo["ModelParameter"].keys() else 10
+        trainEpochs = fvInfo["ModelParameter"]["TrainEpochs"] if "TrainEpochs" in fvInfo["ModelParameter"].keys() else 10
+
+        trainDF, testDF = train_test_split(df, test_size=0.2)
+        clf = ak.StructuredDataClassifier(max_trials=maxTrials)
+        clf.fit(trainDF[xColumnNames],trainDF[yColumnNames], epochs=trainEpochs)
+
+        resultDict = {}
+        resultDict['MakeDataKeys'] = fvInfo['MakeDataKeys']
+        resultDict['MakeDataInfo'] = fvInfo['MakeDataInfo']
+        resultDict['ModelDesign'] = {}
+        resultDict['ModelDesign']['ModelType'] = "AutoDL"
+        resultDict['ModelDesign']['ModelFunction'] = "UseAKerasDefult"
+        resultDict['ModelDesign']['ModelDicts'] = []
+        product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
+
+        predictionsArr = clf.predict(testDF[xColumnNames])
+        predictions = pandas.DataFrame(predictionsArr, columns=['Prediction'])
+        predictions[yColumnNames[0]] = testDF[yColumnNames[0]].values
+        tp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Prediction'] != 0)).sum())
+        fp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Prediction'] == 0)).sum())
+        tn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Prediction'] == 0)).sum())
+        fn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Prediction'] != 0)).sum())
+        modeldict = {}
+        modeldict['ModelFullName'] = "AutoKeras"
+        modeldict['ModelPackage'] = "AutoKeras"
+        modeldict['ModelName'] = "AutoKeras"
+        modeldict['ModelPathName'] = modeldict['ModelName']
+        modeldict['ModelFileName'] = modeldict['ModelName'] + ".ak"
+        modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+        modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir,modeldict['ModelPathName'])
+        modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+        modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir, modeldict['ModelPathName'])
+        modeldict['ModelResult'] = {}
+        modeldict['ModelResult']['TN'] = int(tn)
+        modeldict['ModelResult']['FP'] = int(fp)
+        modeldict['ModelResult']['FN'] = int(fn)
+        modeldict['ModelResult']['TP'] = int(tp)
+        modeldict['ModelResult']['Accuracy'] = ((tp + tn) / (tp + tn + fp + fn)) if (tp + tn + fp + fn) != 0 else 0
+        modeldict['ModelResult']['Precision'] = (tp / (tp + fp)) if (tp + fp) != 0 else 0
+        modeldict['ModelResult']['Recall'] = (tp / (tp + fn)) if (tp + fn) != 0 else 0
+        modeldict['ModelResult']['F1Score'] = ((2 * modeldict['ModelResult']['Precision'] * modeldict['ModelResult']['Recall']) /(modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) )if (modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) != 0 else 0
+        print(modeldict['ModelResult'])
+
+        clf.export_model().save("{}/{}".format(modeldict['ModelStorageLocationPath'], modeldict['ModelPathName']))
+        sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
+        sshCtrl.uploadDirBySFTP(modeldict['ModelStorageLocation'],modeldict['ModelStorageRemote'])
+
+        resultDict['ModelDesign']['ModelDicts'].append(modeldict)
+        del sshCtrl
+        return resultDict
+
+    @classmethod
+    def makeAutoMLByTrainAKerasDefultRegression(self, fvInfo, otherInfo):
+        import autokeras as ak
+        from sklearn.model_selection import train_test_split
+        from sklearn.metrics import explained_variance_score
+        from sklearn.metrics import mean_absolute_error
+        from sklearn.metrics import mean_squared_error
+        from sklearn.metrics import r2_score
+        # Load the iris dataset
+
+        load_dotenv(dotenv_path="env/ssh.env")
+        sshCtrl = SSHCtrl(
+            host=os.getenv("SSH_IP")
+            , port=int(os.getenv("SSH_PORT"))
+            , user=os.getenv("SSH_USER")
+            , passwd=os.getenv("SSH_PASSWD")
+        )
+
+        # -------------------------------------------------- XYColumn --------------------------------------------------
+
+        df, yMakeDataInfoArr, xMakeDataInfoArr, commonColumnNames, yColumnNames, xColumnNames = \
+            self.makeXYDataInfoAndColumnNames(fvInfo, otherInfo)
+
+        # -------------------------------------------------- MakeModel--------------------------------------------------
+        maxTrials = fvInfo["ModelParameter"]["MaxTrials"] if "MaxTrials" in fvInfo["ModelParameter"].keys() else 10
+        trainEpochs = fvInfo["ModelParameter"]["TrainEpochs"] if "TrainEpochs" in fvInfo["ModelParameter"].keys() else 10
+
+        trainDF, testDF = train_test_split(df, test_size=0.2)
+
+        clf = ak.StructuredDataRegressor(max_trials=maxTrials)
+        clf.fit(trainDF[xColumnNames],trainDF[yColumnNames], epochs=trainEpochs)
+
+        resultDict = {}
+        resultDict['MakeDataKeys'] = fvInfo['MakeDataKeys']
+        resultDict['MakeDataInfo'] = fvInfo['MakeDataInfo']
+        resultDict['ModelDesign'] = {}
+        resultDict['ModelDesign']['ModelType'] = "AutoDL"
+        resultDict['ModelDesign']['ModelFunction'] = "UseAKerasDefult"
+        resultDict['ModelDesign']['ModelDicts'] = []
+        product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
+
+        predictionsArr = clf.predict(testDF[xColumnNames])
+        predictions = pandas.DataFrame(predictionsArr, columns=['Prediction'])
+        predictions[yColumnNames[0]] = testDF[yColumnNames[0]].values
+
+        MAE = mean_absolute_error(predictions[yColumnNames[0]], predictions['Prediction'])
+        MSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Prediction'])
+        RMSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Prediction'], squared=False)
+        R2 = r2_score(predictions[yColumnNames[0]], predictions['Prediction'])
+        EVS = explained_variance_score(predictions[yColumnNames[0]], predictions['Prediction'])
+        modeldict = {}
+        modeldict['ModelFullName'] = "AutoKeras"
+        modeldict['ModelPackage'] = "AutoKeras"
+        modeldict['ModelName'] = "AutoKeras"
+        modeldict['ModelPathName'] = modeldict['ModelName']
+        modeldict['ModelFileName'] = modeldict['ModelName'] + ".ak"
+        modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+        modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir,modeldict['ModelPathName'])
+        modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+        modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir, modeldict['ModelPathName'])
+        modeldict['ModelResult'] = {}
+        modeldict['ModelResult']['MAE'] = float(MAE)
+        modeldict['ModelResult']['MSE'] = float(MSE)
+        modeldict['ModelResult']['RMSE'] = float(RMSE)
+        modeldict['ModelResult']['R2'] = float(R2)
+        modeldict['ModelResult']['EVS'] = float(EVS)
+        print(modeldict['ModelResult'])
+
+        clf.export_model().save("{}/{}".format(modeldict['ModelStorageLocationPath'], modeldict['ModelPathName']))
+        sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
+        sshCtrl.uploadDirBySFTP(modeldict['ModelStorageLocation'],modeldict['ModelStorageRemote'])
+
+        resultDict['ModelDesign']['ModelDicts'].append(modeldict)
+        del sshCtrl
+        return resultDict
+
+    @classmethod
+    def makeAutoMLByUseAKerasModelClassification(self, fvInfo, otherInfo):
+        import autokeras as ak
+        from sklearn.model_selection import train_test_split
+        from tensorflow import keras
+        load_dotenv(dotenv_path="env/ssh.env")
+        sshCtrl = SSHCtrl(
+            host=os.getenv("SSH_IP")
+            , port=int(os.getenv("SSH_PORT"))
+            , user=os.getenv("SSH_USER")
+            , passwd=os.getenv("SSH_PASSWD")
+        )
+
+        # -------------------------------------------------- XYColumn --------------------------------------------------
+
+        df, yMakeDataInfoArr, xMakeDataInfoArr, commonColumnNames, yColumnNames, xColumnNames = \
+            self.makeXYDataInfoAndColumnNames(fvInfo, otherInfo)
+
+        # -------------------------------------------------- MakeModel--------------------------------------------------
+        modeldict = fvInfo["ModelDesign"]['ModelDicts'][0]
+        product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
+        modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+        modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldict['ModelPathName'])
+
+        sshCtrl.downloadDirBySFTP(modeldict['ModelStorageRemote'], modeldict['ModelStorageLocation'])
+        clf = keras.models.load_model(modeldict['ModelStorageLocation'], custom_objects=ak.CUSTOM_OBJECTS)
+
+        predictionsArr = clf.predict(df[xColumnNames])
+        predictions = pandas.DataFrame(predictionsArr, columns=['Prediction'])
+        predictions[yColumnNames[0]] = df[yColumnNames[0]].values
+        tp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Prediction'] != 0)).sum())
+        fp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Prediction'] == 0)).sum())
+        tn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Prediction'] == 0)).sum())
+        fn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Prediction'] != 0)).sum())
+
+        oriDF = fvInfo["ResultArr"][0]
+        resultDF = oriDF[commonColumnNames]
+        resultDF[self.getDoubleColumnArr()[0]] = predictions[yColumnNames[0]]
+        resultDF[self.getDoubleColumnArr()[1]] = predictions['Prediction']
+
+        modeldict = {}
+        modeldict['ModelFullName'] = "AutoKeras"
+        modeldict['ModelPackage'] = "AutoKeras"
+        modeldict['ModelName'] = "AutoKeras"
+        modeldict['ModelPathName'] = modeldict['ModelName']
+        modeldict['ModelFileName'] = modeldict['ModelName'] + ".ak"
+        modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+        modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir,modeldict['ModelPathName'])
+        modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+        modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir, modeldict['ModelPathName'])
+        modeldict['ModelResult'] = {}
+        modeldict['ModelResult']['TN'] = int(tn)
+        modeldict['ModelResult']['FP'] = int(fp)
+        modeldict['ModelResult']['FN'] = int(fn)
+        modeldict['ModelResult']['TP'] = int(tp)
+        modeldict['ModelResult']['Accuracy'] = ((tp + tn) / (tp + tn + fp + fn)) if (tp + tn + fp + fn) != 0 else 0
+        modeldict['ModelResult']['Precision'] = (tp / (tp + fp)) if (tp + fp) != 0 else 0
+        modeldict['ModelResult']['Recall'] = (tp / (tp + fn)) if (tp + fn) != 0 else 0
+        modeldict['ModelResult']['F1Score'] = ((2 * modeldict['ModelResult']['Precision'] * modeldict['ModelResult']['Recall']) /(modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) )if (modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) != 0 else 0
+        print(modeldict['ModelResult'])
+        modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+        modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldict['ModelPathName'])
+
+        sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
+        sshCtrl.uploadDirBySFTP(modeldict['ModelStorageLocation'],modeldict['ModelStorageRemote'])
+        resultDict = copy.deepcopy(fvInfo)
+        resultDict["ResultArr"] = [resultDF]
+        resultDict["ModelDict"] = modeldict
+        del sshCtrl
+        return resultDict
+
+    @classmethod
+    def makeAutoMLByUseAKerasModelRegression(self, fvInfo, otherInfo):
+        import autokeras as ak
+        from sklearn.model_selection import train_test_split
+        from sklearn.metrics import explained_variance_score
+        from sklearn.metrics import mean_absolute_error
+        from sklearn.metrics import mean_squared_error
+        from sklearn.metrics import r2_score
+        from tensorflow import keras
+
+        load_dotenv(dotenv_path="env/ssh.env")
+        sshCtrl = SSHCtrl(
+            host=os.getenv("SSH_IP")
+            , port=int(os.getenv("SSH_PORT"))
+            , user=os.getenv("SSH_USER")
+            , passwd=os.getenv("SSH_PASSWD")
+        )
+
+        # -------------------------------------------------- XYColumn --------------------------------------------------
+
+        df, yMakeDataInfoArr, xMakeDataInfoArr, commonColumnNames, yColumnNames, xColumnNames = \
+            self.makeXYDataInfoAndColumnNames(fvInfo, otherInfo)
+
+        # -------------------------------------------------- MakeModel--------------------------------------------------
+
+        modeldict = fvInfo["ModelDesign"]['ModelDicts'][0]
+
+        product, project, opsVersion, opsRecordId, executeFunction = fvInfo["Product"],fvInfo["Project"],fvInfo["OPSVersion"],str(fvInfo["OPSRecordId"]),fvInfo["Version"]
+        exeFunctionLDir = "{}/{}/file/result/{}/{}/{}".format(product, project, opsVersion, opsRecordId,executeFunction)
+        exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
+        os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
+        modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+        modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldict['ModelPathName'])
+
+        sshCtrl.downloadDirBySFTP(modeldict['ModelStorageRemote'], modeldict['ModelStorageLocation'])
+        clf = keras.models.load_model(modeldict['ModelStorageLocation'])
+
+        predictionsArr = clf.predict(df[xColumnNames])
+        predictions = pandas.DataFrame(predictionsArr, columns=['Prediction'])
+        predictions[yColumnNames[0]] = df[yColumnNames[0]].values
+
+        oriDF = fvInfo["ResultArr"][0]
+        resultDF = oriDF[commonColumnNames]
+        resultDF[self.getDoubleColumnArr()[0]] = predictions[yColumnNames[0]]
+        resultDF[self.getDoubleColumnArr()[1]] = predictions['Label']
+
+        MAE = mean_absolute_error(predictions[yColumnNames[0]], predictions['Label'])
+        MSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'])
+        RMSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'], squared=False)
+        R2 = r2_score(predictions[yColumnNames[0]], predictions['Label'])
+        EVS = explained_variance_score(predictions[yColumnNames[0]], predictions['Label'])
+        modeldict['ModelResult']['MAE'] = float(MAE)
+        modeldict['ModelResult']['MSE'] = float(MSE)
+        modeldict['ModelResult']['RMSE'] = float(RMSE)
+        modeldict['ModelResult']['R2'] = float(R2)
+        modeldict['ModelResult']['EVS'] = float(EVS)
+        print(modeldict['ModelResult'])
+        modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+        modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldict['ModelPathName'])
+
+        sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
+        sshCtrl.uploadDirBySFTP(modeldict['ModelStorageLocation'],modeldict['ModelStorageRemote'])
+        resultDict = copy.deepcopy(fvInfo)
+        resultDict["ResultArr"] = [resultDF]
+        del sshCtrl
+        return resultDict

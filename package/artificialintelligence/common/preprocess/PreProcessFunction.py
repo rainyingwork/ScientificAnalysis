@@ -142,9 +142,13 @@ class PreProcessFunction(PreProcessTool,CommonFunction):
                         elif processingFunctionName == "rank":
                             preprossDF[columnFullName] = preprossDF[columnFullName].rank()
                         elif processingFunctionName == "normbymaxmin":
-                            preprossDF[columnFullName] = preprossDF[columnFullName].apply(lambda x: (x - preprossDF[columnFullName].min()) / (preprossDF[columnFullName].max() - preprossDF[columnFullName].min()))
+                            columnMax = preprossDF[columnFullName].max()
+                            columnMin = preprossDF[columnFullName].min()
+                            preprossDF[columnFullName] = preprossDF[columnFullName].apply(lambda x: (x - columnMin) / (columnMax - columnMax)) if (columnMax - columnMax) == 0 else 0
                         elif processingFunctionName == "normbyzscore":
-                            preprossDF[columnFullName] = preprossDF[columnFullName].apply(lambda x: (x - preprossDF[columnFullName].mean()) / preprossDF[columnFullName].std())
+                            columnMean = preprossDF[columnFullName].mean()
+                            columnStd = preprossDF[columnFullName].std()
+                            preprossDF[columnFullName] = preprossDF[columnFullName].apply(lambda x: (x - columnMean) / columnStd) if columnStd == 0 else 0
         return preprossDFArr
 
     @classmethod

@@ -9,7 +9,7 @@ __pipFunction = ("pip install --no-index --find-links=venv/pip" if isLocalDir ==
 
 # Other套件 -------------------------------------------------
 # os.system("{} -m {} openai==0.27.2".format(__pythonexePath,__pipFunction))          # OpenAI GPT-3
-os.system("{} -m {} gTTS==2.3.2".format(__pythonexePath,__pipFunction))          # OpenAI GPT-3
+# os.system("{} -m {} gTTS==2.3.2".format(__pythonexePath,__pipFunction))          # OpenAI GPT-3
 
 # 安裝pygraphviz 請先至 graphviz 安裝2.46以上版本下載位置 https://graphviz.org/download/
 # os.system('{} -m {} --global-option=build_ext --global-option="-IC:\Program Files\Graphviz\include" --global-option="-LC:\Program Files\Graphviz\lib" pygraphviz==1.10'.format(__pythonexePath,__pipFunction))
@@ -18,3 +18,7 @@ os.system("{} -m {} gTTS==2.3.2".format(__pythonexePath,__pipFunction))         
 # os.system("{} -m {} transformers==4.27.4".format(__pythonexePath,__pipFunction))          # diffusers
 
 # os.system("{} -m {} pivottablejs==0.9.0".format(__pythonexePath,__pipFunction))          # OpenAI GPT-3
+
+# os.system("{} -m {} selenium==4.9.0".format(__pythonexePath,__pipFunction))          # OpenAI GPT-3
+
+os.system("{} -m {} comtradeapicall==1.0.20".format(__pythonexePath,__pipFunction))          # OpenAI GPT-3

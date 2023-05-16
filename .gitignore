@@ -6,6 +6,7 @@ env
 */*/file/doc
 */*/file/model
 */*/file/result
+*/*/file/driver
 */*/file/old
 */*/file/PLD
 */*/file/DP
@@ -18,3 +19,5 @@ catboost_info
 logs.log
 venv
 # 暫不上傳
+Finance
+RealWorld

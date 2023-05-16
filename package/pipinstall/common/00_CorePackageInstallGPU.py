@@ -5,9 +5,9 @@ import sys
 
 isInstall = True
 isLocalDir = False
-pythonEXEPath = "python" if os.path.isfile("venv-gpu/python.exe") else "bin/python" if os.name == "posix" else "Scripts/python"
-__pythonexePath = "{}/venv-gpu/{}".format(sys.path[1],pythonEXEPath)
-__pipFunction = ("pip install --no-index --find-links=venv-gpu/pip" if isLocalDir == True else "pip install") if isInstall == True else "pip download -d venv-gpu/pip"
+pythonEXEPath = "python" if os.path.isfile("venv/python.exe") else "bin/python" if os.name == "posix" else "Scripts/python"
+__pythonexePath = "{}/venv/{}".format(sys.path[1],pythonEXEPath)
+__pipFunction = ("pip install --no-index --find-links=venv/pip" if isLocalDir == True else "pip install") if isInstall == True else "pip download -d venv/pip"
 
 # Python套件 -------------------------------------------
 os.system("{} -m {} pip==22.3.1".format(__pythonexePath,__pipFunction))
