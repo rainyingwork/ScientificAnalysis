@@ -176,7 +176,7 @@ class SSHCtrl:
         for file in files:
             fileName = remoteDir + '/' + file.filename
             if stat.S_ISDIR(file.st_mode):  # 如果是文件遞迴處理
-                allFiles.extend(self.getAllFilesInRemoteDir(self.__sftp, fileName))
+                allFiles.extend(self.getAllFilesInRemoteDir(fileName))
             else:
                 allFiles.append(fileName)
         return allFiles
