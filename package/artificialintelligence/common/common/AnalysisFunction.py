@@ -462,3 +462,16 @@ class AnalysisFunction():
         columnInfoMap["double_200"] = {"description": "double_200", 'datatype': 'double'}
         columnInfoMap["json_001"] = {"description": "json_001", 'datatype': 'string'}
         return columnInfoMap
+
+    @classmethod
+    def makeAnalysisColumnDocInfoByTagJson(self , columnInfoMap , tagText ) :
+        for featureKey in tagText.getFeatureDict().keys():
+            columnDict = tagText.getFeatureDict()[featureKey]
+            columnInfoMap["double_{}".format(featureKey)] = {}
+            columnInfoMap["double_{}".format(featureKey)]["description"] = columnDict['cnname']
+            columnInfoMap["double_{}".format(featureKey)]["datatype"] = 'double'
+            columnInfoMap["double_{}".format(featureKey)]["memo"] = columnDict['enname']
+            commentMemo = "\n"
+            commentMemo += "預處理方式：" + ",".join(columnDict['jsonmessage']['DataPreProcess']['ProcessingOrder'])
+            columnInfoMap["double_{}".format(featureKey)]["commentMemo"] = commentMemo
+        return columnInfoMap
