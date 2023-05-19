@@ -282,34 +282,37 @@ class ModelUseFunction(CommonFunction):
         exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
         for bestmodel in bestmodels:
-            predictions = predict_model(bestmodel, data=testDF)
-            tp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Label'] != 0)).sum())
-            fp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Label'] == 0)).sum())
-            tn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Label'] == 0)).sum())
-            fn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Label'] != 0)).sum())
-            modeldict = {}
-            modeldict['ModelFullName'] = "{}.{}".format(bestmodel.__class__.__module__, bestmodel.__class__.__name__)
-            modeldict['ModelPackage'] = bestmodel.__class__.__module__
-            modeldict['ModelName'] = bestmodel.__class__.__name__
-            modeldict['ModelFileName'] = modeldict['ModelName'] + ".pkl"
-            modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
-            modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir,modeldict['ModelFileName'])
-            modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
-            modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir, modeldict['ModelFileName'])
-            modeldict['ModelResult'] = {}
-            modeldict['ModelResult']['TN'] = int(tn)
-            modeldict['ModelResult']['FP'] = int(fp)
-            modeldict['ModelResult']['FN'] = int(fn)
-            modeldict['ModelResult']['TP'] = int(tp)
-            modeldict['ModelResult']['Accuracy'] = ((tp + tn) / (tp + tn + fp + fn)) if (tp + tn + fp + fn) != 0 else 0
-            modeldict['ModelResult']['Precision'] = (tp / (tp + fp)) if (tp + fp) != 0 else 0
-            modeldict['ModelResult']['Recall'] = (tp / (tp + fn)) if (tp + fn) != 0 else 0
-            modeldict['ModelResult']['F1Score'] = ((2 * modeldict['ModelResult']['Precision'] * modeldict['ModelResult']['Recall']) /(modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) )if (modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) != 0 else 0
-            save_model(bestmodel, "{}/{}".format(modeldict['ModelStorageLocationPath'], modeldict['ModelName']))
-            sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
-            sshCtrl.uploadFile(modeldict['ModelStorageLocation'],modeldict['ModelStorageRemote'])
+            try :
+                predictions = predict_model(bestmodel, data=testDF)
+                tp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Label'] != 0)).sum())
+                fp = int(((predictions[yColumnNames[0]] != 0) * (predictions['Label'] == 0)).sum())
+                tn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Label'] == 0)).sum())
+                fn = int(((predictions[yColumnNames[0]] == 0) * (predictions['Label'] != 0)).sum())
+                modeldict = {}
+                modeldict['ModelFullName'] = "{}.{}".format(bestmodel.__class__.__module__, bestmodel.__class__.__name__)
+                modeldict['ModelPackage'] = bestmodel.__class__.__module__
+                modeldict['ModelName'] = bestmodel.__class__.__name__
+                modeldict['ModelFileName'] = modeldict['ModelName'] + ".pkl"
+                modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+                modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir,modeldict['ModelFileName'])
+                modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+                modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir, modeldict['ModelFileName'])
+                modeldict['ModelResult'] = {}
+                modeldict['ModelResult']['TN'] = int(tn)
+                modeldict['ModelResult']['FP'] = int(fp)
+                modeldict['ModelResult']['FN'] = int(fn)
+                modeldict['ModelResult']['TP'] = int(tp)
+                modeldict['ModelResult']['Accuracy'] = ((tp + tn) / (tp + tn + fp + fn)) if (tp + tn + fp + fn) != 0 else 0
+                modeldict['ModelResult']['Precision'] = (tp / (tp + fp)) if (tp + fp) != 0 else 0
+                modeldict['ModelResult']['Recall'] = (tp / (tp + fn)) if (tp + fn) != 0 else 0
+                modeldict['ModelResult']['F1Score'] = ((2 * modeldict['ModelResult']['Precision'] * modeldict['ModelResult']['Recall']) /(modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) )if (modeldict['ModelResult']['Precision'] + modeldict['ModelResult']['Recall']) != 0 else 0
+                save_model(bestmodel, "{}/{}".format(modeldict['ModelStorageLocationPath'], modeldict['ModelName']))
+                sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
+                sshCtrl.uploadFile(modeldict['ModelStorageLocation'],modeldict['ModelStorageRemote'])
 
-            resultDict['ModelDesign']['ModelDicts'].append(modeldict)
+                resultDict['ModelDesign']['ModelDicts'].append(modeldict)
+            except :
+                continue
         del sshCtrl
         return resultDict
 
@@ -360,35 +363,37 @@ class ModelUseFunction(CommonFunction):
         exeFunctionRDir = "{}/{}/{}/{}/{}".format(product, project,opsVersion,opsRecordId,executeFunction)
         os.makedirs(exeFunctionLDir) if not os.path.isdir(exeFunctionLDir) else None
         for bestmodel in bestmodels:
-            predictions = predict_model(bestmodel, data=testDF)
-            MAE = mean_absolute_error(predictions[yColumnNames[0]], predictions['Label'])
-            MSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'])
-            RMSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'], squared=False)
-            R2 = r2_score(predictions[yColumnNames[0]], predictions['Label'])
-            EVS = explained_variance_score(predictions[yColumnNames[0]], predictions['Label'])
-            modeldict = {}
-            modeldict['ModelFullName'] = "{}.{}".format(bestmodel.__class__.__module__, bestmodel.__class__.__name__)
-            modeldict['ModelPackage'] = bestmodel.__class__.__module__
-            modeldict['ModelName'] = bestmodel.__class__.__name__
-            modeldict['ModelFileName'] = modeldict['ModelName'] + ".pkl"
-            modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
-            modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldict['ModelFileName'])
-            modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
-            modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldict['ModelFileName'])
-            modeldict['ModelResult'] = {}
-            modeldict['ModelResult']['MAE'] = float(MAE)
-            modeldict['ModelResult']['MSE'] = float(MSE)
-            modeldict['ModelResult']['RMSE'] = float(RMSE)
-            modeldict['ModelResult']['R2'] = float(R2)
-            modeldict['ModelResult']['EVS'] = float(EVS)
+            try:
+                predictions = predict_model(bestmodel, data=testDF)
+                MAE = mean_absolute_error(predictions[yColumnNames[0]], predictions['Label'])
+                MSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'])
+                RMSE = mean_squared_error(predictions[yColumnNames[0]], predictions['Label'], squared=False)
+                R2 = r2_score(predictions[yColumnNames[0]], predictions['Label'])
+                EVS = explained_variance_score(predictions[yColumnNames[0]], predictions['Label'])
+                modeldict = {}
+                modeldict['ModelFullName'] = "{}.{}".format(bestmodel.__class__.__module__, bestmodel.__class__.__name__)
+                modeldict['ModelPackage'] = bestmodel.__class__.__module__
+                modeldict['ModelName'] = bestmodel.__class__.__name__
+                modeldict['ModelFileName'] = modeldict['ModelName'] + ".pkl"
+                modeldict['ModelStorageLocationPath'] = "{}".format(exeFunctionLDir)
+                modeldict['ModelStorageLocation'] = "{}/{}".format(exeFunctionLDir, modeldict['ModelFileName'])
+                modeldict['ModelStorageRemotePath'] = "/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir)
+                modeldict['ModelStorageRemote'] = "/{}/{}/{}".format(os.getenv("STORAGE_RECORDSAVEPATH"),exeFunctionRDir,modeldict['ModelFileName'])
+                modeldict['ModelResult'] = {}
+                modeldict['ModelResult']['MAE'] = float(MAE)
+                modeldict['ModelResult']['MSE'] = float(MSE)
+                modeldict['ModelResult']['RMSE'] = float(RMSE)
+                modeldict['ModelResult']['R2'] = float(R2)
+                modeldict['ModelResult']['EVS'] = float(EVS)
 
-            save_model(bestmodel, "{}/{}".format(modeldict['ModelStorageLocationPath'], modeldict['ModelName']))
+                save_model(bestmodel, "{}/{}".format(modeldict['ModelStorageLocationPath'], modeldict['ModelName']))
 
-            sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
-            sshCtrl.uploadFile(modeldict['ModelStorageLocation'], modeldict['ModelStorageRemote'])
+                sshCtrl.execCommand("mkdir -p {}".format(modeldict['ModelStorageRemotePath']))
+                sshCtrl.uploadFile(modeldict['ModelStorageLocation'], modeldict['ModelStorageRemote'])
 
-            resultDict['ModelDesign']['ModelDicts'].append(modeldict)
-
+                resultDict['ModelDesign']['ModelDicts'].append(modeldict)
+            except:
+                continue
         del sshCtrl
         return resultDict
 

@@ -40,14 +40,14 @@ if __name__ == "__main__":
                 "DataTime" : dateInfo['DataTime'],
                 "MakeDataKeys": ["common_001"],
                 "MakeDataInfo": [
-                    {"DataType": "Filter", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "max({})", "ColumnNumbers": [3], "HavingSQL":["> 0"]},
+                    # {"DataType": "Filter", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "max({})", "ColumnNumbers": [3], "HavingSQL":["> 0"]},
                     {"DataType": "Y", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "sum({})", "ColumnNumbers": [1]},
                     {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "sum({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
-                    {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "avg({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
-                    {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "max({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
-                    {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "min({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
-                    {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "count({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
-                    {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "count(distinct {})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
+                    # {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "avg({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
+                    # {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "max({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
+                    # {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "min({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
+                    # {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "count({})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
+                    # {"DataType": "X", "Product": "Example", "Project": "P29RawData", "Version": "R0_0_1", "DTDiff": 0 ,"GFuncSQL": "count(distinct {})", "ColumnNumbers": [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]},
                 ]
             },
             "P0_0_1": {
