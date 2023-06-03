@@ -75,12 +75,15 @@ class Dashboard() :
         matInfo = {
             "matTitle": ""
             , "columnLabelArr": ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-            ,
-            "rowLabelArr": ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16',
-                            '17', '18', '19', '20', '21', '22', '23']
+            ,"rowLabelArr": ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16','17', '18', '19', '20', '21', '22', '23']
             , "matData": np.random.random((24, 7))
         }
 
+        imageInfo = {
+            "imagePath": "Example/P61MatplotlibDashboard/file/result/V0_0_1/None/AC0_0_1/test.png"
+        }
+
+        # 標準快速建立相關圖表
         figInfoArray = [
             (None, None, [[0, 1], [0, 1]])
             , (textInfo, "text", [[1, 2], [0, 1]])
@@ -90,12 +93,31 @@ class Dashboard() :
             , (pieInfo, "pie", [[0, 2], [3, 4]])
             , (barInfo, "bar", [[0, 2], [4, 5]])
             , (barhInfo, "barh", [[0, 2], [5, 6]])
-            , (matInfo, "mat", [[2, 6], [6, 7]])
+            , (matInfo, "mat", [[0, 2], [6, 7]])
+            , (imageInfo, "image", [[2, 6], [2, 6]])
         ]
 
         matplotlibDashboardCtrl = MatplotlibDashboardCtrl(figTitle="圖表範本", figsizeWidth=19, figsizeHigh=9,gridSpecHigh=6, gridSpecWidth=7)
         matplotlibDashboardCtrl.makeDashboard(figInfoArray)
-        matplotlibDashboardCtrl.slowDashboard()
+
+        # 自由插入圖表
+        fig , gs , cm = matplotlibDashboardCtrl.getDashboardFigGsCm()
+
+        from matplotlib import ticker
+        axInfo = [[2, 6], [6, 7]]
+        plotAXInfo = matInfo
+        plotAX = fig.add_subplot(gs[axInfo[0][0]:axInfo[0][1], axInfo[1][0]:axInfo[1][1]])
+        matTitle = plotAXInfo["matTitle"] if "matTitle" in plotAXInfo.keys() else ""
+        data = plotAXInfo["matData"] if "matData" in plotAXInfo.keys() else []
+        cmap = plotAXInfo["cmap"] if "cmap" in plotAXInfo.keys() else 'Greys'
+        plotAX.set(title=matTitle)
+        pos = plotAX.matshow (data, interpolation='nearest', cmap=cmap)
+        fig.colorbar(pos,ax=plotAX)
+        plotAX.xaxis.set_major_locator(ticker.MultipleLocator(1))
+        plotAX.yaxis.set_major_locator(ticker.MultipleLocator(1))
+
+
+        matplotlibDashboardCtrl.saveDashboard("Example/P61MatplotlibDashboard/file/result/V0_0_1/None/AC0_0_1/test.png")
 
         return {}, {}
 

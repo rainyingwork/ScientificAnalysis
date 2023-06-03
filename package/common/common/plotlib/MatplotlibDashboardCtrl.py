@@ -30,6 +30,8 @@ class MatplotlibDashboardCtrl:
                 self.makeDashboardText(ax, data)
             elif type == "table":
                 self.makeDashboardTable(ax, data)
+            elif type == "image":
+                self.makeDashboardImage(ax, data)
             elif type == "plot":
                 self.makeDashboardPlot(ax, data)
             elif type == "pie":
@@ -48,6 +50,12 @@ class MatplotlibDashboardCtrl:
         mngr.window.wm_geometry("+5+25")
         plt.tight_layout()
         plt.show()
+
+    def getDashboardFigGsCm(self):
+        return self.fig , self.gs , self.cm
+
+    def saveDashboard(self , fileNamePath):
+        plt.savefig(fileNamePath)
 
     def makeDashboardText(self, plotAX, plotAXInfo):
         textTitle = plotAXInfo["textTitle"] if "textTitle" in plotAXInfo.keys() else ""
@@ -86,6 +94,13 @@ class MatplotlibDashboardCtrl:
             cellDict[(0, i)].set_height(labelHeight)
             for j in range(1, len(tableData)+1):
                 cellDict[(j, i)].set_height(dataHeight)
+
+    def makeDashboardImage(self,plotAX, plotAXInfo):
+        import matplotlib.image as mpimg
+        imagePath = plotAXInfo["imagePath"] if "imagePath" in plotAXInfo.keys() else ""
+        img = mpimg.imread(imagePath)
+        plotAX.imshow(img)
+        plotAX.axis('off')
 
     def makeDashboardPlot(self,plotAX, plotAXInfo):
         plotTitle = plotAXInfo["plotTitle"] if "plotTitle" in plotAXInfo.keys() else ""
