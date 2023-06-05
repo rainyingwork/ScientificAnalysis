@@ -3,6 +3,24 @@ class Dashboard() :
 
     @classmethod
     def AC0_0_1(self, functionInfo):
+        from mpl_toolkits.basemap import Basemap
+        import matplotlib.pyplot as plt
+
+        # 建立 Basemap 物件和其他繪圖設定
+        m = Basemap(projection='mill', llcrnrlat=-90, urcrnrlat=90, llcrnrlon=-180, urcrnrlon=180)
+        m.drawcoastlines()
+        m.drawcountries()
+        m.drawstates()
+        m.drawmapboundary(fill_color='aqua')
+        m.fillcontinents(color='coral', lake_color='aqua')
+
+        # 儲存圖形到圖像檔案
+        plt.savefig("Example/P61MatplotlibDashboard/file/result/V0_0_1/None/AC0_0_1/test.png")
+
+        return {}, {}
+
+    @classmethod
+    def AC0_0_2(self, functionInfo):
         from package.common.common.plotlib.MatplotlibDashboardCtrl import MatplotlibDashboardCtrl
         import numpy as np
         import pandas as pd
@@ -117,7 +135,7 @@ class Dashboard() :
         plotAX.yaxis.set_major_locator(ticker.MultipleLocator(1))
 
 
-        matplotlibDashboardCtrl.saveDashboard("Example/P61MatplotlibDashboard/file/result/V0_0_1/None/AC0_0_1/test.png")
+        matplotlibDashboardCtrl.saveDashboard("Example/P61MatplotlibDashboard/file/result/V0_0_1/None/AC0_0_2/test.png")
 
         return {}, {}
 

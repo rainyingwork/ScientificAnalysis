@@ -11,11 +11,13 @@ if __name__ == "__main__":
     opsInfo = copy.deepcopy(basicInfo)
     opsInfo["OPSVersion"] = ["V0_0_1"]
     opsInfo["OPSOrderJson"] = {
-        "ExeFunctionArr": ["AC0_0_1"],
+        "ExeFunctionArr": ["AC0_0_1","AC0_0_2"],
         "OrdFunctionArr": [
+            {"Parent": "AC0_0_1", "Child": "AC0_0_2"},
         ],
         "FunctionMemo": {
-            "AC0_0_1": "製作圖表範本資料",
+            "AC0_0_1": "製作地圖資料",
+            "AC0_0_2": "製作圖表範本資料",
         },
     }
     opsInfo["ParameterJson"] = {

@@ -32,6 +32,7 @@ os.system("{} -m {} google-auth-oauthlib==0.4.0".format(__pythonexePath,__pipFun
 os.system("{} -m {} google-api-python-client==2.31.0".format(__pythonexePath,__pipFunction))
 # 其他套件 -------------------------------------------------
 os.system("{} -m {} matplotlib==3.6.0".format(__pythonexePath,__pipFunction))           # 繪圖套件
+os.system("{} -m {} basemap==1.3.7".format(__pythonexePath,__pipFunction))
 os.system("{} -m {} seaborn==0.12.1".format(__pythonexePath,__pipFunction))             # 繪圖套件
 os.system("{} -m {} Pillow==9.3.0".format(__pythonexePath,__pipFunction))               # 圖片處理套件
 os.system("{} -m {} Flask==2.2.2".format(__pythonexePath,__pipFunction))                # 網頁套件

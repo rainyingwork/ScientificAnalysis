@@ -21,4 +21,6 @@ __pipFunction = ("pip install --no-index --find-links=venv/pip" if isLocalDir ==
 
 # os.system("{} -m {} selenium==4.9.0".format(__pythonexePath,__pipFunction))          # OpenAI GPT-3
 
-os.system("{} -m {} comtradeapicall==1.0.20".format(__pythonexePath,__pipFunction))          # OpenAI GPT-3
+# os.system("{} -m {} comtradeapicall==1.0.20".format(__pythonexePath,__pipFunction))          # OpenAI GPT-3
+# os.system("{} -m {} matplotlib==3.7.1".format(__pythonexePath,__pipFunction))           # 繪圖套件
+# 繪圖套件
