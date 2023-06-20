@@ -1,3 +1,3 @@
 ScientificAnalysis
 
-V 4.12.1 
+V 5.2.0 
