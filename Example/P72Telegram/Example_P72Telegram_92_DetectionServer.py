@@ -6,7 +6,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from package.common.common.database.PostgresCtrl import PostgresCtrl
 from package.common.common.message.TelegramCtrl import TelegramCtrl
-load_dotenv(dotenv_path="env/postgresql.env")
+load_dotenv(dotenv_path="../../env/postgresql.env")
 telegramCtrl = TelegramCtrl(env="env/telegram.env")
 postgresCtrl = PostgresCtrl(
     host=os.getenv("POSTGRES_HOST")
