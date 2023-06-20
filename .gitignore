@@ -12,6 +12,7 @@ env
 */*/file/DP
 */*/file/out
 */*/.
+common/WSL
 UnitTest/
 LocalConfig.py
 *.pyc

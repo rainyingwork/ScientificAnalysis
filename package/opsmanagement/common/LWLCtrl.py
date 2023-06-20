@@ -60,3 +60,14 @@ class LWLCtrl:
             if executeFunction in opsInfo["OPSOrderJson"]["RunFunctionArr"]:
                 opsInfo["ResultJson"][executeFunction], allGlobalObjectDict[executeFunction] = eval(f"circuitMain.{executeFunction}({opsInfo})")
         return opsInfo
+
+    def reloadCircuit(self, opsInfo):
+        import sys
+        product = opsInfo["Product"][0]
+        project = opsInfo["Project"][0]
+        delModuleNameArr = []
+        for moduleName in sys.modules :
+            if str(moduleName).find(f'{product}.{project}.circuit.') != -1:
+                delModuleNameArr.append(str(moduleName))
+        for delModuleName in delModuleNameArr:
+            del sys.modules[delModuleName]

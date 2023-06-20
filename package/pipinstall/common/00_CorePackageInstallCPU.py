@@ -37,6 +37,8 @@ os.system("{} -m {} matplotlib==3.7.1".format(__pythonexePath,__pipFunction))   
 os.system("{} -m {} seaborn==0.12.2".format(__pythonexePath,__pipFunction))             # 繪圖套件
 os.system("{} -m {} Pillow==9.5.0".format(__pythonexePath,__pipFunction))               # 圖片處理套件
 os.system("{} -m {} Flask==2.3.2".format(__pythonexePath,__pipFunction))                # 網頁套件
+os.system("{} -m {} fastapi==0.97.0".format(__pythonexePath,__pipFunction))             # 網頁套件
+os.system("{} -m {} uvicorn==0.22.0".format(__pythonexePath,__pipFunction))             # 網頁套件
 os.system("{} -m {} streamlit==1.23.1".format(__pythonexePath,__pipFunction))           # 網頁套件
 os.system("{} -m {} requests==2.31.0".format(__pythonexePath,__pipFunction))            # 網頁套件
 os.system("{} -m {} tqdm==4.65.0".format(__pythonexePath,__pipFunction))                # 進度條套件
