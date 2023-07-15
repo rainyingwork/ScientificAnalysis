@@ -30,7 +30,7 @@ class DocumentCtrl:
                 ws.cell(row=7, column=columnNumber, value="{}".format(detailDataMap["TableInfo"]["DataType"]))
                 ws.cell(row=8, column=columnNumber, value="{}".format(detailDataMap["product"]["description"]))
                 ws.cell(row=9, column=columnNumber, value="{}".format(detailDataMap["project"]["description"]))
-                ws.cell(row=10, column=columnNumber, value="{}".format(detailDataMap["tablename"]["description"]))
+                ws.cell(row=10, column=columnNumber, value="{}".format(detailDataMap["version"]["description"]))
                 ws.cell(row=11, column=columnNumber, value="{}".format(detailDataMap["dt"]["description"]))
                 ws.cell(row=12, column=columnNumber, value="{}".format(detailDataMap["TableInfo"]["DataType"]))
 

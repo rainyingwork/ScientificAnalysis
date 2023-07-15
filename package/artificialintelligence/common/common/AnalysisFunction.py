@@ -81,7 +81,7 @@ class AnalysisFunction():
     @classmethod
     def getAnalysisColumnNameArr(self):
         columnNameArr = [
-            "product", "project", "tablename", "dt"
+            "product", "project", "version", "dt"
             , "common_001", "common_002", "common_003", "common_004", "common_005"
             , "common_006", "common_007", "common_008", "common_009", "common_010"
             , "common_011", "common_012", "common_013", "common_014", "common_015"
@@ -243,7 +243,7 @@ class AnalysisFunction():
         columnInfoMap = {}
         columnInfoMap["product"] = {"description": "product" , 'datatype': 'string'}
         columnInfoMap["project"] = {"description": "project", 'datatype': 'string'}
-        columnInfoMap["tablename"] = {"description": "tablename", 'datatype': 'string'}
+        columnInfoMap["version"] = {"description": "version", 'datatype': 'string'}
         columnInfoMap["dt"] = {"description": "dt", 'datatype': 'string'}
         columnInfoMap["common_001"] = {"description": "common_001", 'datatype': 'string'}
         columnInfoMap["common_002"] = {"description": "common_002", 'datatype': 'string'}
