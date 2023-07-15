@@ -17,10 +17,10 @@ class RawDataInfo(RawDataFunction) :
 
         columnInfoMap = self.getAnalysisColumnDocInfo()
         columnInfoMap["TableInfo"] = tableInfo
-        columnInfoMap["product"] = {"description": "product"}
-        columnInfoMap["project"] = {"description": "project"}
-        columnInfoMap["tablename"] = {"description": "tablename"}
-        columnInfoMap["dt"] = {"description": "dt"}
+        columnInfoMap["product"] = {"description": "專案"}
+        columnInfoMap["project"] = {"description": "計畫"}
+        columnInfoMap["version"] = {"description": "版本"}
+        columnInfoMap["dt"] = {"description": "日期"}
         columnInfoMap["common_001"] = {"description": "Id"}
         columnInfoMap["double_001"] = {"description": "IsPurchaseCH"}
         columnInfoMap["double_002"] = {"description": "IsPurchaseMM"}
