@@ -7,7 +7,7 @@ class DocumentCtrl:
     def __init__(self):
         pass
 
-    def MakeStandardDoc(self,dataMap,initFilePath,outFilePath) :
+    def makeAnalysisDoc(self,dataMap,initFilePath,outFilePath) :
         dataColumnArr = AnalysisFunction.getDataColumnNameArr()
 
         englishStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -41,17 +41,76 @@ class DocumentCtrl:
                 rowNumber = 12
                 for dataColumn in dataColumnArr:
                     rowNumber = rowNumber + 1
-                    description = detailDataMap[dataColumn]["description"] if "description" in detailDataMap[dataColumn].keys() else ""
-                    memo = detailDataMap[dataColumn]["memo"] if "memo" in detailDataMap[dataColumn].keys() else ""
-                    commentMemo = detailDataMap[dataColumn]["commentMemo"] if "commentMemo" in detailDataMap[dataColumn].keys() else ""
-                    if dataColumn == detailDataMap[dataColumn]["description"]:
-                        continue
-                    ws.cell(row=rowNumber, column=columnNumber, value="{}".format(description))
-                    if memo == "" and commentMemo == "" :
-                        continue
-                    columnCommentMemoComment = Comment(text="備註: {}\n其他備註: {}".format(memo, commentMemo), author="Code", height=100, width=500)
-                    ws["{}{}".format(englishStr[columnNumber - 1 % 26], str(rowNumber))].comment = columnCommentMemoComment
+                    if dataColumn != detailDataMap[dataColumn]["description"]:
+                        description = detailDataMap[dataColumn]["description"] if "description" in detailDataMap[dataColumn].keys() else ""
+                        ws.cell(row=rowNumber, column=columnNumber, value="{}".format(description))
+
+                        memo = detailDataMap[dataColumn]["memo"] if "memo" in detailDataMap[dataColumn].keys() else ""
+                        commentMemo = ""
+                        processfunc = ",".join(detailDataMap[dataColumn]["processfunc"]) if "processfunc" in detailDataMap[dataColumn].keys() else ""
+                        checkfunc = ",".join(detailDataMap[dataColumn]["checkfunc"]) if "checkfunc" in detailDataMap[dataColumn].keys() else ""
+
+                        if memo != "" or commentMemo != "" or checkfunc != "" :
+                            ws["{}{}".format(englishStr[columnNumber - 1 % 26], str(rowNumber))].comment = Comment(
+                                text="備註: {}\n其他備註: {}\n處理方式: {}\n檢查方式: {}".format(memo, commentMemo,processfunc,checkfunc)
+                                , author="Code",height=150, width=800
+                            )
 
         ws_init = wb["Init"]
         wb.remove(ws_init)
         wb.save(outFilePath)
+
+
+
+    def makeAnalysisDoubleInfoByDataBase(self,product,project,version,dt) :
+        import os , json
+        from dotenv import load_dotenv
+        from package.common.common.database.PostgresCtrl import PostgresCtrl
+        load_dotenv(dotenv_path="env/postgresql.env")
+        postgresCtrl = PostgresCtrl(
+            host=os.getenv("POSTGRES_HOST")
+            , port=int(os.getenv("POSTGRES_POST"))
+            , user=os.getenv("POSTGRES_USERNAME")
+            , password=os.getenv("POSTGRES_PASSWORD")
+            , database=os.environ["POSTGRES_OPSNABAGEMENT_DATABASE"]
+            , schema=os.environ["POSTGRES_OPSNABAGEMENT_SCHEMA"]
+        )
+
+        sqlReplaceArr = [
+            ["[:Product]",product],
+            ["[:Project]",project],
+            ["[:Version]",version],
+            ["[:DataNoLine]",dt],
+        ]
+
+        searchSQL = """
+            select 
+                common_011	
+                , common_012	
+                , common_013	
+                , common_014	
+                , common_015
+            from observationdata.analysisdata AA
+            where 1 = 1 
+                and AA.product = '[:Product]'
+                and AA.project = '[:Project]'
+                and AA.version = '[:Version]'
+                and AA.dt = '[:DataNoLine]' ; 
+        """
+        for sqlReplace in sqlReplaceArr :
+            searchSQL = searchSQL.replace(sqlReplace[0],sqlReplace[1])
+
+        analysisDoubleInfoMap = {}
+        analysisDoubleInfoDF = postgresCtrl.searchSQL(searchSQL)
+        print(analysisDoubleInfoDF)
+        for index , row in analysisDoubleInfoDF.iterrows() :
+            columnName = "double_" + str(row['common_013']).zfill(3)
+            columnDetailInfo =json.loads(row['common_015'])
+            analysisDoubleInfoMap[columnName] ={
+                "description" : row['common_012'] ,
+                "memo" : row['common_011'] + ',' + row['common_014'] ,
+                "processfunc":columnDetailInfo["DataPreProcess"]["ProcessingOrder"] if "DataPreProcess" in columnDetailInfo.keys() else [] ,
+                "checkfunc":columnDetailInfo["DataCheck"]["CheckFunction"] if "DataCheck" in columnDetailInfo.keys() else [] ,
+            }
+
+        return analysisDoubleInfoMap

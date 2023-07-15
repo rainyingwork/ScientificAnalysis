@@ -1,0 +1,35 @@
+from package.artificialintelligence.common.rawdata.RawDataFunction import RawDataFunction
+from package.artificialintelligence.common.common.DocumentCtrl import DocumentCtrl as AnalysisDocumentCtrl
+class RawDataInfo(RawDataFunction) :
+
+    pass
+
+    @classmethod
+    def getInfo_R0_0_1(self, makeInfo):
+        analysisDocumentCtrl = AnalysisDocumentCtrl()
+
+        tableInfo = {
+            "Project": "P86Doc"
+            , "TableName": "R0_0_1"
+            , "Memo": "P86Doc"
+            , "DataType": "RawData"
+            , "StartDate": "2023-01-01"
+            , "EndDate": "2023-01-31"
+            , "CommentMemo": "P13Standard CommentMemo"
+        }
+
+        checkFuncStrs = ["IsNotNull", "IsNotNullPer", "Count", "DisCount"]
+
+        columnInfoMap = self.getAnalysisColumnDocInfo()
+        columnInfoMap["TableInfo"] = tableInfo
+        columnInfoMap["product"] = {"description": "專案"}
+        columnInfoMap["project"] = {"description": "計畫"}
+        columnInfoMap["version"] = {"description": "版本"}
+        columnInfoMap["dt"] = {"description": "日期"}
+        columnInfoMap["common_001"] = {"description": "Id" , "checkfuncs": checkFuncStrs}
+
+        analysisDoubleInfoMap = analysisDocumentCtrl.makeAnalysisDoubleInfoByDataBase("Example", "P86Doc", "R0_0_0", makeInfo["DataTime"].replace("-", ""))
+        for key in analysisDoubleInfoMap.keys():
+            columnInfoMap[key] = analysisDoubleInfoMap[key]
+
+        return columnInfoMap
