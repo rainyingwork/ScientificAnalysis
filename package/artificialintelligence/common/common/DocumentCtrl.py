@@ -43,12 +43,15 @@ class DocumentCtrl:
                     rowNumber = rowNumber + 1
                     if dataColumn != detailDataMap[dataColumn]["description"]:
                         description = detailDataMap[dataColumn]["description"] if "description" in detailDataMap[dataColumn].keys() else ""
-                        ws.cell(row=rowNumber, column=columnNumber, value="{}".format(description))
-
                         memo = detailDataMap[dataColumn]["memo"] if "memo" in detailDataMap[dataColumn].keys() else ""
                         commentMemo = ""
-                        processfunc = ",".join(detailDataMap[dataColumn]["processfunc"]) if "processfunc" in detailDataMap[dataColumn].keys() else ""
-                        checkfunc = ",".join(detailDataMap[dataColumn]["checkfunc"]) if "checkfunc" in detailDataMap[dataColumn].keys() else ""
+                        processfunc = ",".join(detailDataMap[dataColumn]["processfuncs"]) if "processfuncs" in detailDataMap[dataColumn].keys() else ""
+                        checkfunc = ",".join(detailDataMap[dataColumn]["checkfuncs"]) if "checkfuncs" in detailDataMap[dataColumn].keys() else ""
+
+                        if dataColumn == detailDataMap[dataColumn]["description"]:
+                            continue
+
+                        ws.cell(row=rowNumber, column=columnNumber, value="{}".format(description))
 
                         if memo != "" or commentMemo != "" or checkfunc != "" :
                             ws["{}{}".format(englishStr[columnNumber - 1 % 26], str(rowNumber))].comment = Comment(
@@ -102,15 +105,15 @@ class DocumentCtrl:
 
         analysisDoubleInfoMap = {}
         analysisDoubleInfoDF = postgresCtrl.searchSQL(searchSQL)
-        print(analysisDoubleInfoDF)
         for index , row in analysisDoubleInfoDF.iterrows() :
             columnName = "double_" + str(row['common_013']).zfill(3)
             columnDetailInfo =json.loads(row['common_015'])
             analysisDoubleInfoMap[columnName] ={
                 "description" : row['common_012'] ,
+                'datatype': 'double',
                 "memo" : row['common_011'] + ',' + row['common_014'] ,
-                "processfunc":columnDetailInfo["DataPreProcess"]["ProcessingOrder"] if "DataPreProcess" in columnDetailInfo.keys() else [] ,
-                "checkfunc":columnDetailInfo["DataCheck"]["CheckFunction"] if "DataCheck" in columnDetailInfo.keys() else [] ,
+                "processfuncs":columnDetailInfo["DataPreProcess"]["ProcessingOrder"] if "DataPreProcess" in columnDetailInfo.keys() else [] ,
+                "checkfuncs":columnDetailInfo["DataCheck"]["CheckFunction"] if "DataCheck" in columnDetailInfo.keys() else [] ,
             }
 
         return analysisDoubleInfoMap

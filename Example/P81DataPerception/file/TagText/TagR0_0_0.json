@@ -5,7 +5,7 @@
     "tagorder": "1",
     "memo": "Purchase CH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -13,6 +13,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -25,7 +28,7 @@
     "tagorder": "2",
     "memo": "Purchase MM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -33,6 +36,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -45,7 +51,7 @@
     "tagorder": "3",
     "memo": "Store7 Yes",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -53,6 +59,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -65,7 +74,7 @@
     "tagorder": "4",
     "memo": "WeekofPurchase",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -73,6 +82,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -85,7 +97,7 @@
     "tagorder": "5",
     "memo": "StoreID",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -93,6 +105,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -105,7 +120,7 @@
     "tagorder": "6",
     "memo": "SpecialCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -113,6 +128,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -125,7 +143,7 @@
     "tagorder": "7",
     "memo": "SpecialMM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -133,6 +151,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -145,7 +166,7 @@
     "tagorder": "8",
     "memo": "STORE",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -153,6 +174,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -165,7 +189,7 @@
     "tagorder": "9",
     "memo": "PriceCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -173,6 +197,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -185,7 +212,7 @@
     "tagorder": "10",
     "memo": "PriceMM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -193,6 +220,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -205,7 +235,7 @@
     "tagorder": "11",
     "memo": "DiscCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -213,6 +243,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -225,7 +258,7 @@
     "tagorder": "12",
     "memo": "DiscMM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -233,6 +266,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -245,7 +281,7 @@
     "tagorder": "13",
     "memo": "LoyalCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -253,6 +289,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -265,7 +304,7 @@
     "tagorder": "14",
     "memo": "SalePriceMM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -273,6 +312,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -280,12 +322,12 @@
     ]
   }
   ,"015": {
-    "enname": "SalePriceMM",
-    "cnname": "SalePriceMM",
+    "enname": "SalePriceCH",
+    "cnname": "SalePriceCH",
     "tagorder": "15",
-    "memo": "SalePriceMM",
+    "memo": "SalePriceCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -293,6 +335,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -305,7 +350,7 @@
     "tagorder": "16",
     "memo": "PriceDiff",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -313,6 +358,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -325,7 +373,7 @@
     "tagorder": "17",
     "memo": "PctDiscMM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -333,6 +381,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [
@@ -345,7 +396,7 @@
     "tagorder": "18",
     "memo": "PctDiscCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
@@ -353,6 +404,9 @@
             "value": 0
           }
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["IsNotNull", "IsNotNullPer", "Count", "DisCount","Avg", "Round", "Max", "Min", "Sum"]
       }
     },
     "tagshape": [

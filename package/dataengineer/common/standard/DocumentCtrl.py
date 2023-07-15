@@ -44,13 +44,19 @@ class DocumentCtrl:
                     description = detailDataMap[dataColumn]["description"] if "description" in detailDataMap[dataColumn].keys() else ""
                     memo = detailDataMap[dataColumn]["memo"] if "memo" in detailDataMap[dataColumn].keys() else ""
                     commentMemo = detailDataMap[dataColumn]["commentMemo"] if "commentMemo" in detailDataMap[dataColumn].keys() else ""
+                    processfunc = ",".join(detailDataMap[dataColumn]["processfuncs"]) if "processfuncs" in detailDataMap[dataColumn].keys() else ""
+                    checkfunc = ",".join(detailDataMap[dataColumn]["checkfuncs"]) if "checkfuncs" in detailDataMap[dataColumn].keys() else ""
+
                     if dataColumn == detailDataMap[dataColumn]["description"]:
                         continue
+
                     ws.cell(row=rowNumber, column=columnNumber, value="{}".format(description))
-                    if memo == "" and commentMemo == "" :
-                        continue
-                    columnCommentMemoComment = Comment(text="備註: {}\n其他備註: {}".format(memo, commentMemo), author="Code", height=100, width=500)
-                    ws["{}{}".format(englishStr[columnNumber - 1 % 26], str(rowNumber))].comment = columnCommentMemoComment
+
+                    if memo != "" or commentMemo != "" or checkfunc != "":
+                        ws["{}{}".format(englishStr[columnNumber - 1 % 26], str(rowNumber))].comment = Comment(
+                            text="備註: {}\n其他備註: {}\n處理方式: {}\n檢查方式: {}".format(memo, commentMemo,processfunc, checkfunc)
+                            , author="Code", height=150, width=800
+                        )
 
         ws_init = wb["Init"]
         wb.remove(ws_init)
