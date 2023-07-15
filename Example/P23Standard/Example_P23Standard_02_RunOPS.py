@@ -1,5 +1,5 @@
 import os , copy
-import OPSCommonLocal as executeOPSCommon
+import OPSCommon as executeOPSCommon
 
 if __name__ == "__main__":
     basicInfo = {

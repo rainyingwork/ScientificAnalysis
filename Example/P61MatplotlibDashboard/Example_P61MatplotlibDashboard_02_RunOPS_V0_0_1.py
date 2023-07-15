@@ -1,5 +1,5 @@
 import os , copy; os.chdir(os.path.dirname(__file__)) if os.name == "posix" else None
-import OPSCommonLocal as executeOPSCommon
+import OPSCommon as executeOPSCommon
 
 if __name__ == "__main__":
 
