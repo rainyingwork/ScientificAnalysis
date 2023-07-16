@@ -15,7 +15,7 @@ class Dashboard() :
         m.fillcontinents(color='coral', lake_color='aqua')
 
         # 儲存圖形到圖像檔案
-        plt.savefig("Example/P61MatplotlibDashboard/file/result/V0_0_1/None/AC0_0_1/test.png")
+        plt.savefig("Example/P61MPlotDashboard/file/result/V0_0_1/None/AC0_0_1/test.png")
 
         return {}, {}
 
@@ -98,7 +98,7 @@ class Dashboard() :
         }
 
         imageInfo = {
-            "imagePath": "Example/P61MatplotlibDashboard/file/result/V0_0_1/None/AC0_0_1/test.png"
+            "imagePath": "Example/P61MPlotDashboard/file/result/V0_0_1/None/AC0_0_1/test.png"
         }
 
         # 標準快速建立相關圖表
@@ -135,7 +135,7 @@ class Dashboard() :
         plotAX.yaxis.set_major_locator(ticker.MultipleLocator(1))
 
 
-        matplotlibDashboardCtrl.saveDashboard("Example/P61MatplotlibDashboard/file/result/V0_0_1/None/AC0_0_2/test.png")
+        matplotlibDashboardCtrl.saveDashboard("Example/P61MPlotDashboard/file/result/V0_0_1/None/AC0_0_2/test.png")
 
         return {}, {}
 

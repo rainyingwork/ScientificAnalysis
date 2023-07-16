@@ -6,7 +6,7 @@ if __name__ == "__main__":
     basicInfo = {
         "RunType": ["RunOPS"],
         "Product": ["Example"],
-        "Project": ["P61MatplotlibDashboard"],
+        "Project": ["P61MPlotDashboard"],
     }
     opsInfo = copy.deepcopy(basicInfo)
     opsInfo["OPSVersion"] = ["V0_0_1"]
