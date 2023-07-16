@@ -135,6 +135,7 @@ def makeOPSInfoByRunDCEOPS (runType, product, project, opsVersion,opsRecordId) :
 def makeOPSInfoByRunOnlyFunc (runType, product, project, opsVersion,opsRecordId) :
     # 與makeOPSInfoByRunDCEOPS模式一樣，只跑單一方法
     return makeOPSInfoByRunDCEOPS (runType, product, project, opsVersion,opsRecordId)
+
 def makeOPSPipelinePNG(opsInfo,bgcolor="#FFFFFF",versionTextCount=10,functionTextCount=4):
     import pygraphviz
     filePath = "{}/{}/file/PLD".format(opsInfo["Product"][0], opsInfo["Project"][0])

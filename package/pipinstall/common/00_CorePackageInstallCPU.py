@@ -43,5 +43,8 @@ os.system("{} -m {} streamlit==1.23.1".format(__pythonexePath,__pipFunction))   
 os.system("{} -m {} requests==2.31.0".format(__pythonexePath,__pipFunction))            # 網頁套件
 os.system("{} -m {} tqdm==4.65.0".format(__pythonexePath,__pipFunction))                # 進度條套件
 os.system("{} -m {} openpyxl==3.1.2".format(__pythonexePath,__pipFunction))             # Excel套件
-
+os.system("{} -m {} selenium==4.10.0".format(__pythonexePath,__pipFunction))            # 爬蟲專用套件
+os.system("{} -m {} beautifulsoup4==4.12.2".format(__pythonexePath,__pipFunction))      # 爬蟲網頁解析套件
+# 安裝pygraphviz 請先至 graphviz 安裝2.46以上版本下載位置 https://graphviz.org/download/
+os.system('{} -m {} --global-option=build_ext --global-option="-IC:\Program Files\Graphviz\include" --global-option="-LC:\Program Files\Graphviz\lib" pygraphviz==1.11'.format(__pythonexePath,__pipFunction))
 

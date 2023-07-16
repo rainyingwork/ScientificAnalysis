@@ -14,7 +14,6 @@ __pipFunction = ("pip install --no-index --find-links=venv/pip" if isLocalDir ==
 # StableDiffusion 套件 -------------------------------------------------
 # os.system("{} -m {} diffusers==0.14.0".format(__pythonexePath,__pipFunction))             # diffusers
 # GenVoice 套件 -------------------------------------------------
-os.system("{} -m {} gTTS==2.3.2".format(__pythonexePath,__pipFunction))                     # 聲音套件
-os.system("{} -m {} pydub==0.25.1".format(__pythonexePath,__pipFunction))                   # 聲音套件
-os.system("{} -m {} ffmpeg==1.4".format(__pythonexePath,__pipFunction))                   # 聲音套件
-
+# os.system("{} -m {} gTTS==2.3.2".format(__pythonexePath,__pipFunction))                     # 聲音套件
+# os.system("{} -m {} pydub==0.25.1".format(__pythonexePath,__pipFunction))                   # 聲音套件
+# os.system("{} -m {} ffmpeg==1.4".format(__pythonexePath,__pipFunction))                   # 聲音套件
