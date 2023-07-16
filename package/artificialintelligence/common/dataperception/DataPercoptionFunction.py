@@ -63,7 +63,7 @@ class DataPercoptionFunction(DataPercoptionTool):
             for dataTime in dataTimeArr:
                 eval(f"exec('from {fvInfo['Product']}.{fvInfo['Project']}.info.InfoMain import InfoMain')")
                 infoMain = eval(f"InfoMain()")
-                columnInfoMap = eval(f"infoMain.getInfo_{tableName}()")
+                columnInfoMap = eval(f"infoMain.getInfo_{tableName}({fvInfo})")
                 percopDetailAllSQL = ""
                 percopColumnALLSQLs = []
                 percopColumnALLSQLs.append("""'all_data_datacount' , "all_data_datacount" """)
@@ -79,14 +79,14 @@ class DataPercoptionFunction(DataPercoptionTool):
                         cfArr.append(percopColumnSQL)
                     percopColumnALLSQLs.append('\n                    , '.join(cfArr))
 
-                percopSingleInitSQL = DataPercoptionTool().makeBasicPercoptionDetailSQL()
+                percopSingleInitSQL = DataPercoptionTool().makeBasicPercoptionDetailSQL(fvInfo)
 
                 percopColumnALLSQLArr = []
                 for percopColumnALLSQL in percopColumnALLSQLs:
                     percopSingleSQL = percopSingleInitSQL.replace("[:PERCOP_COLUMN]", percopColumnALLSQL)
                     percopColumnALLSQLArr.append(percopSingleSQL)
 
-                exeSQLs = DataPercoptionTool().makeBasicPercoptionSQL().replace("[:Real_TABLE_NAME]",fvInfo["RealTableName"])
+                exeSQLs = DataPercoptionTool().makeBasicPercoptionSQL(fvInfo).replace("[:Real_TABLE_NAME]",fvInfo["RealTableName"])
                 exeSQLs = exeSQLs.replace("[:PRODUCT]", fvInfo["Product"])
                 exeSQLs = exeSQLs.replace("[:PROJECT]", fvInfo["Project"])
                 exeSQLs = exeSQLs.replace("[:TABLENAME]", tableName)
@@ -101,7 +101,6 @@ class DataPercoptionFunction(DataPercoptionTool):
 
                 for exeSQL in exeSQLArr:
                     postgresCtrl.executeSQL(exeSQL)
-
 
         return []
 
@@ -219,7 +218,10 @@ class DataPercoptionFunction(DataPercoptionTool):
         # mngr = plt.get_current_fig_manager()
         # mngr.window.wm_geometry("+10+10")
         plt.tight_layout()
-        plt.savefig("Example/P81DataPerception/file/DP/CPByDT_{}_{}_{}_{}_{}.png".format(fvInfo['RealTableName'], fvInfo['Product'], fvInfo['Project'], fvInfo['Tablename'], fvInfo['PercepCycle']))
+        pltPath = "{}/{}/file/DP".format(fvInfo['Product'], fvInfo['Project'])
+        pltFile = "CPByDT_{}_{}_{}_{}_{}.png".format(fvInfo['RealTableName'], fvInfo['Product'], fvInfo['Project'], fvInfo['Tablename'], fvInfo['PercepCycle'] )
+        os.makedirs(pltPath) if not os.path.isdir(pltPath) else None
+        plt.savefig("{}/{}".format(pltPath,pltFile))
 
         return []
 
