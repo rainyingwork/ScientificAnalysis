@@ -33,7 +33,7 @@ os.system("{} -m {} torchaudio==2.0.2 ".format(__pythonexePath,__pipFunction))  
 # Tensorflow 套件 -------------------------------------------------
 os.system("{} -m {} tensorflow==2.10.0".format(__pythonexePath,__pipFunction))
 # 自動機器學習套件 -------------------------------------------------
-os.system("{} -m {} pycaret==3.0.2".format(__pythonexePath,__pipFunction))          # 自動機器學習套件
+os.system("{} -m {} pycaret==3.0.4".format(__pythonexePath,__pipFunction))          # 自動機器學習套件
 os.system("{} -m {} autokeras==1.1.0".format(__pythonexePath,__pipFunction))        # 自動機器學習套件
 # 其他套件 -------------------------------------------------
 os.system("{} -m {} gym==0.26.2".format(__pythonexePath,__pipFunction))             # 遊戲場套件
