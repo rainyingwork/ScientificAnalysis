@@ -1,3 +1,4 @@
+import copy
 import os
 import datetime
 from dotenv import load_dotenv
@@ -48,29 +49,29 @@ class RawDataFunction(CommonFunction):
         otherInfo = {}
         fvInfo = self.makeIntactFVInfoByXYData(fvInfo)
         if fvInfo['FunctionItemType'] == "ByDT":
-            otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
+            otherInfo["AnalysisDataInfoDF"],otherInfo["AnalysisDataCountDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
             otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
         elif fvInfo['FunctionItemType'] == "ByDTDiff":
-            otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
+            otherInfo["AnalysisDataInfoDF"],otherInfo["AnalysisDataCountDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
             otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
         elif fvInfo['FunctionItemType'] == "ByDTDiffFromDF":
             otherInfo["DFArr"] = self.makeTagDataDFArrByDF(fvInfo, otherInfo)
         fvInfo = self.makeClearFVInfoByXYData(fvInfo)
         otherInfo['FunctionItemType'] = fvInfo["FunctionItemType"]
         otherInfo['MakeDataKeys'] = fvInfo['MakeDataKeys']
-        otherInfo['MakeDataInfo'] = fvInfo['MakeDataInfo']
+        otherInfo['MakeDataInfo'] = self.makeAnalysisDataInfoToMakeDataInfo(fvInfo, otherInfo)
         return otherInfo
 
     @classmethod
     def rdGetXYDataByFunctionRusult(self, fvInfo):
         otherInfo = {}
         fvInfo = self.makeIntactFVInfoByXYData(fvInfo)
-        otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
+        otherInfo["AnalysisDataInfoDF"],otherInfo["AnalysisDataCountDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
         otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
         fvInfo = self.makeClearFVInfoByXYData(fvInfo)
         otherInfo['FunctionItemType'] = fvInfo["FunctionItemType"]
         otherInfo['MakeDataKeys'] = fvInfo['MakeDataKeys']
-        otherInfo['MakeDataInfo'] = fvInfo['MakeDataInfo']
+        otherInfo['MakeDataInfo'] = self.makeAnalysisDataInfoToMakeDataInfo(fvInfo, otherInfo)
         return otherInfo
 
     @classmethod
@@ -81,18 +82,18 @@ class RawDataFunction(CommonFunction):
         fvInfo["MakeDataKeys"] = databaseResultJson["MakeDataKeys"]
         fvInfo["MakeDataInfo"] = databaseResultJson["MakeDataInfo"]
         fvInfo = self.makeIntactFVInfoByXYData(fvInfo)
-        otherInfo["AnalysisDataInfoDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
+        otherInfo["AnalysisDataInfoDF"],otherInfo["AnalysisDataCountDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
         otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
         fvInfo = self.makeClearFVInfoByXYData(fvInfo)
         otherInfo['FunctionItemType'] = fvInfo["FunctionItemType"]
         otherInfo['MakeDataKeys'] = fvInfo['MakeDataKeys']
-        otherInfo['MakeDataInfo'] = fvInfo['MakeDataInfo']
+        otherInfo['MakeDataInfo'] = self.makeAnalysisDataInfoToMakeDataInfo(fvInfo, otherInfo)
         return otherInfo
 
     @classmethod
     def rdGetSQLData(self, fvInfo):
         otherInfo = {}
-        otherInfo["DFArr"] = self.makeGetSQLStrsByDataBase(fvInfo ,otherInfo)
+        otherInfo["DFArr"] = self.makeGetSQLStrsByDataBase(fvInfo, otherInfo)
         return otherInfo
 
     @classmethod
@@ -184,19 +185,47 @@ class RawDataFunction(CommonFunction):
         makeMaxCloumnCount = fvInfo["MakeMaxColumnCount"] if "MakeMaxColumnCount" in fvInfo.keys() else 9999999999
         makeDataInfoArr = fvInfo["MakeDataInfo"]
 
-        infoColumnsSQL = ""
+        countColumnsSQL = ""
         for columnName in doubleColumnNameArr:
-            infoColumnSQL = "\n                    , SUM(CASE WHEN AA.{} is not null then 1 else 0 end ) as {}"
-            infoColumnSQL = infoColumnSQL.format(columnName, columnName)
-            infoColumnsSQL = infoColumnsSQL + infoColumnSQL
+            countColumnSQL = "\n                    , SUM(CASE WHEN AA.{} is not null then 1 else 0 end ) as {}"
+            countColumnSQL = countColumnSQL.format(columnName, columnName)
+            countColumnsSQL = countColumnsSQL + countColumnSQL
+
+        countWheresSQL = ""
+        for makeDataInfo in makeDataInfoArr:
+            countWhereSQL = "\n                        OR (AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = {} )"
+            countWhereSQL = countWhereSQL.format(makeDataInfo["Product"], makeDataInfo["Project"], makeDataInfo["Version"],makeDataInfo["DTSQL"])
+            countWheresSQL = countWheresSQL + countWhereSQL
 
         infoWheresSQL = ""
         for makeDataInfo in makeDataInfoArr:
             infoWhereSQL = "\n                        OR (AA.product = '{}' AND AA.project='{}' AND AA.version='{}' AND AA.dt = {} )"
-            infoWhereSQL = infoWhereSQL.format(makeDataInfo["Product"], makeDataInfo["Project"], makeDataInfo["Version"],makeDataInfo["DTSQL"])
+            infoWhereSQL = infoWhereSQL.format(
+                makeDataInfo["Product"],
+                makeDataInfo["Project"],
+                makeDataInfo['Version'].split("_")[0] + '_' + makeDataInfo['Version'].split("_")[1] + '_0',
+                makeDataInfo["DTSQL"]
+            )
             infoWheresSQL = infoWheresSQL + infoWhereSQL
 
         infoSQL = """
+            SELECT
+                AA.product as product
+                , AA.project as project
+                , AA.common_015::json->> 'DataVersion' as version
+                , AA.dt as dt
+                , AA.common_011 as enname
+                , AA.common_012 as cnname
+                , AA.common_013 as dataindex
+                , AA.common_014 as memo
+                , AA.common_015::json as messageinfo
+            FROM observationdata.analysisdata AA
+            where 1 = 1
+                AND ( 1 != 1 [:WheresSQL] 
+                )
+        """.replace("[:WheresSQL]", infoWheresSQL)
+        analysisDataInfoDF = postgresCtrl.searchSQL(infoSQL)
+        countSQL = """
             SELECT
                 AA.product as product
                 , AA.project as project
@@ -213,10 +242,33 @@ class RawDataFunction(CommonFunction):
                 , AA.version
                 , AA.dt
                 , AA.common_013
-        """.replace("[:ColumnsSQL]", infoColumnsSQL).replace("[:WheresSQL]", infoWheresSQL)
+        """.replace("[:ColumnsSQL]", countColumnsSQL).replace("[:WheresSQL]", countWheresSQL)
 
-        analysisDataInfoDF = postgresCtrl.searchSQL(infoSQL)
-        return analysisDataInfoDF
+        analysisDataCountDF = postgresCtrl.searchSQL(countSQL)
+        return analysisDataInfoDF , analysisDataCountDF
+
+    @classmethod
+    def makeAnalysisDataInfoToMakeDataInfo(self, fvInfo, otherInfo):
+        makeDataInfos = copy.deepcopy(fvInfo['MakeDataInfo'])
+        for makeDataInfo in makeDataInfos:
+            columnInfo = {}
+            for dataIndex, dataRow in otherInfo["AnalysisDataInfoDF"].iterrows():
+                if (dataRow["product"] != makeDataInfo["Product"]) \
+                        | (dataRow["project"] != makeDataInfo["Project"]) \
+                        | (dataRow["project"] != makeDataInfo["Project"]) \
+                        | (dataRow["dt"] != makeDataInfo["DTStr"]) \
+                        | (dataRow["version"] != makeDataInfo["Version"]):
+                    continue
+                if int(dataRow["dataindex"]) not in makeDataInfo["ColumnNumbers"] :
+                    continue
+                columnInfo[dataRow["dataindex"]] = {
+                    "enname": dataRow["enname"],
+                    "cnname": dataRow["cnname"],
+                    "memo": dataRow["memo"],
+                    "messageinfo": dataRow["messageinfo"],
+                }
+            makeDataInfo["ColumnInfo"] = columnInfo
+        return makeDataInfos
 
     @classmethod
     def makeTagDataDFArrByDataInfo(self,fvInfo,otherInfo):
@@ -260,7 +312,7 @@ class RawDataFunction(CommonFunction):
         makeDataDateStr = fvInfo["DataTime"]
         makeDataKeyArr = fvInfo["MakeDataKeys"]
         makeDataInfoArr = fvInfo["MakeDataInfo"]
-        analysisDataInfoDF = otherInfo["AnalysisDataInfoDF"]
+        analysisDataInfoDF = otherInfo["AnalysisDataCountDF"]
 
         infoKeysSQL = ""
         yColumnsSQL = ""
