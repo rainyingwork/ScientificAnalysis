@@ -5,12 +5,15 @@
     "tagorder": "1",
     "memo": "Purchase CH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
           "fillna": {"value": 0}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -21,12 +24,15 @@
     "tagorder": "2",
     "memo": "Purchase MM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
           "fillna": {"value": 0}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -37,12 +43,15 @@
     "tagorder": "3",
     "memo": "Store7 Yes",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna"],
         "ProcessingFunction": {
           "fillna": {"value": 0}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -53,7 +62,7 @@
     "tagorder": "4",
     "memo": "WeekofPurchase",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","log","normbyzscore"],
         "ProcessingFunction": {
@@ -61,6 +70,9 @@
           "log": {"value": 10} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -71,13 +83,16 @@
     "tagorder": "5",
     "memo": "StoreID",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -88,13 +103,16 @@
     "tagorder": "6",
     "memo": "SpecialCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -105,13 +123,16 @@
     "tagorder": "7",
     "memo": "SpecialMM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -122,13 +143,16 @@
     "tagorder": "8",
     "memo": "STORE",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -139,13 +163,16 @@
     "tagorder": "9",
     "memo": "PriceCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -156,13 +183,16 @@
     "tagorder": "10",
     "memo": "PriceMM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -173,13 +203,16 @@
     "tagorder": "11",
     "memo": "DiscCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -190,13 +223,16 @@
     "tagorder": "12",
     "memo": "DiscMM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -207,13 +243,16 @@
     "tagorder": "13",
     "memo": "LoyalCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -224,30 +263,36 @@
     "tagorder": "14",
     "memo": "SalePriceMM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
   }
   ,"015": {
-    "enname": "SalePriceMM",
-    "cnname": "SalePriceMM",
+    "enname": "SalePriceCM",
+    "cnname": "SalePriceCM",
     "tagorder": "15",
-    "memo": "SalePriceMM",
+    "memo": "SalePriceCM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -258,13 +303,16 @@
     "tagorder": "16",
     "memo": "PriceDiff",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -275,13 +323,16 @@
     "tagorder": "17",
     "memo": "PctDiscMM",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]
@@ -292,13 +343,16 @@
     "tagorder": "18",
     "memo": "PctDiscCH",
     "jsonmessage": {
-      "DataVersion":"R0_0_0",
+      "DataVersion":"R0_0_1",
       "DataPreProcess": {
         "ProcessingOrder": ["fillna","normbyzscore"],
         "ProcessingFunction": {
           "fillna": {"value": 0} ,
           "normbyzscore": {}
         }
+      },
+      "DataCheck": {
+        "CheckFunction": ["Count","DisCount","Sum","Avg","Max","Min","Round"]
       }
     },
     "tagshape": [0]

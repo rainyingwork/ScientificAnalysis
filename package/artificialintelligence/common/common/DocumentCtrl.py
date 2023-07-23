@@ -63,8 +63,6 @@ class DocumentCtrl:
         wb.remove(ws_init)
         wb.save(outFilePath)
 
-
-
     def makeAnalysisDoubleInfoByDataBase(self,product,project,version,dt) :
         import os , json
         from dotenv import load_dotenv
