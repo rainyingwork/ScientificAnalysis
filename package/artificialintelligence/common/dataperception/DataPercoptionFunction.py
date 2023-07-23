@@ -333,8 +333,10 @@ class DataPercoptionFunction(DataPercoptionTool):
         # mngr = plt.get_current_fig_manager()
         # mngr.window.wm_geometry("+10+10")
         plt.tight_layout()
-
-        plt.savefig("Example/P81DataPerception/file/DP/CPByTable_{}_{}_{}_{}_{}.png".format(fvInfo['RealTableName'], fvInfo['Product'], fvInfo['Project'], fvInfo['MainTablename'], fvInfo['PercepCycle']))
+        pltPath = "{}/{}/file/DP".format(fvInfo['Product'], fvInfo['Project'])
+        pltFile = "CPByTable_{}_{}_{}_{}_{}.png".format(fvInfo['RealTableName'], fvInfo['Product'], fvInfo['Project'],fvInfo['Tablename'], fvInfo['PercepCycle'])
+        os.makedirs(pltPath) if not os.path.isdir(pltPath) else None
+        plt.savefig("{}/{}".format(pltPath, pltFile))
 
         return []
 
