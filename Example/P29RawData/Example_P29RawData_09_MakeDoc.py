@@ -9,14 +9,14 @@ infoMain = InfoMain()
 if __name__ == "__main__":
     dataMap = {
         "AllData" : [
-            infoMain.getInfo_R0_0_0(),
+            infoMain.getInfo_R0_0_1_ByFile(),
         ],
         "Crawler" : [],
         "Original" : [],
         "Standard" : [
         ],
         "RawData": [
-            infoMain.getInfo_R0_0_0(),
+            infoMain.getInfo_R0_0_1_ByDB(),
         ],
         "PreProcess": [],
         "ModelUse": [],
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     initFilePath = 'common/common/file/doc/AnalysisDataDocInit.xlsx'
     outFilePath = 'Example/P29RawData/file/doc/'
     os.makedirs(outFilePath) if not os.path.isdir(outFilePath) else None
-    analysisDocumentCtrl.MakeStandardDoc(dataMap, initFilePath, '{}/{}'.format(outFilePath, fileName))
+    analysisDocumentCtrl.makeAnalysisDoc(dataMap, initFilePath, '{}/{}'.format(outFilePath, fileName))
 
 
 

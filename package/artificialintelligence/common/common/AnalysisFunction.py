@@ -467,11 +467,14 @@ class AnalysisFunction():
     def makeAnalysisColumnDocInfoByTagJson(self , columnInfoMap , tagText ) :
         for featureKey in tagText.getFeatureDict().keys():
             columnDict = tagText.getFeatureDict()[featureKey]
-            columnInfoMap["double_{}".format(featureKey)] = {}
-            columnInfoMap["double_{}".format(featureKey)]["description"] = columnDict['cnname']
-            columnInfoMap["double_{}".format(featureKey)]["datatype"] = 'double'
-            columnInfoMap["double_{}".format(featureKey)]["memo"] = columnDict['enname']
-            commentMemo = "\n"
-            commentMemo += "預處理方式：" + ",".join(columnDict['jsonmessage']['DataPreProcess']['ProcessingOrder'])
-            columnInfoMap["double_{}".format(featureKey)]["commentMemo"] = commentMemo
+            jsonmessage = columnDict['jsonmessage']
+            columnColumnMap = {}
+            columnColumnMap["description"] = columnDict['cnname']
+            columnColumnMap["endescription"] = columnDict['enname']
+            columnColumnMap["datatype"] = 'double'
+            columnColumnMap["memo"] = columnDict['memo']
+            columnColumnMap["processfuncs"] = jsonmessage['DataPreProcess']['ProcessingOrder'] if "DataPreProcess" in jsonmessage.keys() else []
+            columnColumnMap["checkfuncs"] = jsonmessage['DataCheck']['CheckFunction'] if "DataCheck" in jsonmessage.keys() else []
+            columnInfoMap["double_{}".format(featureKey)] = columnColumnMap
         return columnInfoMap
+
