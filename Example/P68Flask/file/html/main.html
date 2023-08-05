@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="{{ url_for('static',filename='css/main.css') }}" rel="stylesheet" >
+    <script src="{{ url_for('static',filename='script/main.js') }}"></script>
+</head>
+<body>
+    <div class="page-container">
+        <div class="toolbar-block">
+            toolbar-block
+        </div>
+        <div class="top-block">
+            <div class="top-left-block">
+                top-left-block
+            </div>
+            <div class="top-right-block">
+                top-right-block
+            </div>
+        </div>
+        <div class="bottom-block">
+            <div class="bottom-left-block" >
+                <div class="bottom-left-top-block">
+                    bottom-left-top-block
+                </div>
+                <div class="bottom-left-bottom-block">
+                    <canvas id="Chart_1" style="height: 100%;width: 100%;"></canvas>
+                </div>
+            </div>
+            <div class="bottom-right-block">
+                <div class="bottom-right-top-block">
+                    bottom-right-top-block
+                </div>
+                <div class="bottom-right-bottom-block" >
+                    bottom-right-bottom-block
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-overlay-container" id="button-selection" >
+        <div class="overlay-subpage">
+            <div class="toolbar-block">
+                <span> 選擇 </span>
+            </div>
+            <div class="middle-block" id="button-selection-option">
+            </div>
+            <div class="bottom-block" id="button-selection-submit">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

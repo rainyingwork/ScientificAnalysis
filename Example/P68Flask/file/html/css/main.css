@@ -1,0 +1,121 @@
+.page-container {
+    width: 1440px;
+    height: 890px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 12px;
+    .toolbar-block {
+        width: 100%;
+        height: 10%;
+        display: flex;
+        place-items: center;
+    }
+    .top-block {
+        width: 100%;
+        height: 45%;
+        display: flex;
+        .top-left-block {
+            width: 50%;
+            height: 100%;
+        }
+        .top-right-block {
+            width: 50%;
+            height: 100%;
+        }
+    }
+    .bottom-block {
+        width: 100%;
+        height: 45%;
+        display: flex;
+        .bottom-left-block{
+            width: 50%;
+            height: 100%;
+            .bottom-left-top-block {
+                width: 100%;
+                height: 5%;
+                display: flex;
+            }
+            .bottom-left-bottom-block {
+                width: 100%;
+                height: 95%;
+            }
+        }
+        .bottom-right-block {
+            width: 50%;
+            height: 100%;
+            .bottom-right-top-block {
+                width: 100%;
+                height: 5%;
+                display: flex;
+            }
+            .bottom-right-bottom-block {
+                width: 100%;
+                height: 95%;
+                .BRB-row {
+                    display: flex;
+                    gap: 10px;
+                    padding-top: 12px;
+                }
+                .BRB-custom-button {
+                    flex: 1;
+                    color: black;
+                    border: none;
+                    padding: 10px;
+                    font-size: 14px;
+                    cursor: pointer;
+                }
+                .BRB-custom-button:hover {
+                    background-color: blue;
+                }
+            }
+        }
+    }
+}
+
+.page-overlay-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    display: none;
+    .overlay-subpage {
+        position: fixed;
+        width: 50%;
+        height: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        .toolbar-block{
+            width: 100%;
+            height: 10%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .middle-block{
+            width: 100%;
+            height: 80%;
+            list-style-type: none;
+            padding: 0;
+            column-count: 1;
+            column-gap: 10px;
+        }
+        .bottom-block{
+            width: 100%;
+            height: 10%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    }
+}
+
+
+
