@@ -26,6 +26,7 @@ os.system("{} -m {} polars==0.18.2".format(__pythonexePath,__pipFunction))
 os.system("{} -m {} pyodbc==4.0.39".format(__pythonexePath,__pipFunction))
 os.system("{} -m {} SQLAlchemy==2.0.16".format(__pythonexePath,__pipFunction))
 os.system("{} -m {} {}==2.9.6".format(__pythonexePath,__pipFunction ,"psycopg2-binary" if os.name == "posix" else "psycopg2"))
+os.system("{} -m {} connectorx==0.3.2".format(__pythonexePath,__pipFunction))
 # GoogleAPI套件 -------------------------------------------------
 os.system("{} -m {} google-auth==2.19.1".format(__pythonexePath,__pipFunction))
 os.system("{} -m {} oauth2client==4.1.3".format(__pythonexePath,__pipFunction))
