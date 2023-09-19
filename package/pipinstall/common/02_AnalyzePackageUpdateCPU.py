@@ -12,7 +12,7 @@ os.system("{} -m {} impyla==0.18.0".format(__pythonexePath,__pipFunction))      
 os.system("{} -m {} hdfs==2.7.0".format(__pythonexePath,__pipFunction))             # 用於讀取HDFS資料
 os.system("{} -m {} fastparquet==2023.4.0".format(__pythonexePath,__pipFunction))   # 用於讀取HDFS資料
 # 機器學習套件 -------------------------------------------------
-os.system("{} -m {} scikit-learn==1.2.2".format(__pythonexePath,__pipFunction))     # 機器學習套件
+os.system("{} -m {} scikit-learn==1.3.0".format(__pythonexePath,__pipFunction))     # 機器學習套件
 os.system("{} -m {} scikit-surprise==1.1.3".format(__pythonexePath,__pipFunction))  # 機器學習套件
 os.system("{} -m {} mlxtend==0.22.0".format(__pythonexePath,__pipFunction))         # 機器學習套件
 os.system("{} -m {} networkx==3.1".format(__pythonexePath,__pipFunction))           # 網路分析
@@ -33,7 +33,7 @@ os.system("{} -m {} torchaudio==2.0.2 ".format(__pythonexePath,__pipFunction))  
 # Tensorflow 套件 -------------------------------------------------
 os.system("{} -m {} tensorflow==2.10.0".format(__pythonexePath,__pipFunction))
 # 自動機器學習套件 -------------------------------------------------
-os.system("{} -m {} pycaret==3.0.4".format(__pythonexePath,__pipFunction))          # 自動機器學習套件
+os.system("{} -m {} pycaret==3.1.0".format(__pythonexePath,__pipFunction))          # 自動機器學習套件
 os.system("{} -m {} autokeras==1.1.0".format(__pythonexePath,__pipFunction))        # 自動機器學習套件
 # 其他套件 -------------------------------------------------
 os.system("{} -m {} gym==0.26.2".format(__pythonexePath,__pipFunction))             # 遊戲場套件
