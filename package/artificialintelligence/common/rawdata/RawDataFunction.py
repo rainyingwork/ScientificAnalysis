@@ -55,6 +55,7 @@ class RawDataFunction(CommonFunction):
             otherInfo["AnalysisDataInfoDF"],otherInfo["AnalysisDataCountDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
             otherInfo["DFArr"] = self.makeTagDataDFArrByDataInfo(fvInfo, otherInfo)
         elif fvInfo['FunctionItemType'] == "ByDTDiffFromDF":
+            otherInfo["AnalysisDataInfoDF"],otherInfo["AnalysisDataCountDF"] = self.makeAnalysisDataInfoDFByDataInfo(fvInfo, otherInfo)
             otherInfo["DFArr"] = self.makeTagDataDFArrByDF(fvInfo, otherInfo)
         fvInfo = self.makeClearFVInfoByXYData(fvInfo)
         otherInfo['FunctionItemType'] = fvInfo["FunctionItemType"]

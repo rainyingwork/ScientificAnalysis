@@ -73,7 +73,7 @@ class PreProcessFunction(PreProcessTool,CommonFunction):
                 for processingFunctionName in processingOrderArr:
                     processingFunction = processingFunctions[processingFunctionName]
                     if processingFunctionName == "fillna":
-                        preprossDF[columnFullName] = preprossDF[columnFullName].fillna(processingFunction['value'])
+                        preprossDF[columnFullName] = preprossDF[columnFullName].fillna(processingFunction['value']) if columnFullName in preprossDF.columns else processingFunction['value']
                     elif processingFunctionName == "log":
                         preprossDF[columnFullName] = preprossDF[columnFullName].apply(lambda x: (math.log(x, processingFunction['value']) if x > 0 else 0 ))
                     elif processingFunctionName == "rank":

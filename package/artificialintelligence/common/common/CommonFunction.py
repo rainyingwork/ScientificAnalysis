@@ -70,12 +70,12 @@ class CommonFunction(AnalysisFunction):
                 inner join opsmanagement.opsrecord BB on 1 = 1 
                     and AA.opsversionid = BB.opsversion
                     and BB.state = 'FINISH'
-                    and BB.resultjson like '%[:DatabaseFunction']%'
+                    and BB.resultjson like '%[:DatabaseFunction]%'
                 WHERE 1 = 1 
                     AND AA.product = '[:DatabaseProduct]'
                     AND AA.project = '[:DatabaseProject]'
-                    AND AA.opsversion = '[:DatabaseOPSVersion']' 
-            ) select BB.resultjson::json -> '[:DatabaseFunction']' as resultjsonstr
+                    AND AA.opsversion = '[:DatabaseOPSVersion]' 
+            ) select BB.resultjson::json -> '[:DatabaseFunction]' as resultjsonstr
             FROM opsmanagement.opsversion  AA
             inner join opsmanagement.opsrecord BB on 1 = 1 
                 and AA.opsversionid = BB.opsversion
@@ -85,11 +85,11 @@ class CommonFunction(AnalysisFunction):
             WHERE 1 = 1 
                 AND AA.product = '[:DatabaseProduct]'
                 AND AA.project = '[:DatabaseProject]'
-                AND AA.opsversion = '[:DatabaseOPSVersion']' 
+                AND AA.opsversion = '[:DatabaseOPSVersion]' 
         """.replace("[:DatabaseProduct]", databaseProduct) \
             .replace("[:DatabaseProject]", databaseProject) \
-            .replace("[:DatabaseOPSVersion']", databaseOPSVersion) \
-            .replace("[:DatabaseFunction']", databaseFunction)
+            .replace("[:DatabaseOPSVersion]", databaseOPSVersion) \
+            .replace("[:DatabaseFunction]", databaseFunction)
         if type(databaseOPSRecord) == type(1):
             sql = sql.replace("[:OPSRecordSQLCode]", "AND BB.opsrecordid = [:DatabaseOPSRecord]").replace(
                 "[:DatabaseOPSRecord]", str(databaseOPSRecord))
