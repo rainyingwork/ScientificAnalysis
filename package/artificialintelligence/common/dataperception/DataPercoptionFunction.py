@@ -168,7 +168,7 @@ class DataPercoptionFunction(DataPercoptionTool):
         searchSQL = searchSQL.replace("[:DateNoLine]", fvInfo["DataTime"].replace("-", ""))
         searchSQL = searchSQL.replace("[:PERCEP_CYCLE]", fvInfo["PercepCycle"])
 
-        df = postgresCtrl.searchSQL(searchSQL)
+        df = postgresCtrl.searchSQL(searchSQL,readDerviedClass="polars",writeDerviedClass="pandas")
 
         df["YYYY"] = df["datetime"].str[0:4]
         df["MM"] = df["datetime"].str[4:6]
@@ -281,7 +281,7 @@ class DataPercoptionFunction(DataPercoptionTool):
         searchSQL = searchSQL.replace("[:DateNoLine]", fvInfo["DataTime"].replace("-", ""))
         searchSQL = searchSQL.replace("[:PERCEP_CYCLE]", fvInfo["PercepCycle"])
         
-        df = postgresCtrl.searchSQL(searchSQL)
+        df = postgresCtrl.searchSQL(searchSQL,readDerviedClass="polars",writeDerviedClass="pandas")
         
         sortColumnnameArr = [
             "all_data"

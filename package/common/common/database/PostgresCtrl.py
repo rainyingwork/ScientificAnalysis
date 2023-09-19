@@ -1,6 +1,7 @@
 import sqlalchemy
 import psycopg2
 import pandas
+import polars
 import io
 
 class PostgresCtrl:
@@ -13,6 +14,7 @@ class PostgresCtrl:
         self.__password = password
         self.__database = database
         self.__schema = schema
+        self.__connstr = "postgresql://{}:{}@{}:{}/{}".format(self.__user, self.__password, self.__host, self.__port, self.__database)
 
     # 執行SQL
     def executeSQL(self, sql):
@@ -23,11 +25,20 @@ class PostgresCtrl:
         connect.close()
 
     # 查詢SQL，回傳Dataframe格式的資料
-    def searchSQL(self, sql):
-        connect = psycopg2.connect(database=self.__database, user=self.__user, password=self.__password, host=self.__host, port=self.__port)
-        searchDataDF = pandas.read_sql(sql, connect)
-        connect.close()
-        return searchDataDF
+    def searchSQL(self, sql , readDerviedClass = 'pandas' , writeDerviedClass = 'pandas'):
+        if readDerviedClass == 'pandas':
+            connect = psycopg2.connect(database=self.__database, user=self.__user, password=self.__password, host=self.__host, port=self.__port)
+            searchDataDF = pandas.read_sql(sql, connect)
+            connect.close()
+            return searchDataDF
+        elif readDerviedClass == 'polars':
+            connect = self.__connstr
+            searchDataDF = polars.read_database(sql, connect)
+            if writeDerviedClass == 'pandas':
+                searchDataDF = searchDataDF.to_pandas()
+            else :
+                pass
+            return searchDataDF
 
     # 將Entity，使用語法方式，直接塞入資料庫指定Table
     def insertData(self, tableFullName, insertTableInfoDF, insertData):

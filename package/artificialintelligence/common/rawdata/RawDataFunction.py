@@ -225,7 +225,7 @@ class RawDataFunction(CommonFunction):
                 AND ( 1 != 1 [:WheresSQL] 
                 )
         """.replace("[:WheresSQL]", infoWheresSQL)
-        analysisDataInfoDF = postgresCtrl.searchSQL(infoSQL)
+        analysisDataInfoDF = postgresCtrl.searchSQL(infoSQL,readDerviedClass="polars",writeDerviedClass="pandas")
         countSQL = """
             SELECT
                 AA.product as product
@@ -245,7 +245,7 @@ class RawDataFunction(CommonFunction):
                 , AA.common_013
         """.replace("[:ColumnsSQL]", countColumnsSQL).replace("[:WheresSQL]", countWheresSQL)
 
-        analysisDataCountDF = postgresCtrl.searchSQL(countSQL)
+        analysisDataCountDF = postgresCtrl.searchSQL(countSQL,readDerviedClass="polars",writeDerviedClass="pandas")
         return analysisDataInfoDF , analysisDataCountDF
 
     @classmethod
@@ -381,7 +381,7 @@ class RawDataFunction(CommonFunction):
         dfArr = []
         for sqlInfo in sqlInfoArr :
             sql = makeSingleTagDataSQL(fvInfo,sqlInfo)
-            df = postgresCtrl.searchSQL(sql)
+            df = postgresCtrl.searchSQL(sql,readDerviedClass="polars",writeDerviedClass="pandas")
             dfArr.append(df)
         return dfArr
 
@@ -433,7 +433,7 @@ class RawDataFunction(CommonFunction):
         sqlStrArr = sqlStrs.split(";")[:-1]
         dfArr = []
         for sqlStr in sqlStrArr:
-            dfArr.append(postgresCtrl.searchSQL(sqlStr))
+            dfArr.append(postgresCtrl.searchSQL(sqlStr,readDerviedClass="polars",writeDerviedClass="pandas"))
         return dfArr
 
     # ==================================================  MakeTagText ==================================================
