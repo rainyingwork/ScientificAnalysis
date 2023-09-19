@@ -1,0 +1,48 @@
+{
+  "001": {
+    "enname": "RealValue",
+    "cnname": "實際數字",
+    "tagorder": "1",
+    "memo": "實際數字",
+    "jsonmessage": {
+      "DataVersion":"V3_1_1",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      },
+      "DataCheck": {
+        "CheckFunction": []
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"002": {
+    "enname": "PreValue",
+    "cnname": "預測數字",
+    "tagorder": "2",
+    "memo": "預測數字",
+    "jsonmessage": {
+      "DataVersion":"V3_1_1",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      },
+      "DataCheck": {
+        "CheckFunction": []
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+}

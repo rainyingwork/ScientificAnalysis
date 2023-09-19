@@ -1,0 +1,71 @@
+{
+  "001": {
+    "enname": "Login",
+    "cnname": "是否登入",
+    "tagorder": "1",
+    "memo": "今天是否登入",
+    "jsonmessage": {
+      "DataVersion":"R1_1_1",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      },
+      "DataCheck": {
+        "CheckFunction": []
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"002": {
+    "enname": "PingCount",
+    "cnname": "回報次數",
+    "tagorder": "2",
+    "memo": "Ping的次數",
+    "jsonmessage": {
+      "DataVersion":"R1_1_1",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      },
+      "DataCheck": {
+        "CheckFunction": []
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+  ,"003": {
+    "enname": "LoginTime",
+    "cnname": "登入時間",
+    "tagorder": "3",
+    "memo": "登入的時間",
+    "jsonmessage": {
+      "DataVersion":"R1_1_1",
+      "DataPreProcess": {
+        "ProcessingOrder": ["fillna"],
+        "ProcessingFunction": {
+          "fillna": {
+            "value": 0
+          }
+        }
+      },
+      "DataCheck": {
+        "CheckFunction": []
+      }
+    },
+    "tagshape": [
+      0
+    ]
+  }
+}
